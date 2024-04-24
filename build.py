@@ -33,8 +33,6 @@ def build_dev(args):
     subprocess.run(f"{sys.executable} -m pip install -r {reqs}", shell=True, check=True)
     reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_tests.txt")
     subprocess.run(f"{sys.executable} -m pip install -r {reqs}", shell=True, check=True)
-    reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_example.txt")
-    subprocess.run(f"{sys.executable} -m pip install -r {reqs}", shell=True, check=True)
 
     log.info("Installing in dev mode")
     cmd = f"{sys.executable} -m pip install -e ."
@@ -91,7 +89,7 @@ def run_tests(args):
 
     return_code = 0
     try:
-        base_cmd = f"{sys.executable} -m pytest -v --durations=10 --timeout={args.test_timeout}\
+        base_cmd = f"{sys.executable} -m pytest -v --durations=10 --ignore ./python-nextgen --timeout={args.test_timeout}\
              --junitxml {args.test_results} -rf"
         if args.num_workers > 1:
             base_cmd += f" -n{args.num_workers}"
@@ -137,40 +135,6 @@ def write_build_info(args):
     with open(tgt, "w") as f:
         f.write(f"build_info = {json.dumps(info, indent=4)}")
     log.debug(f"Build info: {', '.join([f'{k}={v}' for k,v in info.items()])}")
-
-
-def build_dist(args):
-    # try:
-    #     build_docs(args)
-    # except Exception as ex:
-    #     log.debug(traceback.format_exc())
-    #     log.warning(f"Building docs failed: {ex}")
-
-    if not args.no_freeze:
-        run_freeze(args)
-
-
-def run_freeze(args):
-
-    write_build_info(args)
-
-    if sys.platform == "win32":
-        venv_name = "freeze_env"
-        if not os.path.isdir(venv_name):
-            subprocess.run(f"{sys.executable} -m venv {venv_name}", shell=True, check=True)
-        py_bin = os.path.join(venv_name, "Scripts", "python.exe")
-        py_bin = os.path.abspath(py_bin)
-    else:
-        py_bin = "python3"
-
-    subprocess.run(f"{py_bin} -m pip install --force-reinstall .", shell=True, check=True)
-
-    old_cwd = os.getcwd()
-    freeze_dir = os.path.join(os.path.dirname(__file__), "freeze")
-    os.chdir(freeze_dir)
-    subprocess.run(f"{py_bin} freeze_nuitka.py", shell=True, check=True)
-
-    os.chdir(old_cwd)
 
 
 if __name__ == "__main__":
@@ -235,10 +199,6 @@ if __name__ == "__main__":
 
     wheels = commands.add_parser("wheels")
     wheels.set_defaults(func=build_wheels)
-
-    dist = commands.add_parser("dist")
-    dist.set_defaults(func=build_dist)
-    dist.add_argument("-f", "--no-freeze", action="store_true", help="Skip freezing")
 
     args = parser.parse_args()
     result = args.func(args)

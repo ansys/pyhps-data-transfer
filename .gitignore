@@ -53,6 +53,7 @@ log.txt
 python/dcp.egg-info/
 build/
 bin/
+!ansys/rep/data/transfer/client/bin
 dist
 .vs/
 /*.bat
