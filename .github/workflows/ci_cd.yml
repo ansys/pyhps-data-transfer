@@ -2,15 +2,6 @@ name: CI-CD
 
 on:
   workflow_dispatch:
-    inputs:
-      freeze_linux:
-        type: boolean
-        default: true
-        description: Freeze linux
-      freeze_windows:
-        type: boolean
-        default: false
-        description: Freeze windows
       force_release:
           type: boolean
           default: false
