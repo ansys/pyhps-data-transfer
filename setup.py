@@ -23,7 +23,7 @@ def setup_package():
             "ansys-rep-common[falcon,crypto,redis,otel] @ \
                 git+https://github.com/ansys-internal/rep-common-py.git@main#egg=ansys-rep-common",
         ],
-        package_data={"": ["*.json", "*_job.sh"]},
+        package_data={'ansys.rep.data.transfer.client': ["bin/*"]},
         include_package_data=True,
         extras_require={},
     )
