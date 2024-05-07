@@ -89,7 +89,7 @@ def run_tests(args):
 
     return_code = 0
     try:
-        base_cmd = f"{sys.executable} -m pytest -v --durations=10 --ignore ./python-nextgen --timeout={args.test_timeout}\
+        base_cmd = f"{sys.executable} -m pytest -v --durations=10 --timeout={args.test_timeout}\
              --junitxml {args.test_results} -rf"
         if args.num_workers > 1:
             base_cmd += f" -n{args.num_workers}"

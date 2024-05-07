@@ -8,4 +8,4 @@ def test_storage():
     ) as api_client:
         api_instance = DtsApi(api_client)
         resp = api_instance.storages()
-        assert len(resp.storage) > 0
+        assert len(resp) > 0

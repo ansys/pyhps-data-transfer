@@ -1,104 +1,140 @@
-import openapi_client
-from openapi_client.models.rest_path_operations import RestPathOperations
-from openapi_client.models.rest_src_dst import RestSrcDst
-from openapi_client.models.rest_src_dst_operations import RestSrcDstOperations
-from openapi_client.models.rest_storage_path import RestStoragePath
-from pydantic import StrictStr, conlist
+import mimetypes
+import os
+import tempfile
+from typing import List
 
 from ansys.rep.data.transfer.client.client import Client
+from ansys.rep.data.transfer.client.dts.models.rest import OpIdResponse, OpsResponse, SrcDst, Status, StorageConfigResponse, StoragePath
 
 
 class DtsApi:
     def __init__(self, client: Client):
         self.client = client
 
-    # Status endpoints
     def status(self):
-        return openapi_client.StatusApi(self.client).root_get()
+        url = '/'
+        resp = self.client.session.get(url)
+        json = resp.json()
+        return Status(**json)
 
     async def async_status(self):
-        return openapi_client.StatusApi(self.client).root_get(async_req=True)
+        url = '/'
+        resp = await self.client.session.get(url)
+        json = resp.json()
+        return Status(**json)
 
-    # Operation endpoints
-    def download_file(self, remote: StrictStr, path: StrictStr):
-        return openapi_client.DataTransferApi(self.client).data_remote_path_get(remote, path)
+    def download_file(self, remote: str, path: str, dest: str = None):
+        url = f'/data/{remote}/{path}'
+        if not dest:
+            dest = os.path.join(tempfile.gettempdir(), os.path.basename(path))
+        with self.client.session.stream("GET", url) as resp:
+            with open(dest, "wb") as file:
+                for chunk in resp.iter_bytes():
+                    file.write(chunk)
+        return dest
 
-    async def async_download_file(self, remote: StrictStr, path: StrictStr):
-        return openapi_client.DataTransferApi(self.client).data_remote_path_get(remote, path, async_req=True)
+    async def async_download_file(self, remote: str, path: str, dest: str = None):
+        url = f'/data/{remote}/{path}'
+        if not dest:
+            dest = os.path.join(tempfile.gettempdir(), os.path.basename(path))
+        async with self.client.session.stream("GET", url) as resp:
+            with open(dest, "wb") as file:
+                async for chunk in resp.aiter_bytes():
+                    file.write(chunk)
+        return dest
 
-    def upload_file(self, remote: StrictStr, path: StrictStr, file_path: StrictStr):
-        return openapi_client.DataTransferApi(self.client).data_remote_path_post(remote, path, file_path)
+    def upload_file(self, remote: str, path: str, file_path: str):
+        url = f'/data/{remote}/{path}'
+        filename = os.path.basename(file_path)
+        mime_type = (mimetypes.guess_type(filename)[0] or
+                    'application/octet-stream')
+        resp = self.client.session.post(url, files={"file": (filename, open(file_path, 'rb'), mime_type)})
+        json = resp.json()
+        return OpIdResponse(**json)
 
-    async def async_upload_file(self, remote: StrictStr, path: StrictStr, file_path: StrictStr):
-        return openapi_client.DataTransferApi(self.client).data_remote_path_post(
-            remote, path, file_path, async_req=True
-        )
+    async def async_upload_file(self, remote: str, path: str, file_path: str):
+        url = f'/data/{remote}/{path}'
+        filename = os.path.basename(file_path)
+        mime_type = (mimetypes.guess_type(filename)[0] or
+                    'application/octet-stream')
+        resp = await self.client.session.post(url, files={"file": (filename, open(file_path, 'rb'), mime_type)})
+        json = resp.json()
+        return OpIdResponse(**json)
 
-    # Storage endpoints
-    def operations(self, ids: conlist(StrictStr)):
-        return openapi_client.OperationsApi(self.client).operations_get(ids)
+    def operations(self, ids: List[str]):
+        url = '/operations'
+        resp = self.client.session.get(url, params={"ids": ids})
+        json = resp.json()
+        return OpsResponse(**json).operations
 
-    async def async_operations(self, ids: conlist(StrictStr)):
-        return openapi_client.OperationsApi(self.client).operations_get(ids, async_req=True)
+    async def async_operations(self, ids: List[str]):
+        url = '/operations'
+        resp = await self.client.session.get(url, params={"ids": ids})
+        json = resp.json()
+        return OpsResponse(**json).operations
 
     def storages(self):
-        return openapi_client.StorageApi(self.client).storage_get()
+        url = '/storage'
+        resp = self.client.session.get(url)
+        json = resp.json()
+        return StorageConfigResponse(**json).storage
 
     async def async_storages(self):
-        return openapi_client.StorageApi(self.client).storage_get(async_req=True)
+        url = '/storage'
+        resp = await self.client.session.get(url)
+        json = resp.json()
+        return StorageConfigResponse(**json).storage
 
-    def copy(self, operations: conlist(RestSrcDst)):
-        return openapi_client.StorageApi(self.client).storagecopy_post(RestSrcDstOperations(operations=operations))
+    def copy(self, operations: List[SrcDst]):
+        return self._exec_operation_req('copy', operations)
 
-    async def async_copy(self, operations: conlist(RestSrcDst)):
-        return openapi_client.StorageApi(self.client).storagecopy_post(
-            RestSrcDstOperations(operations=operations), async_req=True
-        )
+    async def async_copy(self, operations: List[SrcDst]):
+        return await self._exec_async_operation_req('copy', operations)
 
-    def exists(self, operations: conlist(RestStoragePath)):
-        return openapi_client.StorageApi(self.client).storageexists_post(RestPathOperations(operations=operations))
+    def exists(self, operations: List[StoragePath]):
+        return self._exec_operation_req('exists', operations)
 
-    async def async_exists(self, operations: conlist(RestStoragePath)):
-        return openapi_client.StorageApi(self.client).storageexists_post(
-            RestPathOperations(operations=operations), async_req=True
-        )
+    async def async_exists(self, operations: List[StoragePath]):
+        return await self._exec_async_operation_req('exists', operations)
 
-    def list(self, operations: conlist(RestSrcDst)):
-        return openapi_client.StorageApi(self.client).storagelist_post(RestPathOperations(operations=operations))
+    def list(self, operations: List[SrcDst]):
+        return self._exec_operation_req('list', operations)
 
-    async def async_list(self, operations: conlist(RestSrcDst)):
-        return openapi_client.StorageApi(self.client).storagelist_post(
-            RestPathOperations(operations=operations), async_req=True
-        )
+    async def async_listo(self, operations: List[SrcDst]):
+        return await self._exec_async_operation_req('list', operations)
 
-    def mkdir(self, operations: conlist(RestStoragePath)):
-        return openapi_client.StorageApi(self.client).storagemkdir_post(RestPathOperations(operations=operations))
+    def mkdir(self, operations: List[StoragePath]):
+        return self._exec_operation_req('mkdir', operations)
 
-    async def async_mkdir(self, operations: conlist(RestStoragePath)):
-        return openapi_client.StorageApi(self.client).storagemkdir_post(
-            RestPathOperations(operations=operations), async_req=True
-        )
+    async def async_mkdir(self, operations: List[StoragePath]):
+        return await self._exec_async_operation_req('mkdir', operations)
 
-    def move(self, operations: conlist(RestSrcDst)):
-        return openapi_client.StorageApi(self.client).storagemove_post(RestSrcDstOperations(operations=operations))
+    def move(self, operations: List[SrcDst]):
+        return self._exec_operation_req('move', operations)
 
-    async def async_move(self, operations: conlist(RestSrcDst)):
-        return openapi_client.StorageApi(self.client).storagemove_post(
-            RestSrcDstOperations(operations=operations), async_req=True
-        )
+    async def async_move(self, operations: List[SrcDst]):
+        return await self._exec_async_operation_req('move', operations)
 
-    def remove(self, operations: conlist(RestStoragePath)):
-        return openapi_client.StorageApi(self.client).storageremove_post(RestPathOperations(operations=operations))
+    def remove(self, operations: List[StoragePath]):
+        return self._exec_operation_req('remove', operations)
 
-    async def async_remove(self, operations: conlist(RestStoragePath)):
-        return openapi_client.StorageApi(self.client).storageremove_post(
-            RestPathOperations(operations=operations), async_req=True
-        )
+    async def async_remove(self, operations: List[StoragePath]):
+        return await self._exec_async_operation_req('remove', operations)
 
-    def rmdir(self, operations: conlist(RestStoragePath)):
-        return openapi_client.StorageApi(self.client).storagermdir_post(RestPathOperations(operations=operations))
+    def rmdir(self, operations: List[StoragePath]):
+        return self._exec_operation_req('rmdir', operations)
 
-    async def async_rmdir(self, operations: conlist(RestStoragePath)):
-        return openapi_client.StorageApi(self.client).storage_get(
-            RestPathOperations(operations=operations), async_req=True
-        )
+    async def async_rmdir(self, operations: List[StoragePath]):
+        return await self._exec_async_operation_req('rmdir', operations)
+
+    def _exec_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
+        url = f'/storage:{storage_operation}'
+        resp = self.client.session.post(url, json={"operations": [dict(operation) for operation in operations]})
+        json = resp.json()
+        return OpIdResponse(**json)
+    
+    async def _exec_async_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
+        url = f'/storage:{storage_operation}'
+        resp = await self.client.session.post(url, json={"operations": [dict(operation) for operation in operations]})
+        json = resp.json()
+        return OpIdResponse(**json)

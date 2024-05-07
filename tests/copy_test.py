@@ -2,11 +2,10 @@ import os
 import tempfile
 import time
 
-from openapi_client.models.ops_operation_state import OpsOperationState
-from openapi_client.models.rest_src_dst import RestSrcDst
-
 from ansys.rep.data.transfer.client.client import Client
 from ansys.rep.data.transfer.client.dts.api.dts_api import DtsApi
+from ansys.rep.data.transfer.client.dts.models.ops import OperationState
+from ansys.rep.data.transfer.client.dts.models.rest import SrcDst
 
 
 def test_copy():
@@ -22,7 +21,7 @@ def test_copy():
         for _ in range(10):
             time.sleep(1)
             resp = api_instance.operations([resp.id])
-            if resp.operations[0].state == OpsOperationState.SUCCEEDED:
+            if resp[0].state == OperationState.Succeeded:
                 break
-        resp = api_instance.copy([RestSrcDst(dst="test_copy", src=temp_file_name)])
+        resp = api_instance.copy([SrcDst(dst="test_copy", src=temp_file_name)])
         assert resp.id is not None

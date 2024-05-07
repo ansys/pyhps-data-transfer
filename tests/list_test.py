@@ -2,11 +2,10 @@ import os
 import tempfile
 import time
 
-from openapi_client.models.ops_operation_state import OpsOperationState
-from openapi_client.models.rest_storage_path import RestStoragePath
-
 from ansys.rep.data.transfer.client.client import Client
 from ansys.rep.data.transfer.client.dts.api.dts_api import DtsApi
+from ansys.rep.data.transfer.client.dts.models.ops import OperationState
+from ansys.rep.data.transfer.client.dts.models.rest import StoragePath
 
 
 def test_list():
@@ -22,13 +21,13 @@ def test_list():
         for _ in range(10):
             time.sleep(1)
             resp = api_instance.operations([resp.id])
-            if resp.operations[0].state == OpsOperationState.SUCCEEDED:
+            if resp[0].state == OperationState.Succeeded:
                 break
-        resp = api_instance.list([RestStoragePath(path="")])
+        resp = api_instance.list([StoragePath(path="")])
         assert resp.id is not None
         for _ in range(10):
             time.sleep(1)
             resp = api_instance.operations([resp.id])
-            if resp.operations[0].state == OpsOperationState.SUCCEEDED:
+            if resp[0].state == OperationState.Succeeded:
                 break
         assert temp_file_name in resp.operations[0].result["any:"]

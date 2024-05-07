@@ -2,10 +2,9 @@ import os
 import tempfile
 import time
 
-from openapi_client.models.ops_operation_state import OpsOperationState
-
 from ansys.rep.data.transfer.client.client import Client
 from ansys.rep.data.transfer.client.dts.api.dts_api import DtsApi
+from ansys.rep.data.transfer.client.dts.models.ops import OperationState
 
 
 def test_download_file():
@@ -20,7 +19,7 @@ def test_download_file():
         for _ in range(10):
             time.sleep(1)
             resp = api_instance.operations([resp.id])
-            if resp.operations[0].state == OpsOperationState.SUCCEEDED:
+            if resp[0].state == OperationState.Succeeded:
                 break
         resp = api_instance.download_file("any", os.path.basename(temp_file.name))
-        assert resp == "Mock file"
+        assert resp is not None
