@@ -17,11 +17,11 @@ class StorageConfigResponse(BaseModel):
 
 class StoragePath(BaseModel):
     path: str
-    remote: Optional[str] = 'any'
+    remote: Optional[str] = "any"
 
 
 class TokenRequest(BaseModel):
-    other: Optional[Dict[str, Any]] = Field(None, description='For custom use')
+    other: Optional[Dict[str, Any]] = Field(None, description="For custom use")
     read: Optional[List[str]] = None
     write: Optional[List[str]] = None
 
@@ -39,8 +39,8 @@ class BuildInfo(BaseModel):
 
 
 class OpIdResponse(BaseModel):
-    id: Optional[str] = '2diK2kCkpgeHAQSNthIZ1JYyPte'
-    location: Optional[str] = '/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte'
+    id: Optional[str] = "2diK2kCkpgeHAQSNthIZ1JYyPte"
+    location: Optional[str] = "/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte"
 
 
 class OpsRequest(BaseModel):

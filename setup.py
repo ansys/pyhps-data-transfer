@@ -8,10 +8,7 @@ about = {}
 with open(os.path.join(root, "ansys", "rep", "data", "transfer", "client", "__version__.py"), "r") as f:
     exec(f.read(), about)
 
-install_requires = [
-    "pydantic==2.4.2",
-    "httpx==0.26.0"
-]
+install_requires = ["pydantic==2.4.2", "httpx==0.26.0"]
 
 priv_modules = {
     "ansys-rep-common[sql,falcon,crypto,redis,otel]": (
@@ -23,6 +20,7 @@ if "--no-priv" in sys.argv:
     sys.argv.remove("--no-priv")
 else:
     install_requires.extend([f"{k} @ {v}" for k, v in priv_modules.items()])
+
 
 def setup_package():
     metadata = dict(
@@ -36,7 +34,7 @@ def setup_package():
         project_urls={},
         python_requires=">=3.10",
         install_requires=install_requires,
-        package_data={'ansys.rep.data.transfer.client': ["bin/*"]},
+        package_data={"ansys.rep.data.transfer.client": ["bin/*"]},
         include_package_data=True,
         extras_require={},
     )
