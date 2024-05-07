@@ -4,10 +4,10 @@ import tempfile
 from typing import List
 
 from ansys.rep.data.transfer.client.client import Client
-from ansys.rep.data.transfer.client.dts.models.rest import OpIdResponse, OpsResponse, SrcDst, Status, StorageConfigResponse, StoragePath
+from ansys.rep.data.transfer.client.dtsc.models.rest import OpIdResponse, OpsResponse, SrcDst, Status, StorageConfigResponse, StoragePath
 
 
-class DtsApi:
+class DtscApi:
     def __init__(self, client: Client):
         self.client = client
 
