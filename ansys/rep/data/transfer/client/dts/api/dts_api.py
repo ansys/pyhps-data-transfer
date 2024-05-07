@@ -129,7 +129,8 @@ class DtsApi:
 
     def _exec_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
         url = f'/storage:{storage_operation}'
-        resp = self.client.session.post(url, json={"operations": [dict(operation) for operation in operations]})
+        payload = {"operations": [operation.model_dump() for operation in operations]}
+        resp = self.client.session.post(url, json=payload)
         json = resp.json()
         return OpIdResponse(**json)
     

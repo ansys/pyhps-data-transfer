@@ -30,4 +30,4 @@ def test_list():
             resp = api_instance.operations([resp.id])
             if resp[0].state == OperationState.Succeeded:
                 break
-        assert temp_file_name in resp.operations[0].result["any:"]
+        assert temp_file_name in resp[0].result["any:"]

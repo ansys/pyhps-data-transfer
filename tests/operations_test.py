@@ -14,4 +14,4 @@ def test_operations():
             temp_file.write("Mock file")
         resp = api_instance.upload_file("any", os.path.basename(temp_file.name), temp_file.name)
         resp = api_instance.operations([resp.id])
-        assert len(resp.operations) > 0
+        assert len(resp) > 0
