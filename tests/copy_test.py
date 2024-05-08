@@ -5,7 +5,7 @@ import time
 from ansys.rep.data.transfer.client.client import Client
 from ansys.rep.data.transfer.client.dtsc.api.dtsc_api import DtscApi
 from ansys.rep.data.transfer.client.dtsc.models.ops import OperationState
-from ansys.rep.data.transfer.client.dtsc.models.rest import SrcDst
+from ansys.rep.data.transfer.client.dtsc.models.rest import SrcDst, StoragePath
 
 
 def test_copy():
@@ -23,5 +23,5 @@ def test_copy():
             resp = api_instance.operations([resp.id])
             if resp[0].state == OperationState.Succeeded:
                 break
-        resp = api_instance.copy([SrcDst(dst="test_copy", src=temp_file_name)])
+        resp = api_instance.copy([SrcDst(dst=StoragePath(path="test_copy"), src=StoragePath(path=temp_file_name))])
         assert resp.id is not None
