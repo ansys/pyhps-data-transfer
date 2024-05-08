@@ -1,6 +1,6 @@
 import os
-import stat
 import platform
+import stat
 import subprocess
 
 
