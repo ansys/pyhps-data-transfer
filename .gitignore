@@ -77,7 +77,6 @@ test_run/
 
 .pytest_cache/
 test_results.xml
-freeze/freeze_log.txt
 docs/schema/*
 *.pdb
 core.*
