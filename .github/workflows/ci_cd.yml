@@ -142,5 +142,6 @@ jobs:
     with:
         tag: v${{ needs.wheels.outputs.version }}
         force_release: ${{ github.event.inputs.force_release == 'true' }}
+        artifact: ''
         files: |
             /tmp/bin/*/*.whl
