@@ -107,17 +107,11 @@ jobs:
         version=$(ls dist/ | grep template | grep -E -o "[0-9]+.[0-9]+.[0-9]+")
         echo "version=$version" >> $GITHUB_OUTPUT
         echo "Version: $version"
-
-    # - name: Version
-    #   run: |
-    #     ver=$(dev_env/bin/pip show ansys-rep-common | grep Version | awk '{print $2}')
-    #     echo "version=$ver" >> $GITHUB_OUTPUT
-    #   id: version
     
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: ansys-rep-repo-template-package
+        name: ansys-rep-data-transfer-client
         path: |
           dist/*.whl
         retention-days: 5
