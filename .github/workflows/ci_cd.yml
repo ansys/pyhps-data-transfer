@@ -124,7 +124,5 @@ jobs:
     with:
         tag: v${{ needs.wheels.outputs.version }}
         force_release: ${{ github.event.inputs.force_release == 'true' }}
-        artifact: .*rep-launcher-service.*
         files: |
             /tmp/bin/*/*.whl
-            /tmp/bin/*/rep-launcher-service-*
