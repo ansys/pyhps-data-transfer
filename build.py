@@ -97,6 +97,7 @@ def run_tests(args):
             base_cmd += f" --maxfail={args.max_fail}"
         if args.no_traceback:
             base_cmd += " --tb=no"
+        base_cmd += f" --reruns={args.reruns} --reruns-delay={args.reruns_delay}"
         p = subprocess.run(f"{base_cmd} {modules_str}", shell=True)
         return_code = p.returncode
     finally:
@@ -196,6 +197,8 @@ if __name__ == "__main__":
         action="store_true",
         help="Don't print tracebacks at end of a test run",
     )
+    tests.add_argument("-reruns", default=2, help="Max number of reruns for failed tests")
+    tests.add_argument("-reruns-delay", default=3, help="Delay between reruns")
 
     wheels = commands.add_parser("wheels")
     wheels.set_defaults(func=build_wheels)
