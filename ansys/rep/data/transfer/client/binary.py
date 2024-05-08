@@ -1,4 +1,5 @@
 import os
+import stat
 import platform
 import subprocess
 
@@ -9,8 +10,16 @@ class Binary:
             binary_filename = "hpsdata.exe"
         else:
             binary_filename = "hpsdata"
+
+        binary_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin", binary_filename)
+
+        # Mark binary as executable
+        if not os.access(binary_file_path, os.X_OK):
+            st = os.stat(binary_file_path)
+            os.chmod(binary_file_path, st.st_mode | stat.S_IEXEC)
+
         self.args = [
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin", binary_filename),
+            binary_file_path,
             "--dt-url",
             dts_url,
             "--external-url",
