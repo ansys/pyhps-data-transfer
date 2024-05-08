@@ -25,5 +25,5 @@ class Operation(BaseModel):
     id: Optional[str] = None
     messages: Optional[List[str]] = None
     progress: Optional[float] = None
-    result: Optional[Dict[str, Any]] = None
+    result: Optional[Dict[str, Any] | bool] = None
     state: Optional[OperationState] = None
