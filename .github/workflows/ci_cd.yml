@@ -127,14 +127,14 @@ jobs:
         python -m pip install --upgrade pip setuptools
         python -m pip install -r requirements/requirements_build.txt
         python build.py dev
-        python build.py wheels
+        python build.py wheels --no-priv
         python -m twine check dist/*
         version=$(ls dist/ | grep rep_data_transfer_client | grep -E -o "[0-9]+.[0-9]+.[0-9]+")
         echo "version=$version" >> $GITHUB_OUTPUT
         echo "Version: $version"
     
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ansys-rep-data-transfer-client
         path: |
