@@ -44,7 +44,10 @@ def build_wheels(args):
     log.info("Building wheels")
 
     subprocess.run(f"{sys.executable} setup.py build", shell=True, check=True)
-    subprocess.run(f"{sys.executable} setup.py bdist_wheel", shell=True, check=True)
+    wheel_cmd = f"{sys.executable} setup.py bdist_wheel"
+    if args.no_priv:
+        wheel_cmd = f"{wheel_cmd} --no-priv"
+    subprocess.run(wheel_cmd, shell=True, check=True)
     wheels = glob.glob(os.path.join("dist", "*.whl"))
     log.info(f"Found {len(wheels)} wheels")
     for w in wheels:
@@ -202,6 +205,7 @@ if __name__ == "__main__":
 
     wheels = commands.add_parser("wheels")
     wheels.set_defaults(func=build_wheels)
+    wheels.add_argument("--no-priv", action="store_true", help="Strip private repo URLs from requirements")
 
     args = parser.parse_args()
     result = args.func(args)
