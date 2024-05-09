@@ -1,7 +1,7 @@
 import httpx
 
 from ansys.rep.data.transfer.client.binary import Binary
-from ansys.rep.data.transfer.client.exceptions import raise_for_status
+from ansys.rep.data.transfer.client.exceptions import async_raise_for_status, raise_for_status
 
 
 class Client:
@@ -27,7 +27,7 @@ class Client:
                 base_url=dtsc_api_url,
                 verify=verify,
                 follow_redirects=True,
-                event_hooks={"response": [raise_for_status]},
+                event_hooks={"response": [async_raise_for_status]},
             )
 
     def __enter__(self):

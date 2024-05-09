@@ -105,7 +105,7 @@ class DtscApi:
     def list(self, operations: List[SrcDst]):
         return self._exec_operation_req("list", operations)
 
-    async def async_listo(self, operations: List[SrcDst]):
+    async def async_list(self, operations: List[SrcDst]):
         return await self._exec_async_operation_req("list", operations)
 
     def mkdir(self, operations: List[StoragePath]):
@@ -141,6 +141,7 @@ class DtscApi:
 
     async def _exec_async_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
         url = f"/storage:{storage_operation}"
-        resp = await self.client.session.post(url, json={"operations": [dict(operation) for operation in operations]})
+        payload = {"operations": [operation.model_dump() for operation in operations]}
+        resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return OpIdResponse(**json)

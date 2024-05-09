@@ -21,6 +21,7 @@
 # SOFTWARE.
 """Module providing the base class for all client and server HPS-related errors."""
 
+import httpx
 from requests.exceptions import RequestException
 
 
@@ -63,7 +64,7 @@ class ClientError(HPSError):
         super(ClientError, self).__init__(*args, **kwargs)
 
 
-def raise_for_status(response, *args, **kwargs):
+def raise_for_status(response: httpx.Response):
     """Automatically checks HTTP errors.
 
     This method mimics the requests.Response.raise_for_status() method.
@@ -107,3 +108,7 @@ def raise_for_status(response, *args, **kwargs):
                 error_msg += f"\n{description}"
             raise APIError(error_msg, reason=reason, description=description, response=response)
     return response
+
+
+async def async_raise_for_status(response: httpx.Response):
+    return raise_for_status(response)
