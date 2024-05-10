@@ -97,8 +97,7 @@ jobs:
 
       - name: Run tests
         run: |
-          export BINARY_PATH="$(pwd)/hpsdata"
-          sudo chmod +x "$BINARY_PATH"
+          export BINARY_PATH="sudo $(pwd)/hpsdata"
           python build.py tests
 
       - name: Stop containers
