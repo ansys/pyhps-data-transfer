@@ -97,7 +97,7 @@ jobs:
 
       - name: Run tests
         run: |
-            export BINARY_PATH=hpsdata
+            export BINARY_PATH=./hpsdata
             python build.py tests
 
       - name: Stop containers
