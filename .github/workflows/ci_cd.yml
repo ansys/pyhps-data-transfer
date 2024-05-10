@@ -67,6 +67,15 @@ jobs:
         with:
           python-version: ${{ matrix.cfg.python-version }}
 
+      - name: Fetch data transfer service client binary
+        uses: robinraju/release-downloader@v1.8
+        with:
+            repository: "ansys-internal/rep-data-transfer"
+            tag: 'latest-dev'
+            fileName: "hpsdata"     
+            token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
+            out-file-path: "hpsdata"
+
       - uses: KengoTODA/actions-setup-docker-compose@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,6 +97,7 @@ jobs:
 
       - name: Run tests
         run: |
+            export BINARY_PATH=hpsdata
             python build.py tests
 
       - name: Stop containers

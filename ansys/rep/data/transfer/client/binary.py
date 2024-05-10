@@ -1,29 +1,34 @@
+import json
 import os
-import platform
 import stat
 import subprocess
 
 
 class Binary:
-    def __init__(self, dts_url: str, dtsc_url: str):
-        if platform.system() == "Windows":
-            binary_filename = "hpsdata.exe"
-        else:
-            binary_filename = "hpsdata"
+    def __init__(self, binary_path: str, data_transfer_url: str, external_url: str = None):
 
-        binary_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "bin", binary_filename)
+        if not binary_path or not os.path.exists(binary_path):
+            # TODO - retrieve the binary?
+            raise os.error("Binary not found.")
 
         # Mark binary as executable
-        if not os.access(binary_file_path, os.X_OK):
-            st = os.stat(binary_file_path)
-            os.chmod(binary_file_path, st.st_mode | stat.S_IEXEC)
+        if not os.access(binary_path, os.X_OK):
+            st = os.stat(binary_path)
+            os.chmod(binary_path, st.st_mode | stat.S_IEXEC)
+
+        if external_url is None:
+            resp = subprocess.run(f"{binary_path} config show", capture_output=True, text=True)
+            config = json.loads(resp.stdout)
+            external_url = config.get("external_url", None)
+
+        self.external_url = external_url
 
         self.args = [
-            binary_file_path,
+            binary_path,
             "--dt-url",
-            dts_url,
+            data_transfer_url,
             "--external-url",
-            dtsc_url,
+            external_url,
             "--docs",
             "--insecure",
         ]

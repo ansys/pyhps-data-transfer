@@ -34,7 +34,7 @@ def setup_package():
         project_urls={},
         python_requires=">=3.10",
         install_requires=install_requires,
-        package_data={"ansys.rep.data.transfer.client": ["bin/*"]},
+        package_data={},
         include_package_data=True,
         extras_require={},
     )

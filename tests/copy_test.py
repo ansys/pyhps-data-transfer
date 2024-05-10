@@ -2,16 +2,19 @@ import os
 import tempfile
 import time
 
-from ansys.rep.data.transfer.client.client import Client, AsyncClient
 from ansys.rep.data.transfer.client.api.api import DataTransferApi
 from ansys.rep.data.transfer.client.api.async_api import AsyncDataTransferApi
+from ansys.rep.data.transfer.client.client import AsyncClient, Client
 from ansys.rep.data.transfer.client.models.ops import OperationState
 from ansys.rep.data.transfer.client.models.rest import SrcDst, StoragePath
 
 
-def test_copy():
+def test_copy(binary_path):
     with Client(
-        dts_url="https://localhost:8443/hps/dts/api/v1", dtsc_url="http://localhost:1090", run_client_binary=True
+        data_transfer_url="https://localhost:8443/hps/dts/api/v1",
+        external_url=None,
+        run_client_binary=True,
+        binary_path=binary_path,
     ) as api_client:
         api_instance = DataTransferApi(api_client)
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
@@ -28,11 +31,12 @@ def test_copy():
         assert resp.id is not None
 
 
-async def test_async_copy():
+async def test_async_copy(binary_path):
     with AsyncClient(
-        dts_url="https://localhost:8443/hps/dts/api/v1",
-        dtsc_url="http://localhost:1090",
+        data_transfer_url="https://localhost:8443/hps/dts/api/v1",
+        external_url=None,
         run_client_binary=True,
+        binary_path=binary_path,
     ) as async_api_client:
         api_instance = AsyncDataTransferApi(async_api_client)
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:

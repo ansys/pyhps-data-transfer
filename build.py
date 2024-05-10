@@ -101,7 +101,7 @@ def run_tests(args):
         if args.no_traceback:
             base_cmd += " --tb=no"
         base_cmd += f" --reruns={args.reruns} --reruns-delay={args.reruns_delay}"
-        p = subprocess.run(f"{base_cmd} {modules_str}", shell=True)
+        p = subprocess.run(f"{base_cmd} {modules_str}", shell=True, env=os.environ)
         return_code = p.returncode
     finally:
         return return_code
