@@ -17,7 +17,7 @@ class Binary:
             os.chmod(binary_path, st.st_mode | stat.S_IEXEC)
 
         if external_url is None:
-            resp = subprocess.run(f"{binary_path} config show", capture_output=True, text=True)
+            resp = subprocess.run([binary_path, "config", "show"], capture_output=True, text=True)
             config = json.loads(resp.stdout)
             external_url = config.get("external_url", None)
 
