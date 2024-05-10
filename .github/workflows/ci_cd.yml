@@ -76,6 +76,10 @@ jobs:
             token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
             out-file-path: "hpsdata"
 
+      - name: Set binary path env var
+        run: |
+          export BINARY_PATH="$(pwd)/hpsdata"
+
       - uses: KengoTODA/actions-setup-docker-compose@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,12 +97,12 @@ jobs:
       
       - name: Start containers
         run: |
-            docker-compose up -d
+          docker-compose up -d
 
       - name: Run tests
         run: |
-            export BINARY_PATH="hpsdata"
-            python build.py tests
+          echo $BINARY_PATH
+          python build.py tests
 
       - name: Stop containers
         if: always()
