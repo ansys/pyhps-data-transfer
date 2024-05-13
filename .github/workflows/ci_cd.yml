@@ -98,6 +98,8 @@ jobs:
       - name: Run tests
         run: |
           export BINARY_PATH="$(pwd)/hpsdata"
+          ls -l "$BINARY_PATH"
+          stat "$BINARY_PATH"
           python build.py tests
 
       - name: Stop containers
