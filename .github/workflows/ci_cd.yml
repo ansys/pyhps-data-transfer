@@ -74,7 +74,7 @@ jobs:
             tag: 'latest-dev'
             fileName: "hpsdata"     
             token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
-            out-file-path: "hpsdata"
+            out-file-path: "release"
 
       - uses: KengoTODA/actions-setup-docker-compose@main
         env:
@@ -97,11 +97,7 @@ jobs:
 
       - name: Run tests
         run: |
-          export BINARY_PATH="$(pwd)/hpsdata"
-          sudo chmod +x "$BINARY_PATH"
-          ls -l "$BINARY_PATH"
-          stat "$BINARY_PATH"
-          ls -lrt $BINARY_PATH
+          export BINARY_PATH="$(pwd)/release/hpsdata"
           python build.py tests
 
       - name: Stop containers
