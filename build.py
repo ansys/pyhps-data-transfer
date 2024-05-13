@@ -33,8 +33,6 @@ def build_dev(args):
     subprocess.run(f"{sys.executable} -m pip install -r {reqs}", shell=True, check=True)
     reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_tests.txt")
     subprocess.run(f"{sys.executable} -m pip install -r {reqs}", shell=True, check=True)
-    reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_example.txt")
-    subprocess.run(f"{sys.executable} -m pip install -r {reqs}", shell=True, check=True)
 
     log.info("Installing in dev mode")
     cmd = f"{sys.executable} -m pip install -e ."
@@ -46,7 +44,10 @@ def build_wheels(args):
     log.info("Building wheels")
 
     subprocess.run(f"{sys.executable} setup.py build", shell=True, check=True)
-    subprocess.run(f"{sys.executable} setup.py bdist_wheel", shell=True, check=True)
+    wheel_cmd = f"{sys.executable} setup.py bdist_wheel"
+    if args.no_priv:
+        wheel_cmd = f"{wheel_cmd} --no-priv"
+    subprocess.run(wheel_cmd, shell=True, check=True)
     wheels = glob.glob(os.path.join("dist", "*.whl"))
     log.info(f"Found {len(wheels)} wheels")
     for w in wheels:
@@ -99,7 +100,8 @@ def run_tests(args):
             base_cmd += f" --maxfail={args.max_fail}"
         if args.no_traceback:
             base_cmd += " --tb=no"
-        p = subprocess.run(f"{base_cmd} {modules_str}", shell=True)
+        base_cmd += f" --reruns={args.reruns} --reruns-delay={args.reruns_delay}"
+        p = subprocess.run(f"{base_cmd} {modules_str}", shell=True, env=os.environ)
         return_code = p.returncode
     finally:
         return return_code
@@ -137,40 +139,6 @@ def write_build_info(args):
     with open(tgt, "w") as f:
         f.write(f"build_info = {json.dumps(info, indent=4)}")
     log.debug(f"Build info: {', '.join([f'{k}={v}' for k,v in info.items()])}")
-
-
-def build_dist(args):
-    # try:
-    #     build_docs(args)
-    # except Exception as ex:
-    #     log.debug(traceback.format_exc())
-    #     log.warning(f"Building docs failed: {ex}")
-
-    if not args.no_freeze:
-        run_freeze(args)
-
-
-def run_freeze(args):
-
-    write_build_info(args)
-
-    if sys.platform == "win32":
-        venv_name = "freeze_env"
-        if not os.path.isdir(venv_name):
-            subprocess.run(f"{sys.executable} -m venv {venv_name}", shell=True, check=True)
-        py_bin = os.path.join(venv_name, "Scripts", "python.exe")
-        py_bin = os.path.abspath(py_bin)
-    else:
-        py_bin = "python3"
-
-    subprocess.run(f"{py_bin} -m pip install --force-reinstall .", shell=True, check=True)
-
-    old_cwd = os.getcwd()
-    freeze_dir = os.path.join(os.path.dirname(__file__), "freeze")
-    os.chdir(freeze_dir)
-    subprocess.run(f"{py_bin} freeze_nuitka.py", shell=True, check=True)
-
-    os.chdir(old_cwd)
 
 
 if __name__ == "__main__":
@@ -232,13 +200,12 @@ if __name__ == "__main__":
         action="store_true",
         help="Don't print tracebacks at end of a test run",
     )
+    tests.add_argument("-reruns", default=3, help="Max number of reruns for failed tests")
+    tests.add_argument("-reruns-delay", default=3, help="Delay between reruns")
 
     wheels = commands.add_parser("wheels")
     wheels.set_defaults(func=build_wheels)
-
-    dist = commands.add_parser("dist")
-    dist.set_defaults(func=build_dist)
-    dist.add_argument("-f", "--no-freeze", action="store_true", help="Skip freezing")
+    wheels.add_argument("--no-priv", action="store_true", help="Strip private repo URLs from requirements")
 
     args = parser.parse_args()
     result = args.func(args)
