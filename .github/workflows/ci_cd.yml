@@ -101,7 +101,7 @@ jobs:
           sudo chmod +x "$BINARY_PATH"
           ls -l "$BINARY_PATH"
           stat "$BINARY_PATH"
-          eval $BINARY_PATH
+          ls -lrt $BINARY_PATH
           python build.py tests
 
       - name: Stop containers
