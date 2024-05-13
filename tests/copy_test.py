@@ -21,10 +21,11 @@ def test_copy(binary_path):
             temp_file.write("Mock file")
         temp_file_name = os.path.basename(temp_file.name)
         resp = api_instance.upload_file("any", temp_file_name, temp_file.name)
-        assert resp.id is not None
+        operation_id = resp.id
+        assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = api_instance.operations([resp.id])
+            resp = api_instance.operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break
         resp = api_instance.copy([SrcDst(dst=StoragePath(path="test_copy"), src=StoragePath(path=temp_file_name))])
@@ -43,10 +44,11 @@ async def test_async_copy(binary_path):
             temp_file.write("Mock file")
         temp_file_name = os.path.basename(temp_file.name)
         resp = await api_instance.async_upload_file("any", temp_file_name, temp_file.name)
-        assert resp.id is not None
+        operation_id = resp.id
+        assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = await api_instance.async_operations([resp.id])
+            resp = await api_instance.async_operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break
         resp = await api_instance.async_copy(

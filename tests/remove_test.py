@@ -20,17 +20,19 @@ def test_remove(binary_path):
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
             temp_file.write("Mock file")
         resp = api_instance.upload_file("any", os.path.basename(temp_file.name), temp_file.name)
-        assert resp.id is not None
+        operation_id = resp.id
+        assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = api_instance.operations([resp.id])
+            resp = api_instance.operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break
         resp = api_instance.remove([StoragePath(path=os.path.basename(temp_file.name))])
-        assert resp.id is not None
+        operation_id = resp.id
+        assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = api_instance.operations([resp.id])
+            resp = api_instance.operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break
 
@@ -46,16 +48,18 @@ async def test_async_remove(binary_path):
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
             temp_file.write("Mock file")
         resp = await api_instance.async_upload_file("any", os.path.basename(temp_file.name), temp_file.name)
-        assert resp.id is not None
+        operation_id = resp.id
+        assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = await api_instance.async_operations([resp.id])
+            resp = await api_instance.async_operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break
         resp = await api_instance.async_remove([StoragePath(path=os.path.basename(temp_file.name))])
-        assert resp.id is not None
+        operation_id = resp.id
+        assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = await api_instance.async_operations([resp.id])
+            resp = await api_instance.async_operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break
