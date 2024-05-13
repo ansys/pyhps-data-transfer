@@ -200,7 +200,7 @@ if __name__ == "__main__":
         action="store_true",
         help="Don't print tracebacks at end of a test run",
     )
-    tests.add_argument("-reruns", default=2, help="Max number of reruns for failed tests")
+    tests.add_argument("-reruns", default=3, help="Max number of reruns for failed tests")
     tests.add_argument("-reruns-delay", default=3, help="Delay between reruns")
 
     wheels = commands.add_parser("wheels")
