@@ -1,6 +1,6 @@
 import time
 
-from ansys.hps.dt_client.data_transfer import AsyncClient, Client, AsyncDataTransferApi, DataTransferApi
+from ansys.hps.dt_client.data_transfer import AsyncClient, AsyncDataTransferApi, Client, DataTransferApi
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 from ansys.hps.dt_client.data_transfer.models.rest import StoragePath
 

@@ -1,4 +1,4 @@
-from ansys.hps.dt_client.data_transfer import AsyncClient, Client, AsyncDataTransferApi, DataTransferApi
+from ansys.hps.dt_client.data_transfer import AsyncClient, AsyncDataTransferApi, Client, DataTransferApi
 
 
 def test_status(binary_path):
