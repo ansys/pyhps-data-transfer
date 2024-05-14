@@ -1,7 +1,7 @@
 import httpx
 
-from ansys.hps.dt_client.data_transfer.binary import Binary
-from ansys.hps.dt_client.data_transfer.exceptions import async_raise_for_status, raise_for_status
+from .binary import Binary
+from .exceptions import async_raise_for_status, raise_for_status
 
 
 class ClientBase:

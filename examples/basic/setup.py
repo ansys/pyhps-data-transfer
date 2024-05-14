@@ -2,8 +2,10 @@
 Example script for file operations.
 """
 import logging
+import uuid
 
-from ansys.hps.dt_client.data_transfer import Client, HPSError
+from ansys.hps.dt_client.data_transfer import Client, HPSError, DataTransferApi
+from ansys.hps.dt_client.data_transfer.models.rest import StoragePath
 
 log = logging.getLogger(__name__)
 
@@ -18,7 +20,16 @@ if __name__ == "__main__":
             run_client_binary=True,
             binary_path=".\\bin\\hpsdata.exe",
         ) as api_client:
+            
+            dts_api = DataTransferApi(api_client)
+
+            log.info("Query storages..")
+            storages = dts_api.storages()
+
             log.info("Creating a directory..")
+            bucket = str(uuid.uuid4())
+            dts_api.mkdir([StoragePath(path=f"{bucket}/", remote=f"{storages[0].name}")])
+
             log.info("Uploading files..")
             log.info("Moving files..")
             log.info("Copying files..")
