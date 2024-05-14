@@ -2,9 +2,7 @@ import os
 import tempfile
 import time
 
-from ansys.hps.dt_client.data_transfer.api.api import DataTransferApi
-from ansys.hps.dt_client.data_transfer.api.async_api import AsyncDataTransferApi
-from ansys.hps.dt_client.data_transfer.client import AsyncClient, Client
+from ansys.hps.dt_client.data_transfer import AsyncClient, Client, AsyncDataTransferApi, DataTransferApi
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 from ansys.hps.dt_client.data_transfer.models.rest import SrcDst, StoragePath
 

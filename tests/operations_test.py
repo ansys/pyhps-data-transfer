@@ -1,9 +1,7 @@
 import os
 import tempfile
 
-from ansys.hps.dt_client.data_transfer.api import DataTransferApi
-from ansys.hps.dt_client.data_transfer.api.async_api import AsyncDataTransferApi
-from ansys.hps.dt_client.data_transfer.client import AsyncClient, Client
+from ansys.hps.dt_client.data_transfer import AsyncClient, Client, AsyncDataTransferApi, DataTransferApi
 
 
 def test_operations(binary_path):
