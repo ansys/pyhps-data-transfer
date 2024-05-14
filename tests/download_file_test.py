@@ -40,13 +40,13 @@ async def test_async_download_file(binary_path):
         api_instance = AsyncDataTransferApi(api_client)
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
             temp_file.write("Mock file")
-        resp = await api_instance.async_upload_file("any", os.path.basename(temp_file.name), temp_file.name)
+        resp = await api_instance.upload_file("any", os.path.basename(temp_file.name), temp_file.name)
         operation_id = resp.id
         assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = await api_instance.async_operations([operation_id])
+            resp = await api_instance.operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break
-        resp = await api_instance.async_download_file("any", os.path.basename(temp_file.name))
+        resp = await api_instance.download_file("any", os.path.basename(temp_file.name))
         assert resp is not None

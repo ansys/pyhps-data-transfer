@@ -23,5 +23,5 @@ async def test_async_status(binary_path):
         binary_path=binary_path,
     ) as api_client:
         api_instance = AsyncDataTransferApi(api_client)
-        resp = await api_instance.async_status()
+        resp = await api_instance.status()
         assert resp.build_info is not None

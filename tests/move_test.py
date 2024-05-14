@@ -43,21 +43,21 @@ async def test_async_mkdir(binary_path):
         binary_path=binary_path,
     ) as api_client:
         api_instance = AsyncDataTransferApi(api_client)
-        resp = await api_instance.async_mkdir([StoragePath(path="test_mkdir")])
+        resp = await api_instance.mkdir([StoragePath(path="test_mkdir")])
         operation_id = resp.id
         assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = await api_instance.async_operations([operation_id])
+            resp = await api_instance.operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break
-        resp = await api_instance.async_move(
+        resp = await api_instance.move(
             [SrcDst(src=StoragePath(path="test_mkdir"), dst=StoragePath(path="nested/test_mkdir"))]
         )
         operation_id = resp.id
         assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = await api_instance.async_operations([operation_id])
+            resp = await api_instance.operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break

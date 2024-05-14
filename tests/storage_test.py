@@ -23,5 +23,5 @@ async def test_async_storage(binary_path):
         binary_path=binary_path,
     ) as api_client:
         api_instance = AsyncDataTransferApi(api_client)
-        resp = await api_instance.async_storages()
+        resp = await api_instance.storages()
         assert len(resp) > 0
