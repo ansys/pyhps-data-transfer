@@ -77,7 +77,7 @@ services:
     depends_on:
       - minio
 
-  dts:
+  data_transfer:
     image: ${DOCKER_REPO}/rep/datad:${DTS_TAG}
     deploy:
       replicas: 1
