@@ -3,8 +3,8 @@ import os
 import tempfile
 from typing import List
 
-from ansys.rep.data.transfer.client.client import AsyncClient
-from ansys.rep.data.transfer.client.models.rest import (
+from ansys.hps.dt_client.data_transfer.client import AsyncClient
+from ansys.hps.dt_client.data_transfer.models.rest import (
     OpIdResponse,
     OpsResponse,
     SrcDst,

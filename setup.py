@@ -5,7 +5,7 @@ from setuptools import find_namespace_packages, setup
 
 root = os.path.abspath(os.path.dirname(__file__))
 about = {}
-with open(os.path.join(root, "ansys", "rep", "data", "transfer", "client", "__version__.py"), "r") as f:
+with open(os.path.join(root, "ansys", "hps", "dt_client", "data_transfer", "__version__.py"), "r") as f:
     exec(f.read(), about)
 
 install_requires = ["pydantic==2.4.2", "httpx==0.26.0"]
@@ -24,11 +24,11 @@ else:
 
 def setup_package():
     metadata = dict(
-        name="ansys-rep-data-transfer-client",
+        name="ansys-hps-data-transfer-client",
         version="0.1.0",
         packages=find_namespace_packages(include=["ansys.*"]),
         author="ANSYS, Inc.",
-        description="REP data transfer service client",
+        description="HPS data transfer service client",
         long_description="See README.md",
         long_description_content_type="text/x-markdown",
         project_urls={},

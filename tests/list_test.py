@@ -2,11 +2,11 @@ import os
 import tempfile
 import time
 
-from ansys.rep.data.transfer.client.api import DataTransferApi
-from ansys.rep.data.transfer.client.api.async_api import AsyncDataTransferApi
-from ansys.rep.data.transfer.client.client import AsyncClient, Client
-from ansys.rep.data.transfer.client.models.ops import OperationState
-from ansys.rep.data.transfer.client.models.rest import StoragePath
+from ansys.hps.dt_client.data_transfer.api import DataTransferApi
+from ansys.hps.dt_client.data_transfer.api.async_api import AsyncDataTransferApi
+from ansys.hps.dt_client.data_transfer.client import AsyncClient, Client
+from ansys.hps.dt_client.data_transfer.models.ops import OperationState
+from ansys.hps.dt_client.data_transfer.models.rest import StoragePath
 
 
 def test_list(binary_path):

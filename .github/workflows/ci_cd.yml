@@ -146,7 +146,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ansys-rep-data-transfer-client
+        name: ansys-hps-data-transfer-client
         path: |
           dist/*.whl
         retention-days: 5
