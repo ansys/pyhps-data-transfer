@@ -4,14 +4,7 @@ import tempfile
 from typing import List
 
 from ..client import Client
-from ..models.rest import (
-    OpIdResponse,
-    OpsResponse,
-    SrcDst,
-    Status,
-    StorageConfigResponse,
-    StoragePath,
-)
+from ..models.rest import OpIdResponse, OpsResponse, SrcDst, Status, StorageConfigResponse, StoragePath
 
 
 class DataTransferApi:
