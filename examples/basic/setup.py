@@ -60,7 +60,12 @@ if __name__ == "__main__":
             list_op_resp = await_operation_completion(api, list_op.id)
             move_items = []
             for file in list_op_resp[0].result[f"{s3_remote}:{bucket}/"]:
-                move_items.append(SrcDst(src=StoragePath(path=f"{bucket}/{file}", remote=s3_remote), dst=StoragePath(path=f"{new_bucket}/{file}", remote=s3_remote)))
+                move_items.append(
+                    SrcDst(
+                        src=StoragePath(path=f"{bucket}/{file}", remote=s3_remote),
+                        dst=StoragePath(path=f"{new_bucket}/{file}", remote=s3_remote),
+                    )
+                )
             move_op = api.move(move_items)
             await_operation_completion(api, move_op.id, 60)
 
@@ -69,7 +74,12 @@ if __name__ == "__main__":
             list_op_resp = await_operation_completion(api, list_op.id)
             copy_items = []
             for file in list_op_resp[0].result[f"{s3_remote}:{new_bucket}/"]:
-                copy_items.append(SrcDst(src=StoragePath(path=f"{bucket}/{file}", remote=s3_remote), dst=StoragePath(path=f"{file}", remote=local_remote)))
+                copy_items.append(
+                    SrcDst(
+                        src=StoragePath(path=f"{bucket}/{file}", remote=s3_remote),
+                        dst=StoragePath(path=f"{file}", remote=local_remote),
+                    )
+                )
             copy_op = api.copy(copy_items)
             await_operation_completion(api, copy_op.id, 60)
 
