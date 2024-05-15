@@ -8,7 +8,7 @@ about = {}
 with open(os.path.join(root, "ansys", "hps", "dt_client", "data_transfer", "__version__.py"), "r") as f:
     exec(f.read(), about)
 
-install_requires = ["pydantic==2.4.2", "httpx==0.26.0"]
+install_requires = ["pydantic==2.7.1", "httpx==0.27.0"]
 
 priv_modules = {
     "ansys-rep-common[sql,falcon,crypto,redis,otel]": (
