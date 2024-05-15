@@ -2,17 +2,15 @@ import os
 import tempfile
 import time
 
-from ansys.rep.data.transfer.client.api.api import DataTransferApi
-from ansys.rep.data.transfer.client.api.async_api import AsyncDataTransferApi
-from ansys.rep.data.transfer.client.client import AsyncClient, Client
-from ansys.rep.data.transfer.client.models.ops import OperationState
-from ansys.rep.data.transfer.client.models.rest import SrcDst, StoragePath
+from ansys.hps.dt_client.data_transfer import AsyncClient, AsyncDataTransferApi, Client, DataTransferApi
+from ansys.hps.dt_client.data_transfer.models.ops import OperationState
+from ansys.hps.dt_client.data_transfer.models.rest import SrcDst, StoragePath
 
 
 def test_copy(binary_path):
     with Client(
         data_transfer_url="https://localhost:8443/hps/dts/api/v1",
-        external_url=None,
+        external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
     ) as api_client:
@@ -35,7 +33,7 @@ def test_copy(binary_path):
 async def test_async_copy(binary_path):
     with AsyncClient(
         data_transfer_url="https://localhost:8443/hps/dts/api/v1",
-        external_url=None,
+        external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
     ) as async_api_client:
@@ -43,15 +41,15 @@ async def test_async_copy(binary_path):
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
             temp_file.write("Mock file")
         temp_file_name = os.path.basename(temp_file.name)
-        resp = await api_instance.async_upload_file("any", temp_file_name, temp_file.name)
+        resp = await api_instance.upload_file("any", temp_file_name, temp_file.name)
         operation_id = resp.id
         assert operation_id is not None
         for _ in range(10):
             time.sleep(1)
-            resp = await api_instance.async_operations([operation_id])
+            resp = await api_instance.operations([operation_id])
             if resp[0].state == OperationState.Succeeded:
                 break
-        resp = await api_instance.async_copy(
+        resp = await api_instance.copy(
             [SrcDst(dst=StoragePath(path="test_copy"), src=StoragePath(path=temp_file_name))]
         )
         assert resp.id is not None

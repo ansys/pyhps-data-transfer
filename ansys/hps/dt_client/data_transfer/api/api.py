@@ -3,15 +3,8 @@ import os
 import tempfile
 from typing import List
 
-from ansys.rep.data.transfer.client.client import Client
-from ansys.rep.data.transfer.client.models.rest import (
-    OpIdResponse,
-    OpsResponse,
-    SrcDst,
-    Status,
-    StorageConfigResponse,
-    StoragePath,
-)
+from ..client import Client
+from ..models.rest import OpIdResponse, OpsResponse, SrcDst, Status, StorageConfigResponse, StoragePath
 
 
 class DataTransferApi:

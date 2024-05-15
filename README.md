@@ -1,5 +1,5 @@
-# REP Data Transfer Service Client
-Python client library for REP Data Transfer Service
+# HPS Data Transfer Service Client
+Python client library for HPS Data Transfer Service
 
 ### Prerequisites
 
@@ -47,5 +47,5 @@ The image contains a REST HTTP Endpoint (http://localhost:8080/index.html) that 
 ### Generate Models
 To generate the Data Transfer Service Client pydantic models, first download the Data Transfer Service Client OpenAPI specification, convert the Openapi version to 3.0 and save it as openapi.json in the root of the repository. Then, run the data model generator with this command:
 ```
-datamodel-codegen --input .\openapi.json --input-file-type openapi --output ansys/rep/data/transfer/client/models --output-model-type pydantic_v2.BaseModel
+datamodel-codegen --input .\openapi.json --input-file-type openapi --output ansys/hps/data_transfer/client/models --output-model-type pydantic_v2.BaseModel
 ```

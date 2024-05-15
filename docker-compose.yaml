@@ -77,7 +77,7 @@ services:
     depends_on:
       - minio
 
-  dts:
+  data-transfer:
     image: ${DOCKER_REPO}/rep/datad:${DTS_TAG}
     deploy:
       replicas: 1
@@ -85,7 +85,8 @@ services:
       - 1090
     command:
       - --config /app/config.json
-      - --host=0.0.0.0 
+      - --host=0.0.0.0
+      - --auth none
       - -v 3
       - --docs
       - --external-url=https://${EXTERNAL_NAME}:${EXTERNAL_PORT}/hps/dts

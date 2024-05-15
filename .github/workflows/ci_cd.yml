@@ -139,14 +139,14 @@ jobs:
         python build.py dev
         python build.py wheels --no-priv
         python -m twine check dist/*
-        version=$(ls dist/ | grep rep_data_transfer_client | grep -E -o "[0-9]+.[0-9]+.[0-9]+")
+        version=$(ls dist/ | grep ansys_hps_client_data_transfer | grep -E -o "[0-9]+.[0-9]+.[0-9]+")
         echo "version=$version" >> $GITHUB_OUTPUT
         echo "Version: $version"
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ansys-rep-data-transfer-client
+        name: ansys-hps-data-transfer-client
         path: |
           dist/*.whl
         retention-days: 5

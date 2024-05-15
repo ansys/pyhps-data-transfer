@@ -16,22 +16,27 @@ class Binary:
             st = os.stat(binary_path)
             os.chmod(binary_path, st.st_mode | stat.S_IEXEC)
 
+        self.args = [
+            binary_path,
+            "--dt-url",
+            data_transfer_url,
+            "--docs",
+            "--insecure",
+        ]
+
         if external_url is None:
-            resp = subprocess.run([binary_path, "config", "show"], capture_output=True, text=True)
+            resp = subprocess.run(self.args + ["config", "show"], capture_output=True, text=True)
             config = json.loads(resp.stdout)
             external_url = config.get("external_url", None)
 
         self.external_url = external_url
 
-        self.args = [
-            binary_path,
-            "--dt-url",
-            data_transfer_url,
-            "--external-url",
-            external_url,
-            "--docs",
-            "--insecure",
-        ]
+        self.args.extend(
+            [
+                "--external-url",
+                external_url,
+            ]
+        )
         self.process = None
 
     def start(self):
