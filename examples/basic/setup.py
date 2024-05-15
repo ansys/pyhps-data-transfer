@@ -3,6 +3,7 @@ Example script for file operations.
 """
 import logging
 import os
+import pathlib
 import time
 import uuid
 
@@ -38,38 +39,45 @@ if __name__ == "__main__":
 
             log.info("Query storages..")
             storages = api.storages()
-            remote = storages[0].get("name", "any")
+            s3_remote = storages[0].get("name", "any")
+            local_remote = "local"
 
             log.info("Creating a directory..")
             bucket = str(uuid.uuid4())
-            mkdir_op = api.mkdir([StoragePath(path=f"{bucket}/", remote=f"{remote}")])
+            mkdir_op = api.mkdir([StoragePath(path=f"{bucket}/", remote=f"{s3_remote}")])
             await_operation_completion(api, mkdir_op.id)
 
             log.info("Uploading files..")
-            for file in os.listdir("./numbers"):
-                full_path = os.path.abspath(f"./numbers/{file}")
-                upload_op = api.upload_file(remote=remote, path=f"{bucket}/{file}", file_path=full_path)
-                await_operation_completion(api, upload_op)
+            upload_path = pathlib.Path(__file__).parent / "files"
+            for file in os.listdir(f"{upload_path}"):
+                full_path = os.path.abspath(f"{upload_path}/{file}")
+                upload_op = api.upload_file(remote=s3_remote, path=f"{bucket}/{file}", file_path=full_path)
+                await_operation_completion(api, upload_op.id)
 
             log.info("Moving files..")
             new_bucket = str(uuid.uuid4())
-            api.move(
-                [
-                    SrcDst(src=StoragePath(path=f"{bucket}/"), dst=StoragePath(path=f"{new_bucket}/")),
-                    SrcDst(src=StoragePath(), dst=StoragePath()),
-                    SrcDst(src=StoragePath(), dst=StoragePath()),
-                    SrcDst(src=StoragePath(), dst=StoragePath()),
-                    SrcDst(src=StoragePath(), dst=StoragePath()),
-                ]
-            )
+            list_op = api.list([StoragePath(path=f"{bucket}/", remote=f"{s3_remote}")])
+            list_op_resp = await_operation_completion(api, list_op.id)
+            move_items = []
+            for file in list_op_resp[0].result[f"{s3_remote}:{bucket}/"]:
+                move_items.append(SrcDst(src=StoragePath(path=f"{bucket}/{file}", remote=s3_remote), dst=StoragePath(path=f"{new_bucket}/{file}", remote=s3_remote)))
+            move_op = api.move(move_items)
+            await_operation_completion(api, move_op.id, 60)
 
             log.info("Copying files..")
+            list_op = api.list([StoragePath(path=f"{new_bucket}/", remote=f"{s3_remote}")])
+            list_op_resp = await_operation_completion(api, list_op.id)
+            copy_items = []
+            for file in list_op_resp[0].result[f"{s3_remote}:{new_bucket}/"]:
+                copy_items.append(SrcDst(src=StoragePath(path=f"{bucket}/{file}", remote=s3_remote), dst=StoragePath(path=f"{file}", remote=local_remote)))
+            copy_op = api.copy(copy_items)
+            await_operation_completion(api, copy_op.id, 60)
 
             log.info("Downloading files..")
-            list_op = api.list([StoragePath(path=f"{bucket}/", remote=f"{remote}")])
+            list_op = api.list([StoragePath(path=f"", remote=f"{local_remote}")])
             list_op_resp = await_operation_completion(api, list_op)
-            for file in list_op_resp[0].children:
-                download_op = api.download_file(path=f"{bucket}/{file}", remote=f"{remote}")
+            for file in list_op_resp[0].result[f"{local_remote}:/"]:
+                download_op = api.download_file(path=f"{bucket}/{file}", remote=f"{s3_remote}")
                 await_operation_completion(api, download_op)
 
     except HPSError as e:
