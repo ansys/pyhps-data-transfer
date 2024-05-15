@@ -8,7 +8,7 @@ from ansys.hps.dt_client.data_transfer.models.rest import SrcDst, StoragePath
 def test_mkdir(binary_path):
     with Client(
         data_transfer_url="https://localhost:8443/hps/dts/api/v1",
-        external_url=None,
+        external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
     ) as api_client:
@@ -36,7 +36,7 @@ def test_mkdir(binary_path):
 async def test_async_mkdir(binary_path):
     with AsyncClient(
         data_transfer_url="https://localhost:8443/hps/dts/api/v1",
-        external_url=None,
+        external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
     ) as api_client:

@@ -3,8 +3,8 @@ Example script for file operations.
 """
 import logging
 import os
-import uuid
 import time
+import uuid
 
 from ansys.hps.dt_client.data_transfer import Client, DataTransferApi, HPSError
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
@@ -12,13 +12,15 @@ from ansys.hps.dt_client.data_transfer.models.rest import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)
 
+
 def await_operation_completion(api: DataTransferApi, operation_id: str, max_attempts: int = 10):
     for _ in range(max_attempts):
         time.sleep(1)
         resp = api.operations([operation_id])
         if resp[0].state == OperationState.Succeeded:
             return resp
-    raise HPSError('Exceeded max number of attempts for operation to complete')
+    raise HPSError("Exceeded max number of attempts for operation to complete")
+
 
 if __name__ == "__main__":
     logger = logging.getLogger()
@@ -27,7 +29,7 @@ if __name__ == "__main__":
         log.info("Connecting to the data transfer service client..")
         with Client(
             data_transfer_url="https://localhost:8443/hps/dts/api/v1",
-            external_url=None,
+            external_url="http://localhost:1091",
             run_client_binary=True,
             binary_path=".\\bin\\hpsdata.exe",
         ) as client:
@@ -36,7 +38,7 @@ if __name__ == "__main__":
 
             log.info("Query storages..")
             storages = api.storages()
-            remote = storages[0].get('name', 'any')
+            remote = storages[0].get("name", "any")
 
             log.info("Creating a directory..")
             bucket = str(uuid.uuid4())
@@ -44,14 +46,22 @@ if __name__ == "__main__":
             await_operation_completion(api, mkdir_op.id)
 
             log.info("Uploading files..")
-            for file in os.listdir('./numbers'):
+            for file in os.listdir("./numbers"):
                 full_path = os.path.abspath(f"./numbers/{file}")
                 upload_op = api.upload_file(remote=remote, path=f"{bucket}/{file}", file_path=full_path)
                 await_operation_completion(api, upload_op)
-            
 
             log.info("Moving files..")
-                
+            new_bucket = str(uuid.uuid4())
+            api.move(
+                [
+                    SrcDst(src=StoragePath(path=f"{bucket}/"), dst=StoragePath(path=f"{new_bucket}/")),
+                    SrcDst(src=StoragePath(), dst=StoragePath()),
+                    SrcDst(src=StoragePath(), dst=StoragePath()),
+                    SrcDst(src=StoragePath(), dst=StoragePath()),
+                    SrcDst(src=StoragePath(), dst=StoragePath()),
+                ]
+            )
 
             log.info("Copying files..")
 
