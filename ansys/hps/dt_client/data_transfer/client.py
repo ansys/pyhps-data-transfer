@@ -38,6 +38,7 @@ class AsyncClient(ClientBase):
         run_client_binary: bool = False,
         binary_path: str = None,
         verify: bool = True,
+        token: str = None
     ):
         super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify)
         self.session = httpx.AsyncClient(
@@ -47,6 +48,8 @@ class AsyncClient(ClientBase):
             follow_redirects=True,
             event_hooks={"response": [async_raise_for_status]},
         )
+        if token is not None:
+            self.session.headers.setdefault("Authorization", f"Bearer {token}")
 
 
 class Client(ClientBase):
@@ -57,6 +60,7 @@ class Client(ClientBase):
         run_client_binary: bool = False,
         binary_path: str = None,
         verify: bool = True,
+        token: str = None
     ):
         super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify)
         self.session = httpx.Client(
@@ -66,3 +70,5 @@ class Client(ClientBase):
             follow_redirects=True,
             event_hooks={"response": [raise_for_status]},
         )
+        if token is not None:
+            self.session.headers.setdefault("Authorization", f"Bearer {token}")
