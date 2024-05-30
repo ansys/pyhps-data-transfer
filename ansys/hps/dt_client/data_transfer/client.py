@@ -38,7 +38,7 @@ class AsyncClient(ClientBase):
         run_client_binary: bool = False,
         binary_path: str = None,
         verify: bool = True,
-        token: str = None
+        token: str = None,
     ):
         super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify)
         self.session = httpx.AsyncClient(
@@ -60,7 +60,7 @@ class Client(ClientBase):
         run_client_binary: bool = False,
         binary_path: str = None,
         verify: bool = True,
-        token: str = None
+        token: str = None,
     ):
         super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify)
         self.session = httpx.Client(
