@@ -4,7 +4,8 @@ import tempfile
 from typing import List
 
 from ..client import Client
-from ..models.rest import OpIdResponse, OpsResponse, SrcDst, Status, StorageConfigResponse, StoragePath
+from ..models.rest import CheckPermissionsResponse, GetPermissionsResponse, OpIdResponse, OpsResponse, RemovePermissionsRequest, SrcDst, Status, StorageConfigResponse, StoragePath
+from ..models.permissions import RoleAssignment, RoleQuery
 
 
 class DataTransferApi:
@@ -74,3 +75,31 @@ class DataTransferApi:
         resp = self.client.session.post(url, json=payload)
         json = resp.json()
         return OpIdResponse(**json)
+
+    def check_permissions(self, permissions: List[RoleAssignment]):
+        url = "/permissions:check"
+        payload = { "permissions": permissions }
+        resp = self.client.session.post(url, json=payload)
+        json = resp.json()
+        return CheckPermissionsResponse(**json)
+    
+    def get_permissions(self, permissions: List[RoleQuery]):
+        url = "/permissions:get"
+        payload = { "permissions": permissions }
+        resp = self.client.session.post(url, json=payload)
+        json = resp.json()
+        return GetPermissionsResponse(**json)
+    
+    def remove_permissions(self, permissions: List[RoleAssignment]):
+        url = "/permissions:remove"
+        payload = { "permissions": permissions }
+        resp = self.client.session.post(url, json=payload)
+        json = resp.json()
+        return RemovePermissionsRequest(**json)
+    
+    def set_permissions(self, permissions: List[RoleAssignment]):
+        url = "/permissions:set"
+        payload = { "permissions": permissions }
+        resp = self.client.session.post(url, json=payload)
+        json = resp.json()
+        return GetPermissionsResponse(**json)
