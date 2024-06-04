@@ -9,12 +9,14 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
+
 class OperationState(Enum):
     Unknown = "unknown"
     Queued = "queued"
     Running = "running"
     Succeeded = "succeeded"
     Failed = "failed"
+
 
 class Operation(BaseModel):
     children: Optional[List[str]] = None

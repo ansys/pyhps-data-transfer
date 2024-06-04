@@ -6,7 +6,17 @@ from typing import List
 from ansys.hps.dt_client.data_transfer.models.permissions import RoleAssignment, RoleQuery
 
 from ..client import AsyncClient
-from ..models.rest import CheckPermissionsResponse, GetPermissionsResponse, OpIdResponse, OpsResponse, RemovePermissionsRequest, SrcDst, Status, StorageConfigResponse, StoragePath
+from ..models.rest import (
+    CheckPermissionsResponse,
+    GetPermissionsResponse,
+    OpIdResponse,
+    OpsResponse,
+    RemovePermissionsRequest,
+    SrcDst,
+    Status,
+    StorageConfigResponse,
+    StoragePath,
+)
 
 
 class AsyncDataTransferApi:
@@ -79,28 +89,28 @@ class AsyncDataTransferApi:
 
     async def check_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:check"
-        payload = { "permissions": permissions }
+        payload = {"permissions": permissions}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return CheckPermissionsResponse(**json)
 
     async def get_permissions(self, permissions: List[RoleQuery]):
         url = "/permissions:get"
-        payload = { "permissions": permissions }
+        payload = {"permissions": permissions}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return GetPermissionsResponse(**json)
 
     async def remove_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:remove"
-        payload = { "permissions": permissions }
+        payload = {"permissions": permissions}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return RemovePermissionsRequest(**json)
 
     async def set_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:set"
-        payload = { "permissions": permissions }
+        payload = {"permissions": permissions}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return GetPermissionsResponse(**json)
