@@ -4,10 +4,17 @@
 
 from __future__ import annotations
 
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
+class OperationState(Enum):
+    Unknown = "unknown"
+    Queued = "queued"
+    Running = "running"
+    Succeeded = "succeeded"
+    Failed = "failed"
 
 class Operation(BaseModel):
     children: Optional[List[str]] = None
@@ -16,5 +23,5 @@ class Operation(BaseModel):
     id: Optional[str] = None
     messages: Optional[List[str]] = None
     progress: Optional[float] = None
-    result: Optional[Dict[str, Any]] = None
-    state: Optional[str] = None
+    result: Optional[Dict[str, Any] | bool] = None
+    state: Optional[OperationState] = None
