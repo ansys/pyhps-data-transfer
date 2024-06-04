@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
-from . import ops, permissions  # noqa: F401
+from . import ops, permissions # noqa: F401
 
 
 class CheckPermissionsResponse(BaseModel):
@@ -79,20 +79,20 @@ class SrcDstOperations(BaseModel):
 
 
 class CheckPermissionsRequest(BaseModel):
-    permissions: Optional[List[permissions.RoleAssignment]] = None
+    permissions: Optional[List[permissions.RoleAssignment]]
 
 
 class GetPermissionsRequest(BaseModel):
-    permissions: Optional[List[permissions.RoleQuery]] = None
+    permissions: Optional[List[permissions.RoleQuery]]
 
 
 class GetPermissionsResponse(BaseModel):
-    permissions: Optional[List[permissions.RoleAssignment]] = None
+    permissions: Optional[List[permissions.RoleAssignment]]
 
 
 class RemovePermissionsRequest(BaseModel):
-    permissions: Optional[List[permissions.RoleAssignment]] = None
+    permissions: Optional[List[permissions.RoleAssignment]]
 
 
 class SetPermissionsRequest(BaseModel):
-    permissions: Optional[List[permissions.RoleAssignment]] = None
+    permissions: Optional[List[permissions.RoleAssignment]]
