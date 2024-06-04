@@ -103,13 +103,11 @@ class DataTransferApi:
     def remove_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:remove"
         payload = {"permissions": permissions}
-        resp = self.client.session.post(url, json=payload)
-        json = resp.json()
-        return RemovePermissionsRequest(**json)
+        self.client.session.post(url, json=payload)
+        return None
 
     def set_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:set"
         payload = {"permissions": permissions}
-        resp = self.client.session.post(url, json=payload)
-        json = resp.json()
-        return GetPermissionsResponse(**json)
+        self.client.session.post(url, json=payload)
+        return None
