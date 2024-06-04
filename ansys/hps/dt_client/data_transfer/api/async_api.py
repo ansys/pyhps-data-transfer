@@ -10,7 +10,6 @@ from ..models.rest import (
     GetPermissionsResponse,
     OpIdResponse,
     OpsResponse,
-    RemovePermissionsRequest,
     SrcDst,
     Status,
     StorageConfigResponse,
