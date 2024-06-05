@@ -3,8 +3,8 @@ import tempfile
 import time
 
 from ansys.hps.dt_client.data_transfer import AsyncClient, AsyncDataTransferApi, Client, DataTransferApi
+from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
-from ansys.hps.dt_client.data_transfer.models.rest import SrcDst, StoragePath
 
 
 def test_copy(binary_path):

@@ -8,8 +8,8 @@ import time
 import uuid
 
 from ansys.hps.dt_client.data_transfer import Client, DataTransferApi, HPSError
+from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
-from ansys.hps.dt_client.data_transfer.models.rest import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)
 

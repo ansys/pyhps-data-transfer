@@ -3,8 +3,8 @@ import tempfile
 import time
 
 from ansys.hps.dt_client.data_transfer import AsyncClient, AsyncDataTransferApi, Client, DataTransferApi
+from ansys.hps.dt_client.data_transfer.models.msg import StoragePath
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
-from ansys.hps.dt_client.data_transfer.models.rest import StoragePath
 
 
 def test_exists(binary_path):
