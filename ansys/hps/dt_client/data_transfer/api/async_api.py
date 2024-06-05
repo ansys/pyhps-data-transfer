@@ -5,7 +5,7 @@ from typing import List
 
 from ..client import AsyncClient
 from ..models.permissions import RoleAssignment, RoleQuery
-from ..models.rest import (
+from ..models.msg import (
     CheckPermissionsResponse,
     GetPermissionsResponse,
     OpIdResponse,
