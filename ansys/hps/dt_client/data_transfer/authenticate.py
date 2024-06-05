@@ -114,9 +114,7 @@ def authenticate(
 
     data.update(**kwargs)
 
-    log.debug(
-        f"Retrieving access token for client {client_id} from {auth_url} using {grant_type} grant."
-    )
+    log.debug(f"Retrieving access token for client {client_id} from {auth_url} using {grant_type} grant.")
     r = session.post(token_url, data=data, timeout=timeout)
 
     raise_for_status(r)

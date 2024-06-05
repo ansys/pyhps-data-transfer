@@ -11,7 +11,7 @@ def test_mkdir(binary_path, access_token):
         external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
-        token=access_token
+        token=access_token,
     ) as api_client:
         api_instance = DataTransferApi(api_client)
         resp = api_instance.mkdir([StoragePath(path="test_mkdir")])
@@ -30,7 +30,7 @@ async def test_async_mkdir(binary_path, access_token):
         external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
-        token=access_token
+        token=access_token,
     ) as api_client:
         api_instance = AsyncDataTransferApi(api_client)
         resp = await api_instance.mkdir([StoragePath(path="test_mkdir")])

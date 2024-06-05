@@ -13,7 +13,7 @@ def test_exists(binary_path, access_token):
         external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
-        token=access_token
+        token=access_token,
     ) as api_client:
         api_instance = DataTransferApi(api_client)
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
@@ -43,7 +43,7 @@ async def test_async_exists(binary_path, access_token):
         external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
-        token=access_token
+        token=access_token,
     ) as api_client:
         api_instance = AsyncDataTransferApi(api_client)
         with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
