@@ -69,20 +69,20 @@ class SrcDstOperations(BaseModel):
 
 
 class CheckPermissionsRequest(BaseModel):
-    permissions: Optional[List[permissions.RoleAssignment]] = None
+    permissions: Optional[List[permissions.RoleAssignment]]
 
 
 class GetPermissionsRequest(BaseModel):
-    permissions: Optional[List[permissions.RoleQuery]] = None
+    permissions: Optional[List[permissions.RoleQuery]]
 
 
 class GetPermissionsResponse(BaseModel):
-    permissions: Optional[List[permissions.RoleAssignment]] = None
+    permissions: Optional[List[permissions.RoleAssignment]]
 
 
 class RemovePermissionsRequest(BaseModel):
-    permissions: Optional[List[permissions.RoleAssignment]] = None
+    permissions: Optional[List[permissions.RoleAssignment]]
 
 
 class SetPermissionsRequest(BaseModel):
-    permissions: Optional[List[permissions.RoleAssignment]] = None
+    permissions: Optional[List[permissions.RoleAssignment]]

@@ -4,7 +4,6 @@ import tempfile
 from typing import List
 
 from ..client import AsyncClient
-from ..models.permissions import RoleAssignment, RoleQuery
 from ..models.msg import (
     CheckPermissionsResponse,
     GetPermissionsResponse,
@@ -15,6 +14,7 @@ from ..models.msg import (
     StorageConfigResponse,
     StoragePath,
 )
+from ..models.permissions import RoleAssignment, RoleQuery
 
 
 class AsyncDataTransferApi:
