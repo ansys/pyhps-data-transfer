@@ -87,26 +87,26 @@ class AsyncDataTransferApi:
 
     async def check_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:check"
-        payload = {"permissions": permissions}
+        payload = {"permissions":  [permission.model_dump() for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return CheckPermissionsResponse(**json)
 
     async def get_permissions(self, permissions: List[RoleQuery]):
         url = "/permissions:get"
-        payload = {"permissions": permissions}
+        payload = {"permissions":  [permission.model_dump() for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return GetPermissionsResponse(**json)
 
     async def remove_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:remove"
-        payload = {"permissions": permissions}
+        payload = {"permissions":  [permission.model_dump() for permission in permissions]}
         await self.client.session.post(url, json=payload)
         return None
 
     async def set_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:set"
-        payload = {"permissions": permissions}
+        payload = {"permissions":  [permission.model_dump() for permission in permissions]}
         await self.client.session.post(url, json=payload)
         return None
