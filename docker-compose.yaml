@@ -74,8 +74,25 @@ services:
         sleep 1
         mc alias set minio http://minio:9000 minioadmin miniopassword
         mc mb minio/data-transfer
+        sleep infinity
     depends_on:
       - minio
+
+  openfga:
+    image: openfga/openfga:latest
+    command:
+      - run
+    expose: 
+      - 8080
+    labels:
+      traefik.enable: true
+      traefik.http.routers.openfga.entrypoints: websecure
+      traefik.http.routers.openfga.rule: Host(`localhost`) && PathPrefix(`/hps/fga`)
+      traefik.http.routers.openfga.service: openfga
+      traefik.http.routers.openfga.tls: true
+      traefik.http.services.openfga.loadbalancer.server.port: 8080
+      traefik.http.routers.openfga.middlewares: openfga-strip-prefix
+      traefik.http.middlewares.openfga-strip-prefix.stripprefix.prefixes: /hps/fga
 
   data-transfer:
     image: ${DOCKER_REPO}/rep/datad:${DTS_TAG}
