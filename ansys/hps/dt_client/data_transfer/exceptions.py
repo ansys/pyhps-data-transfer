@@ -71,6 +71,9 @@ def raise_for_status(response: httpx.Response):
     """
     if 400 <= response.status_code < 600:
 
+        if response.is_error:
+            response.read()
+
         r_content = {}
         try:
             r_content = response.json()

@@ -5,12 +5,13 @@ from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 
 
-def test_mkdir(binary_path):
+def test_mkdir(binary_path, access_token):
     with Client(
         data_transfer_url="https://localhost:8443/hps/dts/api/v1",
         external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
+        token=access_token
     ) as api_client:
         api_instance = DataTransferApi(api_client)
         resp = api_instance.mkdir([StoragePath(path="test_mkdir")])
@@ -33,12 +34,13 @@ def test_mkdir(binary_path):
                 break
 
 
-async def test_async_mkdir(binary_path):
+async def test_async_mkdir(binary_path, access_token):
     with AsyncClient(
         data_transfer_url="https://localhost:8443/hps/dts/api/v1",
         external_url="http://localhost:1091",
         run_client_binary=True,
         binary_path=binary_path,
+        token=access_token
     ) as api_client:
         api_instance = AsyncDataTransferApi(api_client)
         resp = await api_instance.mkdir([StoragePath(path="test_mkdir")])

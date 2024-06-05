@@ -5,7 +5,7 @@ import subprocess
 
 
 class Binary:
-    def __init__(self, binary_path: str, data_transfer_url: str, external_url: str = None):
+    def __init__(self, binary_path: str, data_transfer_url: str, external_url: str = None, token: str = None):
 
         if not binary_path or not os.path.exists(binary_path):
             # TODO - retrieve the binary?
@@ -37,6 +37,15 @@ class Binary:
                 external_url,
             ]
         )
+
+        if token is not None:
+            self.args.extend(
+                [
+                    "-t",
+                    f"Bearer {token}",
+                ]
+            )
+
         self.process = None
 
     def start(self):
