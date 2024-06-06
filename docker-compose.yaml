@@ -174,7 +174,7 @@ services:
       traefik.http.middlewares.openfga-strip-prefix.stripprefix.prefixes: /hps/fga
 
   data-transfer:
-    image: ${DOCKER_REPO}/rep/datad:${DTS_TAG}
+    image: ${DOCKER_REPO}/hps/datad:${DTS_TAG}
     deploy:
       replicas: 1
     expose:
@@ -184,6 +184,7 @@ services:
       - --host=0.0.0.0
       - -v 3
       - --docs
+      - --debug
       - --external-url=https://${EXTERNAL_NAME}:${EXTERNAL_PORT}/hps/dts
       - --auth-url=https://${EXTERNAL_NAME}:${EXTERNAL_PORT}/hps/auth/realms/rep
     volumes:
