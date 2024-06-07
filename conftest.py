@@ -90,7 +90,7 @@ def client(binary_path, admin_access_token, dt_url):
 
 
 @pytest.fixture(scope="session")
-def user_client(binary_path, admin_access_token, dt_url):
+def user_client(binary_path, user_access_token, dt_url):
     from ansys.hps.dt_client.data_transfer import Client
 
     c = Client(
@@ -113,6 +113,21 @@ def async_client(binary_path, admin_access_token, dt_url, event_loop):
         run_client_binary=True,
         binary_path=binary_path,
         token=admin_access_token,
+    )
+    c.start()
+    yield c
+    c.stop()
+
+
+@pytest.fixture(scope="session")
+def async_user_client(binary_path, user_access_token, dt_url, event_loop):
+    from ansys.hps.dt_client.data_transfer import AsyncClient
+
+    c = AsyncClient(
+        data_transfer_url=dt_url,
+        run_client_binary=True,
+        binary_path=binary_path,
+        token=user_access_token,
     )
     c.start()
     yield c
