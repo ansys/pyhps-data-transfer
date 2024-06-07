@@ -1,6 +1,8 @@
+import asyncio
 import mimetypes
 import os
 import tempfile
+import time
 from typing import List
 
 from ..client import AsyncClient
@@ -111,3 +113,15 @@ class AsyncDataTransferApi:
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         await self.client.session.post(url, json=payload)
         return None
+
+    async def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
+        start = time.time()
+        while True:
+            ops = await self.operations(operation_ids)
+            if all(op.state in ["succeeded", "failed"] for op in ops):
+                break
+
+            if timeout is not None and (time.time() - start) > timeout:
+                raise TimeoutError("Timeout waiting for operations to complete")
+            asyncio.sleep(interval)
+        return ops

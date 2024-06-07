@@ -1,6 +1,7 @@
 import mimetypes
 import os
 import tempfile
+import time
 from typing import List
 
 from ..client import Client
@@ -38,11 +39,11 @@ class DataTransferApi:
                     file.write(chunk)
         return dest
 
-    def upload_file(self, remote: str, path: str, file_path: str):
+    def upload_file(self, remote: str, path: str, src: str):
         url = f"/data/{remote}/{path}"
-        filename = os.path.basename(file_path)
+        filename = os.path.basename(src)
         mime_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
-        resp = self.client.session.post(url, files={"file": (filename, open(file_path, "rb"), mime_type)})
+        resp = self.client.session.post(url, files={"file": (filename, open(src, "rb"), mime_type)})
         json = resp.json()
         return OpIdResponse(**json)
 
@@ -111,3 +112,15 @@ class DataTransferApi:
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
         return None
+
+    def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
+        start = time.time()
+        while True:
+            ops = self.operations(operation_ids)
+            if all(op.state in ["succeeded", "failed"] for op in ops):
+                break
+
+            if timeout is not None and (time.time() - start) > timeout:
+                raise TimeoutError("Timeout waiting for operations to complete")
+            time.sleep(interval)
+        return ops
