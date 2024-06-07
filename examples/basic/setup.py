@@ -30,11 +30,8 @@ if __name__ == "__main__":
         log.info("Connecting to the data transfer service client..")
         with Client(
             data_transfer_url="https://localhost:8443/hps/dts/api/v1",
-            external_url="http://localhost:1091",
             run_client_binary=True,
-            binary_path=".\\bin\\hpsdata.exe",
         ) as client:
-
             api = DataTransferApi(client)
 
             log.info("Query storages..")

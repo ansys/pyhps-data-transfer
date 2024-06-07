@@ -70,7 +70,6 @@ def raise_for_status(response: httpx.Response):
     This method mimics the requests.Response.raise_for_status() method.
     """
     if 400 <= response.status_code < 600:
-
         if response.is_error:
             response.read()
 
@@ -84,7 +83,7 @@ def raise_for_status(response: httpx.Response):
         if not reason:
             reason = r_content.get("error", None)  # auth api
         if not reason:
-            reason = response.reason
+            reason = getattr(response, "reason", None)
 
         description = r_content.get("description", None)  # jms api
         if not description:

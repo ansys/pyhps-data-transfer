@@ -25,6 +25,12 @@ class AsyncDataTransferApi:
         self.dump_mode = "json"
         self.client = client
 
+    def start(self):
+        self.client.start()
+
+    def stop(self):
+        self.client.stop()
+
     async def status(self):
         url = "/"
         resp = await self.client.session.get(url)
@@ -67,7 +73,7 @@ class AsyncDataTransferApi:
     async def exists(self, operations: List[StoragePath]):
         return await self._exec_async_operation_req("exists", operations)
 
-    async def list(self, operations: List[SrcDst]):
+    async def list(self, operations: List[StoragePath]):
         return await self._exec_async_operation_req("list", operations)
 
     async def mkdir(self, operations: List[StoragePath]):
