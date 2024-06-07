@@ -3,6 +3,9 @@ name: 'ansys-rep'
 
 volumes:
   minio-data:
+  keydb_data:
+  postgres_data:
+  keycloak_data:
 
 services:
 
@@ -41,6 +44,82 @@ services:
       traefik.http.middlewares.traefik_api-rep-stripprefix.stripprefix.prefixes: /rep/traefik
       traefik.http.middlewares.traefik_api-hps-stripprefix.stripprefix.prefixes: /hps/traefik
 
+  kvstore:
+    image: eqalpha/keydb
+    restart: unless-stopped # change to 'always' if required
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "keydb-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+      retries: 50
+    volumes:
+      - keydb_data:/data
+
+  postgres:
+    image: postgres
+    volumes:
+      - ./config/psql/create_keycloak_db.sh:/docker-entrypoint-initdb.d/create_keycloak_db.sh:ro
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: repadmin
+      POSTGRES_USER: repadmin
+      POSTGRES_PASSWORD: repadmin
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "repadmin"]
+      interval: 5s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.6
+    command: >-
+      start-dev
+      --proxy=edge
+      --hostname=${EXTERNAL_NAME}
+      --hostname-port=${EXTERNAL_PORT}
+      --hostname-admin-url=https://${EXTERNAL_NAME}:${EXTERNAL_PORT}/hps/auth
+      --http-relative-path=/hps/auth/
+      --http-enabled=true
+      --import-realm
+      --log-level=info
+      --features=token-exchange
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
+      DB_USER: repadmin
+      DB_PASSWORD: repadmin
+      KEYCLOAK_ADMIN: keycloak
+      KEYCLOAK_ADMIN_PASSWORD: keycloak123
+    expose:
+      - 8080
+    volumes:
+      - keycloak_data:/opt/keycloak/data/
+      - ./config/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+    labels:
+      traefik.http.routers.keycloak.tls: true
+      traefik.http.routers.keycloak.rule: PathPrefix(`/hps/auth`)
+      traefik.http.routers.keycloak.entrypoints: external
+      traefik.http.routers.keycloak.priority: 100
+      traefik.http.services.keycloak.loadbalancer.server.port: 8080
+      traefik.http.routers.keycloak.middlewares: keycloak-hps-stripprefix,keycloak-addprefix
+      traefik.http.middlewares.keycloak-hps-stripprefix.stripprefix.prefixes: /hps/auth
+      traefik.http.middlewares.keycloak-addprefix.addprefix.prefix: /hps/auth
+    healthcheck:
+       test: "timeout 10s bash -c ':> /dev/tcp/127.0.0.1/8080' || exit 1"
+       interval: 10s
+       timeout: 1s
+       retries: 30
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
   minio:
     image: minio/minio:latest
     volumes:
@@ -74,11 +153,28 @@ services:
         sleep 1
         mc alias set minio http://minio:9000 minioadmin miniopassword
         mc mb minio/data-transfer
+        sleep infinity
     depends_on:
       - minio
 
+  openfga:
+    image: openfga/openfga:latest
+    command:
+      - run
+    expose: 
+      - 8080
+    labels:
+      traefik.enable: true
+      traefik.http.routers.openfga.entrypoints: external
+      traefik.http.routers.openfga.rule: Host(`localhost`) && PathPrefix(`/hps/fga`)
+      traefik.http.routers.openfga.service: openfga
+      traefik.http.routers.openfga.tls: true
+      traefik.http.services.openfga.loadbalancer.server.port: 8080
+      traefik.http.routers.openfga.middlewares: openfga-strip-prefix
+      traefik.http.middlewares.openfga-strip-prefix.stripprefix.prefixes: /hps/fga
+
   data-transfer:
-    image: ${DOCKER_REPO}/rep/datad:${DTS_TAG}
+    image: ${DOCKER_REPO}/hps/datad:${DTS_TAG}
     deploy:
       replicas: 1
     expose:
@@ -86,22 +182,23 @@ services:
     command:
       - --config /app/config.json
       - --host=0.0.0.0
-      - --auth none
       - -v 3
       - --docs
-      - --external-url=https://${EXTERNAL_NAME}:${EXTERNAL_PORT}/hps/dts
+      - --debug
+      - --external-url=https://${EXTERNAL_NAME}:${EXTERNAL_PORT}/hps/dt
+      - --auth-url=https://${EXTERNAL_NAME}:${EXTERNAL_PORT}/hps/auth/realms/rep
     volumes:
       - ./config/dts/config.json:/app/config.json
     extra_hosts:
       - "s3.localhost:host-gateway"
+      - "localhost:host-gateway"
     labels:
-      traefik.http.routers.dts.rule: PathPrefix(`/rep/dts`, `/hps/dts`)
+      traefik.http.routers.dts.rule: PathPrefix(`/hps/dt`)
       traefik.http.routers.dts.tls: true
       traefik.http.routers.dts.priority: 100
       traefik.http.routers.dts.entrypoints: external
-      traefik.http.routers.dts.middlewares: dts-rep-stripprefix,dts-hps-stripprefix
-      traefik.http.middlewares.dts-rep-stripprefix.stripprefix.prefixes: /rep/dts
-      traefik.http.middlewares.dts-hps-stripprefix.stripprefix.prefixes: /hps/dts
+      traefik.http.routers.dts.middlewares: dts-hps-stripprefix
+      traefik.http.middlewares.dts-hps-stripprefix.stripprefix.prefixes: /hps/dt
       traefik.http.services.dts.loadbalancer.server.port: 1090
       traefik.http.services.dts.loadbalancer.healthcheck.path: /api/v1
       traefik.http.services.dts.loadbalancer.healthcheck.interval: 5s
