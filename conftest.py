@@ -14,7 +14,7 @@ def binary_path():
 
 
 @pytest.fixture(scope="session")
-def access_token(auth_url):
+def admin_access_token(auth_url):
     tokens = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     return tokens.get("access_token", None)
 
@@ -27,21 +27,6 @@ def dt_url():
 @pytest.fixture(scope="session")
 def auth_url():
     return "https://localhost:8443/hps/auth/realms/rep"
-
-
-@pytest.fixture(scope="session")
-def client(binary_path, access_token, dt_url):
-    from ansys.hps.dt_client.data_transfer import Client
-
-    c = Client(
-        data_transfer_url=dt_url,
-        run_client_binary=True,
-        binary_path=binary_path,
-        token=access_token,
-    )
-    c.start()
-    yield c
-    c.stop()
 
 
 @pytest.fixture(scope="session")
@@ -59,14 +44,29 @@ def event_loop():
 
 
 @pytest.fixture(scope="session")
-def async_client(binary_path, access_token, dt_url, event_loop):
+def client(binary_path, admin_access_token, dt_url):
+    from ansys.hps.dt_client.data_transfer import Client
+
+    c = Client(
+        data_transfer_url=dt_url,
+        run_client_binary=True,
+        binary_path=binary_path,
+        token=admin_access_token,
+    )
+    c.start()
+    yield c
+    c.stop()
+
+
+@pytest.fixture(scope="session")
+def async_client(binary_path, admin_access_token, dt_url, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
     c = AsyncClient(
         data_transfer_url=dt_url,
         run_client_binary=True,
         binary_path=binary_path,
-        token=access_token,
+        token=admin_access_token,
     )
     c.start()
     yield c
