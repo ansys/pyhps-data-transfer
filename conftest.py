@@ -83,6 +83,7 @@ def client(binary_path, admin_access_token, dt_url):
         run_client_binary=True,
         binary_path=binary_path,
         token=admin_access_token,
+        port=2000,
     )
     c.start()
     yield c
@@ -98,6 +99,7 @@ def user_client(binary_path, user_access_token, dt_url):
         run_client_binary=True,
         binary_path=binary_path,
         token=user_access_token,
+        port=2001,
     )
     c.start()
     yield c
@@ -113,6 +115,7 @@ def async_client(binary_path, admin_access_token, dt_url, event_loop):
         run_client_binary=True,
         binary_path=binary_path,
         token=admin_access_token,
+        port=2002,
     )
     c.start()
     yield c
@@ -128,6 +131,7 @@ def async_user_client(binary_path, user_access_token, dt_url, event_loop):
         run_client_binary=True,
         binary_path=binary_path,
         token=user_access_token,
+        port=2003,
     )
     c.start()
     yield c

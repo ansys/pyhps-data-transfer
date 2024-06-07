@@ -1,11 +1,16 @@
 import json
+import logging
 import os
 import stat
 import subprocess
 
+log = logging.getLogger(__name__)
+
 
 class Binary:
-    def __init__(self, binary_path: str, data_transfer_url: str, external_url: str = None, token: str = None):
+    def __init__(
+        self, binary_path: str, data_transfer_url: str, external_url: str = None, token: str = None, port: int = 1091
+    ):
         if not binary_path or not os.path.exists(binary_path):
             # TODO - retrieve the binary?
             raise os.error("Binary not found.")
@@ -15,14 +20,21 @@ class Binary:
             st = os.stat(binary_path)
             os.chmod(binary_path, st.st_mode | stat.S_IEXEC)
 
+        # Rather pass token via env
         self.args = [
             binary_path,
             "--dt-url",
             data_transfer_url,
             "--docs",
             "--insecure",
+            "-v",
+            "3",
+            "-d",
+            "--port",
+            str(port),
         ]
 
+        # TODO: use shell=True on subprocess calls
         if external_url is None:
             resp = subprocess.run(self.args + ["config", "show"], capture_output=True, text=True)
             config = json.loads(resp.stdout)
@@ -52,3 +64,6 @@ class Binary:
 
     def stop(self):
         self.process.kill()
+
+    def args_str(self):
+        return " ".join(self.args)

@@ -1,9 +1,7 @@
-"""
-Example script for file operations.
-"""
 import logging
 import os
 import pathlib
+import traceback
 
 from keycloak import KeycloakAdmin
 
@@ -54,7 +52,7 @@ if __name__ == "__main__":
     user_token = user_token.get("access_token", None)
 
     log.info("Preparing data transfer client for 'repuser' ...")
-    user = DataTransferApi(Client(data_transfer_url=dt_url, run_client_binary=True, token=user_token))
+    user = DataTransferApi(Client(data_transfer_url=dt_url, run_client_binary=True, token=user_token, port=4444))
     user.start()
 
     log.info("Checking binary's status ...")
@@ -84,49 +82,65 @@ if __name__ == "__main__":
     except Exception as ex:
         log.error(f"Encountered error: {ex}")
 
-    admin_token = authenticate(adminname="repadmin", password="repadmin", verify=False, url=auth_url)
+    admin_token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     admin_token = admin_token.get("access_token", None)
 
     log.info("Preparing data transfer client for 'repadmin' ...")
-    admin = DataTransferApi(Client(data_transfer_url=dt_url, run_client_binary=True, token=admin_token))
+    admin = DataTransferApi(Client(data_transfer_url=dt_url, run_client_binary=True, token=admin_token, port=5555))
     admin.start()
 
     log.info("Granting 'repuser' the necessary permissions ...")
     user_id = get_user_id_from_keycloak()
 
-    admin.set_permissions(
-        [
-            RoleAssignment(
-                resource=Resource(path=target_dir, type=ResourceType.Doc),
-                role=RoleType.Writer,
-                subject=Subject(id=user_id, type=SubjectType.User),
-            )
-        ]
-    )
+    try:
+        admin.set_permissions(
+            [
+                RoleAssignment(
+                    resource=Resource(path=target_dir, type=ResourceType.Doc),
+                    role=RoleType.Writer,
+                    subject=Subject(id=user_id, type=SubjectType.User),
+                )
+            ]
+        )
 
-    log.info("Verifying permissions for 'repuser' ...")
-    resp = admin.check_permissions(
-        [
-            RoleQuery(
-                resource=Resource(path=target_dir, type=ResourceType.Doc),
-                role=RoleType.Writer,
-                subject=Subject(id=user_id, type=SubjectType.User),
-            )
-        ]
-    )
+        log.info("Verifying permissions for 'repuser' ...")
+        resp = admin.check_permissions(
+            [
+                RoleQuery(
+                    resource=Resource(path=target_dir, type=ResourceType.Doc),
+                    role=RoleType.Writer,
+                    subject=Subject(id=user_id, type=SubjectType.User),
+                )
+            ]
+        )
 
-    log.info(f"Is 'repuser'({user_id}) allowed to read from {target_dir}? -> {resp.allowed}")
+        log.info(f"Is 'repuser'({user_id}) allowed to read from {target_dir}? -> {resp.allowed}")
 
-    log.info("Removing permissions for 'repuser' ...")
-    admin.remove_permissions(
-        [
-            RoleAssignment(
-                resource=Resource(path=target_dir, type=ResourceType.Doc),
-                role="writer",
-                subject=Subject(id=user_id, type=SubjectType.User),
-            )
-        ]
-    )
+        log.info("Trying to copy files as 'repuser' one more time...")
+        resp = user.copy(src_dst)
+        op = user.wait_for([resp.id], timeout=10)[0]
+        log.info(f"Copy operation state: {op.state}")
+
+        log.info("Listing files in the target directory as 'repadmin' ...")
+        resp = admin.list([StoragePath(path=target_dir, remote="any")])
+        op = user.wait_for([resp.id], timeout=10)[0]
+        log.info(f"Result: {op.result}")
+    except Exception as ex:
+        log.debug(traceback.format_exc())
+        log.error(f"Error: {ex}")
+    finally:
+        log.info("Removing permissions for 'repuser' ...")
+        admin.remove_permissions(
+            [
+                RoleAssignment(
+                    resource=Resource(path=target_dir, type=ResourceType.Doc),
+                    role="writer",
+                    subject=Subject(id=user_id, type=SubjectType.User),
+                )
+            ]
+        )
+
+    log.info("And that's all folks!")
 
     admin.stop()
     user.stop()

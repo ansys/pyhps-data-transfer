@@ -24,6 +24,12 @@ class DataTransferApi:
         self.dump_mode = "json"
         self.client = client
 
+    def start(self):
+        self.client.start()
+
+    def stop(self):
+        self.client.stop()
+
     def status(self):
         url = "/"
         resp = self.client.session.get(url)
@@ -66,7 +72,7 @@ class DataTransferApi:
     def exists(self, operations: List[StoragePath]):
         return self._exec_operation_req("exists", operations)
 
-    def list(self, operations: List[SrcDst]):
+    def list(self, operations: List[StoragePath]):
         return self._exec_operation_req("list", operations)
 
     def mkdir(self, operations: List[StoragePath]):
