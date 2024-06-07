@@ -6,7 +6,6 @@ import subprocess
 
 class Binary:
     def __init__(self, binary_path: str, data_transfer_url: str, external_url: str = None, token: str = None):
-
         if not binary_path or not os.path.exists(binary_path):
             # TODO - retrieve the binary?
             raise os.error("Binary not found.")
@@ -49,7 +48,8 @@ class Binary:
         self.process = None
 
     def start(self):
-        self.process = subprocess.Popen(self.args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.process = subprocess.Popen(self.args)
+        # self.process = subprocess.Popen(self.args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def stop(self):
         self.process.kill()
