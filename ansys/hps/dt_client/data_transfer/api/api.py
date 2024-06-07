@@ -19,6 +19,7 @@ from ..models.permissions import RoleAssignment, RoleQuery
 
 class DataTransferApi:
     def __init__(self, client: Client):
+        self.dump_mode = "json"
         self.client = client
 
     def status(self):
@@ -80,33 +81,33 @@ class DataTransferApi:
 
     def _exec_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
         url = f"/storage:{storage_operation}"
-        payload = {"operations": [operation.model_dump() for operation in operations]}
+        payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
         resp = self.client.session.post(url, json=payload)
         json = resp.json()
         return OpIdResponse(**json)
 
     def check_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:check"
-        payload = {"permissions": [permission.model_dump() for permission in permissions]}
+        payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = self.client.session.post(url, json=payload)
         json = resp.json()
         return CheckPermissionsResponse(**json)
 
     def get_permissions(self, permissions: List[RoleQuery]):
         url = "/permissions:get"
-        payload = {"permissions": [permission.model_dump() for permission in permissions]}
+        payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = self.client.session.post(url, json=payload)
         json = resp.json()
         return GetPermissionsResponse(**json)
 
     def remove_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:remove"
-        payload = {"permissions": [permission.model_dump() for permission in permissions]}
+        payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
         return None
 
     def set_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:set"
-        payload = {"permissions": [permission.model_dump() for permission in permissions]}
+        payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
         return None
