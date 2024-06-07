@@ -27,6 +27,7 @@ class ClientBase:
             external_url = self.binary.external_url
             self.base_api_url = external_url + "/api/v1"
         else:
+            self.binary = None
             self.base_api_url = data_transfer_url
 
     def start(self):
