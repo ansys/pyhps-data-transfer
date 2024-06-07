@@ -2,6 +2,7 @@ import asyncio
 import os
 import sys
 
+from keycloak import KeycloakAdmin
 import pytest
 
 from ansys.hps.dt_client.data_transfer.authenticate import authenticate
@@ -20,13 +21,43 @@ def admin_access_token(auth_url):
 
 
 @pytest.fixture(scope="session")
+def user_access_token(auth_url):
+    tokens = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
+    return tokens.get("access_token", None)
+
+
+@pytest.fixture(scope="session")
 def dt_url():
     return "https://localhost:8443/hps/dt/api/v1"
 
 
 @pytest.fixture(scope="session")
-def auth_url():
-    return "https://localhost:8443/hps/auth/realms/rep"
+def keycloak_url():
+    return "https://localhost:8443/hps/auth"
+
+
+@pytest.fixture(scope="session")
+def auth_url(keycloak_url):
+    return f"{keycloak_url}/realms/rep"
+
+
+@pytest.fixture(scope="session")
+def keycloak_client(keycloak_url):
+    admin = KeycloakAdmin(
+        server_url=keycloak_url + "/",
+        username="keycloak",
+        password="keycloak123",
+        realm_name="rep",
+        user_realm_name="master",
+        verify=False,
+    )
+    yield admin
+
+
+@pytest.fixture(scope="session")
+def user_id(keycloak_client):
+    user_id = keycloak_client.get_user_id("repuser")
+    return user_id
 
 
 @pytest.fixture(scope="session")
@@ -52,6 +83,21 @@ def client(binary_path, admin_access_token, dt_url):
         run_client_binary=True,
         binary_path=binary_path,
         token=admin_access_token,
+    )
+    c.start()
+    yield c
+    c.stop()
+
+
+@pytest.fixture(scope="session")
+def user_client(binary_path, admin_access_token, dt_url):
+    from ansys.hps.dt_client.data_transfer import Client
+
+    c = Client(
+        data_transfer_url=dt_url,
+        run_client_binary=True,
+        binary_path=binary_path,
+        token=user_access_token,
     )
     c.start()
     yield c

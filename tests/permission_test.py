@@ -7,7 +7,7 @@ from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 from ansys.hps.dt_client.data_transfer.models.permissions import Resource, RoleQuery
 
 
-def test_permissions(client):
+def test_permissions(client, user_id):
     api_instance = DataTransferApi(client)
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
@@ -19,5 +19,7 @@ def test_permissions(client):
         resp = api_instance.operations([operation_id])
         if resp[0].state == OperationState.Succeeded:
             break
+
     resp = api_instance.get_permissions([RoleQuery(resource=Resource(path=os.path.basename(temp_file.name)))])
+
     assert len(resp.permissions) == 0
