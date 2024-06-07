@@ -1,6 +1,8 @@
+import asyncio
 import mimetypes
 import os
 import tempfile
+import time
 from typing import List
 
 from ..client import AsyncClient
@@ -19,6 +21,7 @@ from ..models.permissions import RoleAssignment, RoleQuery
 
 class AsyncDataTransferApi:
     def __init__(self, client: AsyncClient):
+        self.dump_mode = "json"
         self.client = client
 
     async def status(self):
@@ -80,33 +83,45 @@ class AsyncDataTransferApi:
 
     async def _exec_async_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
         url = f"/storage:{storage_operation}"
-        payload = {"operations": [operation.model_dump() for operation in operations]}
+        payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return OpIdResponse(**json)
 
     async def check_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:check"
-        payload = {"permissions": [permission.model_dump() for permission in permissions]}
+        payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return CheckPermissionsResponse(**json)
 
     async def get_permissions(self, permissions: List[RoleQuery]):
         url = "/permissions:get"
-        payload = {"permissions": [permission.model_dump() for permission in permissions]}
+        payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return GetPermissionsResponse(**json)
 
     async def remove_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:remove"
-        payload = {"permissions": [permission.model_dump() for permission in permissions]}
+        payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         await self.client.session.post(url, json=payload)
         return None
 
     async def set_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:set"
-        payload = {"permissions": [permission.model_dump() for permission in permissions]}
+        payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         await self.client.session.post(url, json=payload)
         return None
+
+    async def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
+        start = time.time()
+        while True:
+            ops = await self.operations(operation_ids)
+            if all(op.state in ["succeeded", "failed"] for op in ops):
+                break
+
+            if timeout is not None and (time.time() - start) > timeout:
+                raise TimeoutError("Timeout waiting for operations to complete")
+            asyncio.sleep(interval)
+        return ops

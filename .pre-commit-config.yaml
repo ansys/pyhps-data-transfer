@@ -1,7 +1,7 @@
 repos:
 
 - repo: https://github.com/psf/black
-  rev: 22.3.0
+  rev: 23.1.0
   hooks:
   - id: black
     # exclude: ^(ansys/rep/common/jms/resource/|ansys/rep/common/auth/resource/)
@@ -10,6 +10,17 @@ repos:
   rev: 5.12.0
   hooks:
   - id: isort
+
+- repo: https://github.com/PyCQA/autoflake
+  rev: v2.0.1
+  hooks:
+  -   id: autoflake
+      args: [
+        --recursive,
+        --ignore-init-module-imports, 
+        --remove-all-unused-imports, 
+        --in-place
+      ]
 
 - repo: https://github.com/PyCQA/flake8
   rev: 5.0.4

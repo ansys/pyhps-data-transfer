@@ -6,7 +6,6 @@ import subprocess
 
 class Binary:
     def __init__(self, binary_path: str, data_transfer_url: str, external_url: str = None, token: str = None):
-
         if not binary_path or not os.path.exists(binary_path):
             # TODO - retrieve the binary?
             raise os.error("Binary not found.")

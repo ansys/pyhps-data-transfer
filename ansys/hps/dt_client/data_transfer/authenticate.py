@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 
 
 def authenticate(
-    url: str = "https://127.0.0.1:8443/hps",
+    url: str = "https://localhost:8443/hps",
     realm: str = "rep",
     grant_type: str = "password",
     scope="openid",
@@ -55,7 +55,7 @@ def authenticate(
     ----------
 
     url : str, optional
-        Base path for the server to call. The default is ``'https://127.0.0.1:8443/rep'``.
+        Base path for the server to call. The default is ``'https://localhost:8443/rep'``.
     realm : str, optional
         Keycloak realm. The default is ``'rep'``.
     grant_type: str, optional
