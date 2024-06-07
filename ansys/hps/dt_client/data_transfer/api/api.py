@@ -15,6 +15,7 @@ from ..models.msg import (
     StorageConfigResponse,
     StoragePath,
 )
+from ..models.ops import OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
 
 
@@ -117,7 +118,7 @@ class DataTransferApi:
         start = time.time()
         while True:
             ops = self.operations(operation_ids)
-            if all(op.state in ["succeeded", "failed"] for op in ops):
+            if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                 break
 
             if timeout is not None and (time.time() - start) > timeout:
