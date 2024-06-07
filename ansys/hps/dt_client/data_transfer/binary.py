@@ -48,8 +48,7 @@ class Binary:
         self.process = None
 
     def start(self):
-        self.process = subprocess.Popen(self.args)
-        # self.process = subprocess.Popen(self.args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.process = subprocess.Popen(self.args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def stop(self):
         self.process.kill()
