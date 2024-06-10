@@ -3,10 +3,7 @@ import mimetypes
 import os
 import tempfile
 import time
-import traceback
 from typing import List
-
-import backoff
 
 log = logging.getLogger(__name__)
 
@@ -23,20 +20,7 @@ from ..models.msg import (
 )
 from ..models.ops import OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
-
-
-def _on_backoff(details, exc_info=False):
-    try:
-        msg = "Backing off {wait:0.1f} seconds after {tries} tries: {exception}".format(**details)
-        log.info(msg)
-        if exc_info:
-            try:
-                ex_str = "\n".join(traceback.format_exception(details["exception"]))
-                log.debug(f"Backoff caused by:\n{ex_str}")
-            except:
-                pass
-    except Exception as ex:
-        log.warning(f"Failed to log in backoff handler: {ex}")
+from .retry import retry
 
 
 class DataTransferApi:
@@ -50,17 +34,8 @@ class DataTransferApi:
     def stop(self):
         self.client.stop()
 
-    @backoff.on_exception(
-        backoff.expo,
-        Exception,
-        max_tries=30,
-        max_time=60,
-        jitter=backoff.full_jitter,
-        raise_on_giveup=True,
-        on_backoff=_on_backoff,
-        logger=None,
-    )
-    def status(self, wait=False, timeout=None):
+    @retry()
+    def status(self, wait=False):
         url = "/"
         while True:
             resp = self.client.session.get(url)
@@ -71,6 +46,7 @@ class DataTransferApi:
                 continue
             return s
 
+    @retry()
     def download_file(self, remote: str, path: str, dest: str = None):
         url = f"/data/{remote}/{path}"
         if not dest:
@@ -81,6 +57,7 @@ class DataTransferApi:
                     file.write(chunk)
         return dest
 
+    @retry()
     def upload_file(self, remote: str, path: str, src: str):
         url = f"/data/{remote}/{path}"
         filename = os.path.basename(src)
@@ -89,12 +66,14 @@ class DataTransferApi:
         json = resp.json()
         return OpIdResponse(**json)
 
+    @retry()
     def operations(self, ids: List[str]):
         url = "/operations"
         resp = self.client.session.get(url, params={"ids": ids})
         json = resp.json()
         return OpsResponse(**json).operations
 
+    @retry()
     def storages(self):
         url = "/storage"
         resp = self.client.session.get(url)
@@ -131,6 +110,7 @@ class DataTransferApi:
         log.warning("op id : %s", r.id)
         return r
 
+    @retry()
     def check_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -138,6 +118,7 @@ class DataTransferApi:
         json = resp.json()
         return CheckPermissionsResponse(**json)
 
+    @retry()
     def get_permissions(self, permissions: List[RoleQuery]):
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -145,28 +126,21 @@ class DataTransferApi:
         json = resp.json()
         return GetPermissionsResponse(**json)
 
+    @retry()
     def remove_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
         return None
 
+    @retry()
     def set_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
         return None
 
-    @backoff.on_exception(
-        backoff.expo,
-        Exception,
-        max_tries=30,
-        max_time=60,
-        jitter=backoff.full_jitter,
-        raise_on_giveup=True,
-        on_backoff=_on_backoff,
-        logger=None,
-    )
+    @retry()
     def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
         start = time.time()
         while True:
