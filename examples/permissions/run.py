@@ -60,7 +60,7 @@ if __name__ == "__main__":
     user.start()
 
     log.info("Checking binary's status ...")
-    status = user.status()
+    status = user.status(wait=True, timeout=10)
     log.info(f"User status: {status}")
 
     source_dir = pathlib.Path(__file__).parent / "files"
