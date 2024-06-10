@@ -47,12 +47,16 @@ def get_user_id_from_keycloak():
 
 
 if __name__ == "__main__":
+    run_bin = True
+
     log.info("Logging in as repuser ...")
     user_token = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)
 
     log.info("Preparing data transfer client for 'repuser' ...")
-    user = DataTransferApi(Client(data_transfer_url=dt_url, run_client_binary=True, token=user_token, port=4444))
+    user = DataTransferApi(
+        Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=user_token, port=1091, verify=False)
+    )
     user.start()
 
     log.info("Checking binary's status ...")
@@ -86,7 +90,9 @@ if __name__ == "__main__":
     admin_token = admin_token.get("access_token", None)
 
     log.info("Preparing data transfer client for 'repadmin' ...")
-    admin = DataTransferApi(Client(data_transfer_url=dt_url, run_client_binary=True, token=admin_token, port=5555))
+    admin = DataTransferApi(
+        Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=admin_token, port=1091, verify=False)
+    )
     admin.start()
 
     log.info("Granting 'repuser' the necessary permissions ...")
@@ -102,7 +108,10 @@ if __name__ == "__main__":
                 )
             ]
         )
+    except Exception as ex:
+        log.info(ex)
 
+    try:
         log.info("Verifying permissions for 'repuser' ...")
         resp = admin.check_permissions(
             [
