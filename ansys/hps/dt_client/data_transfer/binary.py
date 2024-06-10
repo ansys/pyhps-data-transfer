@@ -36,7 +36,8 @@ class Binary:
 
         # TODO: use shell=True on subprocess calls
         if external_url is None:
-            resp = subprocess.run(self.args + ["config", "show"], capture_output=True, text=True)
+            args = " ".join(self.args)
+            resp = subprocess.run(f"{args} config show", capture_output=True, text=True, shell=True)
             config = json.loads(resp.stdout)
             external_url = config.get("external_url", None)
 
@@ -60,7 +61,8 @@ class Binary:
         self.process = None
 
     def start(self):
-        self.process = subprocess.Popen(self.args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        args = " ".join(self.args)
+        self.process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def stop(self):
         self.process.kill()

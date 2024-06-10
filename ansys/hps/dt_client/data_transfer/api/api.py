@@ -1,8 +1,11 @@
+import logging
 import mimetypes
 import os
 import tempfile
 import time
 from typing import List
+
+log = logging.getLogger(__name__)
 
 from ..client import Client
 from ..models.msg import (
@@ -17,6 +20,7 @@ from ..models.msg import (
 )
 from ..models.ops import OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
+from .retry import retry
 
 
 class DataTransferApi:
@@ -30,12 +34,19 @@ class DataTransferApi:
     def stop(self):
         self.client.stop()
 
-    def status(self):
+    @retry()
+    def status(self, wait=False):
         url = "/"
-        resp = self.client.session.get(url)
-        json = resp.json()
-        return Status(**json)
+        while True:
+            resp = self.client.session.get(url)
+            json = resp.json()
+            s = Status(**json)
+            if wait and not s.ready:
+                time.sleep(1)
+                continue
+            return s
 
+    @retry()
     def download_file(self, remote: str, path: str, dest: str = None):
         url = f"/data/{remote}/{path}"
         if not dest:
@@ -46,6 +57,7 @@ class DataTransferApi:
                     file.write(chunk)
         return dest
 
+    @retry()
     def upload_file(self, remote: str, path: str, src: str):
         url = f"/data/{remote}/{path}"
         filename = os.path.basename(src)
@@ -54,12 +66,14 @@ class DataTransferApi:
         json = resp.json()
         return OpIdResponse(**json)
 
+    @retry()
     def operations(self, ids: List[str]):
         url = "/operations"
         resp = self.client.session.get(url, params={"ids": ids})
         json = resp.json()
         return OpsResponse(**json).operations
 
+    @retry()
     def storages(self):
         url = "/storage"
         resp = self.client.session.get(url)
@@ -92,8 +106,11 @@ class DataTransferApi:
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
         resp = self.client.session.post(url, json=payload)
         json = resp.json()
-        return OpIdResponse(**json)
+        r = OpIdResponse(**json)
+        log.warning("op id : %s", r.id)
+        return r
 
+    @retry()
     def check_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -101,6 +118,7 @@ class DataTransferApi:
         json = resp.json()
         return CheckPermissionsResponse(**json)
 
+    @retry()
     def get_permissions(self, permissions: List[RoleQuery]):
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -108,18 +126,21 @@ class DataTransferApi:
         json = resp.json()
         return GetPermissionsResponse(**json)
 
+    @retry()
     def remove_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
         return None
 
+    @retry()
     def set_permissions(self, permissions: List[RoleAssignment]):
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
         return None
 
+    @retry()
     def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
         start = time.time()
         while True:
