@@ -64,10 +64,7 @@ class Binary:
 
     def start(self):
         args = " ".join(self.args)
-        import sys
-
-        self.process = subprocess.Popen(args, shell=True, stdout=sys.stderr, stderr=sys.stderr)
-        # self.process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        self.process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def stop(self):
         self.process.kill()
