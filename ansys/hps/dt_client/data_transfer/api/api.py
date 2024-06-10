@@ -42,11 +42,11 @@ class DataTransferApi:
             json = resp.json()
             s = Status(**json)
             if wait and not s.ready:
+                log.info("Waiting for the client to be ready...")
                 time.sleep(1)
                 continue
             return s
 
-    @retry()
     def download_file(self, remote: str, path: str, dest: str = None):
         url = f"/data/{remote}/{path}"
         if not dest:
@@ -57,7 +57,6 @@ class DataTransferApi:
                     file.write(chunk)
         return dest
 
-    @retry()
     def upload_file(self, remote: str, path: str, src: str):
         url = f"/data/{remote}/{path}"
         filename = os.path.basename(src)
@@ -73,7 +72,6 @@ class DataTransferApi:
         json = resp.json()
         return OpsResponse(**json).operations
 
-    @retry()
     def storages(self):
         url = "/storage"
         resp = self.client.session.get(url)
@@ -141,7 +139,6 @@ class DataTransferApi:
         self.client.session.post(url, json=payload)
         return None
 
-    @retry()
     def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
         start = time.time()
         while True:

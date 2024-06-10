@@ -27,8 +27,8 @@ log.addHandler(stream_handler)
 log.setLevel(logging.DEBUG)
 
 
-# hps_url = "https://localhost:8443/hps"
-hps_url = "https://10.231.106.149:3000/hps"
+hps_url = "https://localhost:8443/hps"
+# hps_url = "https://10.231.106.149:3000/hps"
 keycloak_url = f"{hps_url}/auth"
 auth_url = f"{keycloak_url}/realms/rep"
 dt_url = f"{hps_url}/dt/api/v1"
@@ -53,6 +53,7 @@ if __name__ == "__main__":
     log.info("Logging in as repuser ...")
     user_token = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)
+    assert user_token is not None
 
     log.info("Preparing data transfer client for 'repuser' ...")
     user = DataTransferApi(

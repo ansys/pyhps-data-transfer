@@ -39,7 +39,6 @@ class AsyncDataTransferApi:
         json = resp.json()
         return Status(**json)
 
-    @retry()
     async def download_file(self, remote: str, path: str, dest: str = None):
         url = f"/data/{remote}/{path}"
         if not dest:
@@ -50,7 +49,6 @@ class AsyncDataTransferApi:
                     file.write(chunk)
         return dest
 
-    @retry()
     async def upload_file(self, remote: str, path: str, file_path: str):
         url = f"/data/{remote}/{path}"
         filename = os.path.basename(file_path)
@@ -66,7 +64,6 @@ class AsyncDataTransferApi:
         json = resp.json()
         return OpsResponse(**json).operations
 
-    @retry()
     async def storages(self):
         url = "/storage"
         resp = await self.client.session.get(url)
@@ -94,7 +91,6 @@ class AsyncDataTransferApi:
     async def rmdir(self, operations: List[StoragePath]):
         return await self._exec_async_operation_req("rmdir", operations)
 
-    @retry()
     async def _exec_async_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
@@ -132,7 +128,6 @@ class AsyncDataTransferApi:
         await self.client.session.post(url, json=payload)
         return None
 
-    @retry()
     async def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
         start = time.time()
         while True:
