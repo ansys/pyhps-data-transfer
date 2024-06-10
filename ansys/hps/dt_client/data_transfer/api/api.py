@@ -50,24 +50,26 @@ class DataTransferApi:
     def stop(self):
         self.client.stop()
 
+    @backoff.on_exception(
+        backoff.expo,
+        Exception,
+        max_tries=30,
+        max_time=60,
+        jitter=backoff.full_jitter,
+        raise_on_giveup=True,
+        on_backoff=_on_backoff,
+        logger=None,
+    )
     def status(self, wait=False, timeout=None):
         url = "/"
-        resp = self.client.session.get(url)
-        json = resp.json()
-        s = Status(**json)
-
-        if not wait:
-            return s
-
-        start = time.time()
-        while s.ready is False:
-            if timeout is not None and (time.time() - start) > timeout:
-                raise TimeoutError("Timeout waiting for status to be ready")
-            time.sleep(1)
+        while True:
             resp = self.client.session.get(url)
             json = resp.json()
             s = Status(**json)
-        return s
+            if wait and not s.ready:
+                time.sleep(1)
+                continue
+            return s
 
     def download_file(self, remote: str, path: str, dest: str = None):
         url = f"/data/{remote}/{path}"
