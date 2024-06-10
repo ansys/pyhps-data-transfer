@@ -32,6 +32,8 @@ class Binary:
             "-d",
             "--port",
             str(port),
+            "--log-types",
+            "console",
         ]
 
         # TODO: use shell=True on subprocess calls
