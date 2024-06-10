@@ -55,12 +55,13 @@ if __name__ == "__main__":
 
     log.info("Preparing data transfer client for 'repuser' ...")
     user = DataTransferApi(
-        Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=user_token, port=1091, verify=False)
+        Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=user_token, port=4444, verify=False)
     )
     user.start()
 
     log.info("Checking binary's status ...")
     status = user.status(wait=True)
+
     log.info(f"User status: {status}")
 
     source_dir = pathlib.Path(__file__).parent / "files"
@@ -91,7 +92,7 @@ if __name__ == "__main__":
 
     log.info("Preparing data transfer client for 'repadmin' ...")
     admin = DataTransferApi(
-        Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=admin_token, port=1091, verify=False)
+        Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=admin_token, port=5555, verify=False)
     )
     admin.start()
 

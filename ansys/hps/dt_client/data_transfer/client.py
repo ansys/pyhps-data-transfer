@@ -29,7 +29,7 @@ class ClientBase:
         else:
             self.binary = None
             # self.base_api_url = data_transfer_url
-            self.base_api_url = f"http://localhost:1091/api/v1"
+            self.base_api_url = external_url or f"http://localhost:1091/api/v1"
 
     def start(self):
         if not self.binary:
