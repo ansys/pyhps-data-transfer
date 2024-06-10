@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
         log.info("Listing files in the target directory as 'repadmin' ...")
         resp = admin.list([StoragePath(path=target_dir, remote="any")])
-        op = user.wait_for([resp.id], timeout=10)[0]
+        op = admin.wait_for([resp.id], timeout=10)[0]
         log.info(f"Result: {op.result}")
     except Exception as ex:
         log.debug(traceback.format_exc())
