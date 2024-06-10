@@ -101,6 +101,7 @@ class DataTransferApi:
     def rmdir(self, operations: List[StoragePath]):
         return self._exec_operation_req("rmdir", operations)
 
+    @retry()
     def _exec_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
