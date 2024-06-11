@@ -2,9 +2,12 @@ import os
 import sys
 
 import httpx
+import urllib3
 
 from .binary import Binary
 from .exceptions import async_raise_for_status, raise_for_status
+
+urllib3.disable_warnings()
 
 
 class ClientBase:
