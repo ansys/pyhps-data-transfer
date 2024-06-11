@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 import pathlib
@@ -69,20 +70,29 @@ if __name__ == "__main__":
     source_dir = pathlib.Path(__file__).parent / "files"
     source_dir = os.path.relpath(source_dir, os.getcwd())
     log.info(f"Searching for files to copy in {source_dir} ...")
-    files = [os.path.join(source_dir, f) for f in os.listdir(f"{source_dir}")]
+    files = glob.glob(os.path.join(source_dir, "**", "*.*"), recursive=True)
     log.info("Found files:")
     for file in files:
         log.info(f"- {file}")
 
     log.info("Trying to copy files as 'repuser'...")
-    target_dir = "my_permissions_demo_dir"
+    target_dir = "permissions_demo"
     src_dst = [
         SrcDst(
             src=StoragePath(path=f, remote="local"),
-            dst=StoragePath(path=os.path.join(target_dir, os.path.basename(f)), remote="any"),
+            dst=StoragePath(
+                path=os.path.normpath(
+                    os.path.join(target_dir, os.path.relpath(os.path.dirname(f), source_dir), os.path.basename(f))
+                ),
+                remote="any",
+            ),
         )
         for f in files
     ]
+    log.info("Operations to be executed: ")
+    for sd in src_dst:
+        log.info(f"- {sd.src.remote}:{sd.src.path} -> {sd.dst.remote}:{sd.dst.path}")
+
     try:
         # The operation will fail because 'repuser' does not have the necessary permissions
         resp = user.copy(src_dst)
@@ -137,6 +147,19 @@ if __name__ == "__main__":
         resp = admin.list([StoragePath(path=target_dir, remote="any")])
         op = admin.wait_for([resp.id], timeout=10)[0]
         log.info(f"Result: {op.result}")
+
+        target_dir = os.path.join(os.path.dirname(__file__), "downloaded")
+        log.info(f"Downloading files to {target_dir}...")
+        src_dst = [
+            SrcDst(
+                src=sd.dst,
+                dst=StoragePath(remote="local", path=os.path.join(target_dir, os.path.basename(sd.dst.path))),
+            )
+            for sd in src_dst
+        ]
+        resp = admin.copy(src_dst)
+        op = admin.wait_for([resp.id], timeout=10)[0]
+        log.info(f"Copy operation state: {op.state}")
     except Exception as ex:
         log.debug(traceback.format_exc())
         log.error(f"Error: {ex}")
