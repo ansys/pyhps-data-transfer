@@ -96,3 +96,4 @@ test_results-*.xml
 .coverage.*
 .DS_Store
 .DS_Store
+examples/permissions/downloaded
