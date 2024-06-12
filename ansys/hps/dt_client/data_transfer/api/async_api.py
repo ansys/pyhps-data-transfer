@@ -146,6 +146,7 @@ class AsyncDataTransferApi:
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for operations to complete")
 
+            # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=10)
             log.debug(f"Waiting for {hf.format_timespan(duration)} ...")
             asyncio.sleep(duration)
