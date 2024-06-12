@@ -3,13 +3,20 @@ import logging
 import os
 import stat
 import subprocess
+import threading
 
 log = logging.getLogger(__name__)
 
 
 class Binary:
     def __init__(
-        self, binary_path: str, data_transfer_url: str, external_url: str = None, token: str = None, port: int = 1091
+        self,
+        binary_path: str,
+        data_transfer_url: str,
+        external_url: str = None,
+        token: str = None,
+        port: int = 1091,
+        log: bool = True,
     ):
         if not binary_path or not os.path.exists(binary_path):
             # TODO - retrieve the binary?
@@ -28,8 +35,8 @@ class Binary:
             "--docs",
             "--insecure",
             "-v",
-            "3",
-            "-d",
+            "2",
+            # "-d",
             "--port",
             str(port),
             "--log-types",
@@ -64,12 +71,24 @@ class Binary:
 
     def start(self):
         args = " ".join(self.args)
-        self.process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        # import sys
-        # self.process = subprocess.Popen(args, shell=True, stdout=sys.stderr, stderr=sys.stderr)
+        # if False:
+        proc = self.process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+        if log:
+            t = threading.Thread(target=self._log_output, args=(proc,))
+            t.daemon = True
+            t.start()
 
     def stop(self):
         self.process.kill()
 
     def args_str(self):
         return " ".join(self.args)
+
+    def _log_output(self, proc):
+        while proc.poll() is None:
+            line = proc.stdout.readline()
+            if not line:
+                break
+            line = line.decode().strip()
+            log.info("Binary: %s" % line)
