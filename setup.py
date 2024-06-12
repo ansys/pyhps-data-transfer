@@ -12,6 +12,7 @@ install_requires = [
     "pydantic==2.7.1",
     "httpx==0.27.0",
     "backoff==2.2.1",
+    "humanfriendly==10.0",
 ]
 
 priv_modules = {

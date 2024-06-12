@@ -7,6 +7,8 @@ from typing import List
 
 log = logging.getLogger(__name__)
 
+import humanfriendly as hf
+
 from ..client import Client
 from ..models.msg import (
     CheckPermissionsResponse,
@@ -20,6 +22,7 @@ from ..models.msg import (
 )
 from ..models.ops import OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
+from ..utils.jitter import get_expo_backoff
 from .retry import retry
 
 
@@ -141,12 +144,17 @@ class DataTransferApi:
 
     def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
         start = time.time()
+        attempt = 0
         while True:
+            attempt += 1
             ops = self.operations(operation_ids)
             if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                 break
 
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for operations to complete")
-            time.sleep(interval)
+
+            duration = get_expo_backoff(interval, attempts=attempt, cap=10)
+            log.debug(f"Waiting for {hf.format_timespan(duration)} ...")
+            time.sleep(duration)
         return ops

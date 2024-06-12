@@ -28,8 +28,8 @@ log.addHandler(stream_handler)
 log.setLevel(logging.DEBUG)
 
 
-hps_url = "https://localhost:8443/hps"
-# hps_url = "https://10.231.106.149:3000/hps"
+# hps_url = "https://localhost:8443/hps"
+hps_url = "https://10.231.106.149:3000/hps"
 keycloak_url = f"{hps_url}/auth"
 auth_url = f"{keycloak_url}/realms/rep"
 dt_url = f"{hps_url}/dt/api/v1"
@@ -51,31 +51,30 @@ def get_user_id_from_keycloak():
 if __name__ == "__main__":
     run_bin = True
 
-    log.info("Logging in as repuser ...")
+    log.info("### Logging in as repuser ...")
     user_token = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)
     assert user_token is not None
 
-    log.info("Preparing data transfer client for 'repuser' ...")
+    log.info("### Preparing data transfer client for 'repuser' ...")
     user = DataTransferApi(
         Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=user_token, port=4444, verify=False)
     )
     user.start()
 
-    log.info("Checking binary's status ...")
+    log.info("### Checking binary's status ...")
     status = user.status(wait=True)
-
-    log.info(f"User status: {status}")
+    log.info(f"### Client binary status: {status}")
 
     source_dir = pathlib.Path(__file__).parent / "files"
     source_dir = os.path.relpath(source_dir, os.getcwd())
-    log.info(f"Searching for files to copy in {source_dir} ...")
+    log.info(f"### Searching for files to copy in {source_dir} ...")
     files = glob.glob(os.path.join(source_dir, "**", "*.*"), recursive=True)
     log.info("Found files:")
     for file in files:
         log.info(f"- {file}")
 
-    log.info("Trying to copy files as 'repuser'...")
+    log.info("### Trying to copy files as 'repuser'...")
     target_dir = "permissions_demo"
     src_dst = [
         SrcDst(
@@ -89,7 +88,7 @@ if __name__ == "__main__":
         )
         for f in files
     ]
-    log.info("Operations to be executed: ")
+    log.info("### Operations to be executed: ")
     for sd in src_dst:
         log.info(f"- {sd.src.remote}:{sd.src.path} -> {sd.dst.remote}:{sd.dst.path}")
 
@@ -102,13 +101,13 @@ if __name__ == "__main__":
     admin_token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     admin_token = admin_token.get("access_token", None)
 
-    log.info("Preparing data transfer client for 'repadmin' ...")
+    log.info("### Preparing data transfer client for 'repadmin' ...")
     admin = DataTransferApi(
         Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=admin_token, port=5555, verify=False)
     )
     admin.start()
 
-    log.info("Granting 'repuser' the necessary permissions ...")
+    log.info("### Granting 'repuser' the necessary permissions ...")
     user_id = get_user_id_from_keycloak()
 
     try:
@@ -125,7 +124,7 @@ if __name__ == "__main__":
         log.info(ex)
 
     try:
-        log.info("Verifying permissions for 'repuser' ...")
+        log.info("### Verifying permissions for 'repuser' ...")
         resp = admin.check_permissions(
             [
                 RoleQuery(
@@ -136,20 +135,20 @@ if __name__ == "__main__":
             ]
         )
 
-        log.info(f"Is 'repuser'({user_id}) allowed to read from {target_dir}? -> {resp.allowed}")
+        log.info(f"### Is 'repuser'({user_id}) allowed to read from {target_dir}? -> {resp.allowed}")
 
-        log.info("Trying to copy files as 'repuser' one more time...")
+        log.info("### Trying to copy files as 'repuser' one more time...")
         resp = user.copy(src_dst)
-        op = user.wait_for([resp.id], timeout=10)[0]
-        log.info(f"Copy operation state: {op.state}")
+        op = user.wait_for([resp.id], timeout=None)[0]
+        log.info(f"### Copy operation state: {op.state}")
 
-        log.info("Listing files in the target directory as 'repadmin' ...")
+        log.info("### Listing files in the target directory as 'repadmin' ...")
         resp = admin.list([StoragePath(path=target_dir, remote="any")])
         op = admin.wait_for([resp.id], timeout=10)[0]
-        log.info(f"Result: {op.result}")
+        log.info(f"### Result: {op.result}")
 
         target_dir = os.path.join(os.path.dirname(__file__), "downloaded")
-        log.info(f"Downloading files to {target_dir}...")
+        log.info(f"### Downloading files to {target_dir}...")
         src_dst = [
             SrcDst(
                 src=sd.dst,
@@ -158,8 +157,8 @@ if __name__ == "__main__":
             for sd in src_dst
         ]
         resp = admin.copy(src_dst)
-        op = admin.wait_for([resp.id], timeout=10)[0]
-        log.info(f"Copy operation state: {op.state}")
+        op = admin.wait_for([resp.id], timeout=300)[0]
+        log.info(f"### Copy operation state: {op.state}")
     except Exception as ex:
         log.debug(traceback.format_exc())
         log.error(f"Error: {ex}")
