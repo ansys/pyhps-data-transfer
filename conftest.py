@@ -78,13 +78,7 @@ def event_loop():
 def client(binary_path, admin_access_token, dt_url):
     from ansys.hps.dt_client.data_transfer import Client
 
-    c = Client(
-        data_transfer_url=dt_url,
-        run_client_binary=True,
-        binary_path=binary_path,
-        token=admin_access_token,
-        port=2000,
-    )
+    c = Client(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=admin_access_token)
     c.start()
     yield c
     c.stop()
@@ -94,13 +88,7 @@ def client(binary_path, admin_access_token, dt_url):
 def user_client(binary_path, user_access_token, dt_url):
     from ansys.hps.dt_client.data_transfer import Client
 
-    c = Client(
-        data_transfer_url=dt_url,
-        run_client_binary=True,
-        binary_path=binary_path,
-        token=user_access_token,
-        port=2001,
-    )
+    c = Client(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=user_access_token)
     c.start()
     yield c
     c.stop()
@@ -110,13 +98,7 @@ def user_client(binary_path, user_access_token, dt_url):
 def async_client(binary_path, admin_access_token, dt_url, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(
-        data_transfer_url=dt_url,
-        run_client_binary=True,
-        binary_path=binary_path,
-        token=admin_access_token,
-        port=2002,
-    )
+    c = AsyncClient(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=admin_access_token)
     c.start()
     yield c
     c.stop()
@@ -126,13 +108,7 @@ def async_client(binary_path, admin_access_token, dt_url, event_loop):
 def async_user_client(binary_path, user_access_token, dt_url, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(
-        data_transfer_url=dt_url,
-        run_client_binary=True,
-        binary_path=binary_path,
-        token=user_access_token,
-        port=2003,
-    )
+    c = AsyncClient(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=user_access_token)
     c.start()
     yield c
     c.stop()
