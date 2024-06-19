@@ -131,7 +131,7 @@ jobs:
         username: pyansys-ci-bot
         password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-    - name: Fetch data transfer client windows binary
+    - name: Fetch windows data transfer client binary
       uses: robinraju/release-downloader@v1.8
       with:
           repository: "ansys-internal/rep-data-transfer"
@@ -140,7 +140,7 @@ jobs:
           token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
           out-file-path: "data-transfer-client-binary"
 
-    - name: Fetch data transfer client linux binary
+    - name: Fetch linux data transfer client binary
       uses: robinraju/release-downloader@v1.8
       with:
           repository: "ansys-internal/rep-data-transfer"
@@ -151,8 +151,8 @@ jobs:
 
     - name: Move data transfer client binaries
       run: |
-        mkdir ansys/hps/dt_client/data_transfer/bin
-        mv data-transfer-client-binary/* ansys/hps/dt_client/data_transfer/bin/
+        mkdir ./ansys/hps/dt_client/data_transfer/bin
+        mv ./data-transfer-client-binary/* ./ansys/hps/dt_client/data_transfer/bin/
 
     - name: Install dependencies and build the library
       id: wheels      
