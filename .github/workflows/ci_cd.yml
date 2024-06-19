@@ -151,8 +151,10 @@ jobs:
 
     - name: Move data transfer client binaries
       run: |
+        ls -lrt
         mkdir ./ansys/hps/dt_client/data_transfer/bin
         mv ./data-transfer-client-binary/* ./ansys/hps/dt_client/data_transfer/bin/
+        ls -lrt ./ansys/hps/dt_client/data_transfer/bin
 
     - name: Install dependencies and build the library
       id: wheels      
