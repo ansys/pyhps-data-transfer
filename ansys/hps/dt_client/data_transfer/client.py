@@ -19,7 +19,7 @@ class ClientBase:
         binary_path: str = None,
         verify: bool = True,
         token: str = None,
-        port: int = 1091,
+        port: int = None,
     ):
         if binary_path is None:
             bin_ext = ".exe" if sys.platform == "win32" else ""
@@ -63,7 +63,7 @@ class AsyncClient(ClientBase):
         binary_path: str = None,
         verify: bool = True,
         token: str = None,
-        port: int = 1091,
+        port: int = None,
     ):
         super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify, token, port)
         self.session = httpx.AsyncClient(
@@ -86,7 +86,7 @@ class Client(ClientBase):
         binary_path: str = None,
         verify: bool = True,
         token: str = None,
-        port: int = 1091,
+        port: int = None,
     ):
         super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify, token, port)
         self.session = httpx.Client(

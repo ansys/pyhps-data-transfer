@@ -203,3 +203,7 @@ services:
       traefik.http.services.dts.loadbalancer.healthcheck.path: /api/v1
       traefik.http.services.dts.loadbalancer.healthcheck.interval: 5s
       traefik.http.services.dts.loadbalancer.healthcheck.timeout: 20s
+    depends_on:
+      - minio
+      - openfga
+      - keycloak

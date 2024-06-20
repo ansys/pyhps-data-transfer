@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import socket
 import stat
 import subprocess
 import threading
@@ -15,9 +16,13 @@ class Binary:
         data_transfer_url: str,
         external_url: str = None,
         token: str = None,
-        port: int = 1091,
+        port: int = None,
         log: bool = True,
     ):
+        # Retrieve an open port
+        if port is None:
+            port = self._get_open_port()
+
         if not binary_path or not os.path.exists(binary_path):
             # TODO - retrieve the binary?
             raise os.error("Binary not found.")
@@ -92,3 +97,11 @@ class Binary:
                 break
             line = line.decode().strip()
             log.info("Binary: %s" % line)
+
+    def _get_open_port(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(("", 0))
+        s.listen(1)
+        port = s.getsockname()[1]
+        s.close()
+        return port

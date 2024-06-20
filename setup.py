@@ -39,7 +39,7 @@ def setup_package():
         project_urls={},
         python_requires=">=3.10",
         install_requires=install_requires,
-        package_data={},
+        package_data={"": ["bin/*"]},
         include_package_data=True,
         extras_require={},
     )
