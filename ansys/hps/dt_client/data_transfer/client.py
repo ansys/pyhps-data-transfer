@@ -23,7 +23,7 @@ class ClientBase:
     ):
         if binary_path is None:
             bin_ext = ".exe" if sys.platform == "win32" else ""
-            binary_path = os.path.join("bin", f"hpsdata{bin_ext}")
+            binary_path = os.path.join(os.path.dirname(__file__), "bin", f"hpsdata{bin_ext}")
 
         if run_client_binary:
             self.binary = Binary(binary_path, data_transfer_url, external_url, token, port=port)
