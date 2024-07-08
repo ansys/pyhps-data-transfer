@@ -17,7 +17,7 @@ skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2
 quiet-level = 3
 
 [tool.coverage.run]
-source = ["ansys.rep.common"]
+source = ["ansys.hps.dt_client"]
 
 [tool.coverage.report]
 show_missing = true

@@ -13,18 +13,9 @@ install_requires = [
     "httpx==0.27.0",
     "backoff==2.2.1",
     "humanfriendly==10.0",
+    "requests==2.32.3",
 ]
 
-priv_modules = {
-    "ansys-rep-common[sql,falcon,crypto,redis,otel]": (
-        " git+https://github.com/ansys-internal/rep-common-py.git@main#egg=ansys-rep-common"
-    )
-}
-
-if "--no-priv" in sys.argv:
-    sys.argv.remove("--no-priv")
-else:
-    install_requires.extend([f"{k} @ {v}" for k, v in priv_modules.items()])
 
 
 def setup_package():
