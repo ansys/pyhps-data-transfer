@@ -44,13 +44,14 @@ class ClientBase:
             self.binary.stop()
 
     def __enter__(self):
-        if self.binary:
-            self.binary.start()
+        # if self.binary:
+        #    self.binary.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.binary:
-            self.binary.stop()
+        pass
+        # if self.binary:
+        #     self.binary.stop()
 
 
 class AsyncClient(ClientBase):
