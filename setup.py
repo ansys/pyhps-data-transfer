@@ -1,5 +1,4 @@
 import os
-import sys
 
 from setuptools import find_namespace_packages, setup
 
@@ -15,7 +14,6 @@ install_requires = [
     "humanfriendly==10.0",
     "requests==2.32.3",
 ]
-
 
 
 def setup_package():

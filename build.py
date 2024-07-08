@@ -1,11 +1,9 @@
 import argparse
 import glob
-import json
 import logging
 import os
 import subprocess
 import sys
-import time
 
 file_formatter = logging.Formatter("[%(asctime)s/%(levelname)5.5s]  %(message)s")
 stream_formatter = logging.Formatter("[%(asctime)s/%(levelname)5.5s]  %(message)s", datefmt="%H:%M:%S")
