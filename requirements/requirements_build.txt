@@ -4,4 +4,5 @@ requests==2.32.2
 twine==5.1.0
 wheel==0.43.0
 black==24.4.2
+importlib_metadata==7.2.1
 datamodel-code-generator==0.25.6
