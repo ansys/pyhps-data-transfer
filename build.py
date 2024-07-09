@@ -1,11 +1,9 @@
 import argparse
 import glob
-import json
 import logging
 import os
 import subprocess
 import sys
-import time
 
 file_formatter = logging.Formatter("[%(asctime)s/%(levelname)5.5s]  %(message)s")
 stream_formatter = logging.Formatter("[%(asctime)s/%(levelname)5.5s]  %(message)s", datefmt="%H:%M:%S")
@@ -45,8 +43,6 @@ def build_wheels(args):
 
     subprocess.run(f"{sys.executable} setup.py build", shell=True, check=True)
     wheel_cmd = f"{sys.executable} setup.py bdist_wheel"
-    if args.no_priv:
-        wheel_cmd = f"{wheel_cmd} --no-priv"
     subprocess.run(wheel_cmd, shell=True, check=True)
     wheels = glob.glob(os.path.join("dist", "*.whl"))
     log.info(f"Found {len(wheels)} wheels")
@@ -107,40 +103,6 @@ def run_tests(args):
         return return_code
 
 
-def write_build_info(args):
-    root_dir = os.path.dirname(__file__)
-    tgt_dir = os.path.join(root_dir, "ansys", "rep", "template")
-    tgt = os.path.join(tgt_dir, "build_info.py")
-
-    about = {}
-    with open(
-        os.path.join(root_dir, "ansys", "rep", "template", "__version__.py"),
-        "r",
-    ) as f:
-        exec(f.read(), about)
-
-    info = {
-        "version": about["__version__"],
-        "external_version": about["__internal_version__"],
-        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "branch": args.branch,
-        "short_revision": args.short_revision,
-        "revision": args.revision,
-    }
-    try:
-        from ansys.rep.common.build_info import extract_build_info
-
-        detected = extract_build_info(tgt_dir, no_defaults=True)
-        log.debug(f"Detected build info: {', '.join([f'{k}={v}' for k,v in detected.items()])}")
-        info.update(detected)
-    except Exception as ex:
-        log.debug(f"Detecting build info not possible: {ex}")
-
-    with open(tgt, "w") as f:
-        f.write(f"build_info = {json.dumps(info, indent=4)}")
-    log.debug(f"Build info: {', '.join([f'{k}={v}' for k,v in info.items()])}")
-
-
 if __name__ == "__main__":
     log.debug(f"Using python at: {sys.executable}")
     # if not hasattr(sys, "base_prefix") or sys.base_prefix == sys.prefix:
@@ -159,9 +121,6 @@ if __name__ == "__main__":
 
     dev = commands.add_parser("dev")
     dev.set_defaults(func=build_dev)
-
-    build_info = commands.add_parser("build-info")
-    build_info.set_defaults(func=write_build_info)
 
     licenses = commands.add_parser("licenses")
     licenses.set_defaults(func=gather_licenses)
@@ -205,7 +164,6 @@ if __name__ == "__main__":
 
     wheels = commands.add_parser("wheels")
     wheels.set_defaults(func=build_wheels)
-    wheels.add_argument("--no-priv", action="store_true", help="Strip private repo URLs from requirements")
 
     args = parser.parse_args()
     result = args.func(args)

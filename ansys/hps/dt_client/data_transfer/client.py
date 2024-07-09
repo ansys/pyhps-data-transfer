@@ -45,7 +45,7 @@ class ClientBase:
 
     def __enter__(self):
         # if self.binary:
-        #     self.binary.start()
+        #    self.binary.start()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
