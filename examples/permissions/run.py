@@ -28,8 +28,7 @@ log.addHandler(stream_handler)
 log.setLevel(logging.DEBUG)
 
 
-# hps_url = "https://localhost:8443/hps"
-hps_url = "https://10.231.106.149:3000/hps"
+hps_url = "https://localhost:8443/hps"
 keycloak_url = f"{hps_url}/auth"
 auth_url = f"{keycloak_url}/realms/rep"
 dt_url = f"{hps_url}/dt/api/v1"
