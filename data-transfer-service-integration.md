@@ -3,7 +3,7 @@
 # Description
 The data transfer service is a replacement to the existing REP/HPS file transfer tool. This tool is utilized in the following technology components: PyHPS, Housekeeper, Evaluator, JMS, and JMS Web to handle storage and file operations. The data transfer service is comprised of two parts: a client and server. The server implementation is wrapped by a docker image and in the current internal release is exposed via the data-transfer profile. The client is available as a binary, docker image, and in a python wheel. Direct communication with the server implementation is typically conducted via the client. Integration of the new data transfer service into the existing stack should be done via the python data transfer client (https://github.com/ansys-internal/hps-data-transfer-client). This python client wraps the data transfer service client binary. In it's current iteration, the data transfer client binaries are included in the python data transfer service client wheel (https://github.com/ansys-internal/hps-data-transfer-client/releases). 
 
-Note - there is one blocking item for each technology component integrating with the python data transfer service client. There does not appear to be an existing mechanism to install a python wheel via GitHub release. I've experimented with adding custom install steps, but I have not had success with these steps properly functioning. During development, I've manually downloaded and installed the wheel locally in each virtual environment This issue needs resolve to fully build related docker technology components.
+Note - there is one blocking item for each technology component integrating with the python data transfer service client. There does not appear to be an existing mechanism to install a python wheel via GitHub release. I've experimented with adding custom install steps (e.g. during build.py dev), but I have not had success with these steps properly functioning. During development, I've manually downloaded and installed the wheel locally in each virtual environment This issue needs resolve to fully build related docker technology components.
 
 Alternative solutions:
 1. Include client binaries inside the python data transfer service client repository :(
@@ -44,4 +44,7 @@ I've conducted some preliminary testing like the housekeeper, but evaluator need
 There is an open PR to replace the old file transfer calls in JMS: https://github.com/ansys-internal/rep-job-management/pull/628. This item is on-going. I have replaced old file transfer calls in JMS outside tests. The tests need refactored and preliminary testing needs conducted. There were more changes here than originally expected.
 
 ## JMS Web
-NOT STARTED
+Created a new angular service DataTransferService that mimics methods defined within FileStorageService.
+The idea is to have a drop-in replacement for the existing file transfer service calls. The development of this service was started, but all file manipulation pathways need examined and fully tested.
+
+Here are the associated PRs for the current changes: https://github.com/ansys-internal/rep-job-management-web/pull/538 and https://github.com/ansys-internal/rep-common-web/pull/32
