@@ -24,7 +24,7 @@ There is an open PR to replace the old file transfer calls: https://github.com/a
 
 I've conducted some preliminary testing by creating a project (and confirming files are created), but the changes need properly tested (including file download functionality).
 
-Note - you will need to submit examples as repadmin due to permission related issues.
+Note - you will need to submit examples as repadmin due to permission related issues. (e.g. when creating a project default dt permissions are not setup)
 
 ```
 python project_setup.py -u repadmin -p repadmin
@@ -43,8 +43,35 @@ I've conducted some preliminary testing like the housekeeper, but evaluator need
 ## JMS
 There is an open PR to replace the old file transfer calls in JMS: https://github.com/ansys-internal/rep-job-management/pull/628. This item is on-going. I have replaced old file transfer calls in JMS outside tests. The tests need refactored and preliminary testing needs conducted. There were more changes here than originally expected.
 
+Note - I refactored the docker compose in the JMS repo to contain related services for data transfer. However, this compose is also lacking housekeeper (e.g. a service required for statistics to update and for an evaluator to effectively find a project with pending tasks). There is an issue with the docker compose housekeeper configuration. I couldn't figure out the exact issue.. and push up my latest changes. 
+
 ## JMS Web
 Created a new angular service DataTransferService that mimics methods defined within FileStorageService.
-The idea is to have a drop-in replacement for the existing file transfer service calls. The development of this service was started, but all file manipulation pathways need examined and fully tested.
+The idea is to have a drop-in replacement for the existing file transfer service calls. The development of this service was started, but all file manipulation pathways need finished and fully tested. (*see list below of all areas that need addressed).
+
+Note - there is another angular service that handles file operations FilesStorageService. This service in its prior iteration used the FileStorageService. Given the DataTransferService is intended to be a drop-in replacement of the FileStorageService, the FilesStorageService was refactored to use the DataTransferService. My presumption is that these two services are the only two that handle file operations from JMS Web. (e.g. FilesStorageService and FileStorageService).
+
+Here are places in the UI that I believe need addressed (e.g. finished to use new dts rest api and tested):
+- Templates Detail
+    - Upload execution script
+    - Edit execution script
+    - Download execution script
+- Task Definition Detail
+    - Upload execution script
+    - Edit execution script
+    - Download execution script
+    - Upload input file
+    - Edit input file
+    - Download input file
+- Create Project Wizard
+    - Upload input file
+- Job Detail Page
+    - Download File
+    - View File
+    - All Files Button
+- About Page
+    - Display of available storages
+
+Note - my refactoring of FilesStorageService may impact some of the calls in the above list.
 
 Here are the associated PRs for the current changes: https://github.com/ansys-internal/rep-job-management-web/pull/538 and https://github.com/ansys-internal/rep-common-web/pull/32
