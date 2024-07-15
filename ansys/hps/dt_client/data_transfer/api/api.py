@@ -5,6 +5,8 @@ import tempfile
 import time
 from typing import List
 
+import backoff
+
 log = logging.getLogger(__name__)
 
 import humanfriendly as hf
@@ -32,7 +34,7 @@ class DataTransferApi:
         self.client = client
 
     @retry()
-    def status(self, wait=False):
+    def status(self, wait=False, sleep=5, jitter=True):
         url = "/"
         while True:
             resp = self.client.session.get(url)
@@ -40,7 +42,8 @@ class DataTransferApi:
             s = Status(**json)
             if wait and not s.ready:
                 log.info("Waiting for the client to be ready...")
-                time.sleep(1)
+                s = backoff.full_jitter(sleep) if jitter else sleep
+                time.sleep(s)
                 continue
             return s
 

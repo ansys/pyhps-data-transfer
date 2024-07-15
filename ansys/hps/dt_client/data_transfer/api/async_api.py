@@ -6,6 +6,7 @@ import tempfile
 import time
 from typing import List
 
+import backoff
 import humanfriendly as hf
 
 from ..client import AsyncClient
@@ -33,11 +34,18 @@ class AsyncDataTransferApi:
         self.client = client
 
     @retry()
-    async def status(self):
+    async def status(self, wait=False, sleep=5, jitter=True):
         url = "/"
-        resp = await self.client.session.get(url)
-        json = resp.json()
-        return Status(**json)
+        while True:
+            resp = await self.client.session.get(url)
+            json = resp.json()
+            s = Status(**json)
+            if wait and not s.ready:
+                log.info("Waiting for the client to be ready...")
+                s = backoff.full_jitter(sleep) if jitter else sleep
+                asyncio.sleep(s)
+                continue
+            return s
 
     async def download_file(self, remote: str, path: str, dest: str = None):
         url = f"/data/{remote}/{path}"

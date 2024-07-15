@@ -80,7 +80,7 @@ class Binary:
     def config(self):
         return self._config
 
-    def start(self, wait: float = None, sleep: float = 0.5):
+    def start(self):
         if self._process is not None and self._process.returncode is None:
             raise BinaryError("Worker already started.")
 
@@ -104,6 +104,8 @@ class Binary:
             bin_path,
             "--log-types",
             "console",
+            "--port",
+            str(self._config.port),
         ]
 
         if self._config.external_url is None:
@@ -114,7 +116,8 @@ class Binary:
         self._process = None
 
         if self._config.debug:
-            log.info(f"Starting worker: {self._args}")
+            s = " ".join(self._args).replace(self._config.token, "***")
+            log.debug(f"Starting worker: {s}")
 
         # if False:
         t = threading.Thread(target=self._monitor, args=())
@@ -125,12 +128,6 @@ class Binary:
             t = threading.Thread(target=self._log_output, args=())
             t.daemon = True
             t.start()
-
-        if wait is not None:
-            start = time.time()
-            while time.time() - start < wait:
-                log.warn("not implemented")
-                time.sleep(sleep)
 
     def stop(self):
         if self._process is None:
@@ -187,8 +184,6 @@ class Binary:
             [
                 "--dt-url",
                 self._config.data_transfer_url,
-                "--port",
-                str(self._config.port),
                 "--log-types",
                 "console",
             ]
@@ -222,7 +217,7 @@ class Binary:
             self._args.extend(
                 [
                     "-t",
-                    f"Bearer {self._config.token}",
+                    f'"Bearer {self._config.token}"',
                 ]
             )
 
@@ -231,3 +226,4 @@ class Binary:
         resp = subprocess.run(f"{args} config show", capture_output=True, text=True, shell=True)
         loaded = json.loads(resp.stdout)
         self._config.external_url = loaded.get("external_url", None)
+        log.debug(f"Detected external URL: {self._config.external_url}")
