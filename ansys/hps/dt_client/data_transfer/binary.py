@@ -70,6 +70,7 @@ class Binary:
         self._base_args = []
         self._args = []
         self._stop = threading.Event()
+        self._prepared = threading.Event()
         self._process = None
 
     @property
@@ -86,10 +87,6 @@ class Binary:
 
         self._stop.clear()
 
-        # Retrieve an open port
-        if self._config.port is None:
-            self._config.port = self._get_open_port()
-
         bin_path = self._config.path
         if not bin_path or not os.path.exists(bin_path):
             # TODO - retrieve the binary?
@@ -100,24 +97,7 @@ class Binary:
             st = os.stat(bin_path)
             os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
 
-        self._base_args = [
-            bin_path,
-            "--log-types",
-            "console",
-            "--port",
-            str(self._config.port),
-        ]
-
-        if self._config.external_url is None:
-            self._fill_external_url()
-
-        self._build_args()
-
         self._process = None
-
-        if self._config.debug:
-            s = " ".join(self._args).replace(self._config.token, "***")
-            log.debug(f"Starting worker: {s}")
 
         # if False:
         t = threading.Thread(target=self._monitor, args=())
@@ -129,10 +109,14 @@ class Binary:
             t.daemon = True
             t.start()
 
+        if not self._prepared.wait(timeout=5.0):
+            log.warning("Worker did not prepare in time.")
+
     def stop(self, wait=5.0):
         if self._process is None:
             return
         self._stop.set()
+        self._prepared.clear()
         # TODO use /shutdown endpoint
 
         start = time.time()
@@ -167,17 +151,33 @@ class Binary:
     def _monitor(self):
         while not self._stop.is_set():
             if self._process is None:
+                self._prepare()
                 args = " ".join(self._args)
+                if self._config.debug:
+                    s = args.replace(self._config.token, "***")
+                    log.debug(f"Starting worker: {s}")
                 self._process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-            ret_code = self._process.poll()
-            if ret_code is not None:
-                log.warn(f"Worker exited with code {ret_code}, restarting ...")
-                self._process = None
-                time.sleep(1.0)
-                continue
+            else:
+                ret_code = self._process.poll()
+                if ret_code is not None:
+                    log.warn(f"Worker exited with code {ret_code}, restarting ...")
+                    self._process = None
+                    time.sleep(1.0)
+                    continue
 
             time.sleep(self._config.monitor_interval)
+
+    def _prepare(self):
+        if self._config.port is None:
+            self._config.port = self._get_open_port()
+
+        self._build_base_args()
+
+        if self._config.external_url is None:
+            self._fill_external_url()
+
+        self._build_args()
+        self._prepared.set()
 
     def _get_open_port(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -186,6 +186,15 @@ class Binary:
         port = s.getsockname()[1]
         s.close()
         return port
+
+    def _build_base_args(self):
+        self._base_args = [
+            self._config.path,
+            "--log-types",
+            "console",
+            "--port",
+            str(self._config.port),
+        ]
 
     def _build_args(self):
         self._args = list(self._base_args)

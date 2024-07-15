@@ -17,6 +17,10 @@ httpx_log.setLevel(logging.CRITICAL)
 httpcore_log = logging.getLogger("httpcore")
 httpcore_log.setLevel(logging.CRITICAL)
 
+for n in ["httpx", "httpcore", "requests", "urllib3"]:
+    log = logging.getLogger(n)
+    log.setLevel(logging.CRITICAL)
+
 log = logging.getLogger(__name__)
 
 
