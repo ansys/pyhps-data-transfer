@@ -1,10 +1,7 @@
-import os
-import sys
-
 import httpx
 import urllib3
 
-from .binary import Binary
+from .binary import Binary, BinaryConfig
 from .exceptions import async_raise_for_status, raise_for_status
 
 urllib3.disable_warnings()
@@ -13,59 +10,36 @@ urllib3.disable_warnings()
 class ClientBase:
     def __init__(
         self,
-        data_transfer_url: str,
-        external_url: str = None,
-        run_client_binary: bool = False,
-        binary_path: str = None,
-        verify: bool = True,
-        token: str = None,
-        port: int = None,
+        bin_config: BinaryConfig = BinaryConfig(),
     ):
-        if binary_path is None:
-            bin_ext = ".exe" if sys.platform == "win32" else ""
-            binary_path = os.path.join(os.path.dirname(__file__), "bin", f"hpsdata{bin_ext}")
+        self._bin_config = bin_config
+        self.binary = None
 
-        if run_client_binary:
-            self.binary = Binary(binary_path, data_transfer_url, external_url, token, port=port)
-            external_url = self.binary.external_url
-            self.base_api_url = external_url + "/api/v1"
-        else:
-            self.binary = None
-            # self.base_api_url = data_transfer_url
-            self.base_api_url = external_url or f"http://localhost:1091/api/v1"
+    @property
+    def binary_config(self):
+        return self._bin_config
 
-    def start(self):
-        if not self.binary:
+    def start(self, wait: float = None, sleep: float = 0.5):
+        if self.binary is not None:
             return
-        self.binary.start()
+
+        self.binary = Binary(config=self._bin_config)
+        self.binary.start(wait=wait, sleep=sleep)
+        self.base_api_url = self.binary.external_url + "/api/v1"
 
     def stop(self):
-        if self.binary:
-            self.binary.stop()
-
-    def __enter__(self):
-        # if self.binary:
-        #    self.binary.start()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-        # if self.binary:
-        #     self.binary.stop()
+        if self.binary is None:
+            return
+        self.binary.stop()
+        self.binary = None
 
 
 class AsyncClient(ClientBase):
-    def __init__(
-        self,
-        data_transfer_url: str,
-        external_url: str = None,
-        run_client_binary: bool = False,
-        binary_path: str = None,
-        verify: bool = True,
-        token: str = None,
-        port: int = None,
-    ):
-        super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify, token, port)
+    def __init__(self):
+        super().__init__()
+
+    def start(self, verify: bool = True, token: str = None, **kwargs):
+        super().start(**kwargs)
         self.session = httpx.AsyncClient(
             transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
             base_url=self.base_api_url,
@@ -78,17 +52,11 @@ class AsyncClient(ClientBase):
 
 
 class Client(ClientBase):
-    def __init__(
-        self,
-        data_transfer_url: str,
-        external_url: str = None,
-        run_client_binary: bool = False,
-        binary_path: str = None,
-        verify: bool = True,
-        token: str = None,
-        port: int = None,
-    ):
-        super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify, token, port)
+    def __init__(self):
+        super().__init__()
+
+    def start(self, verify: bool = True, token: str = None, **kwargs):
+        super().start(**kwargs)
         self.session = httpx.Client(
             transport=httpx.HTTPTransport(retries=5, verify=verify),
             base_url=self.base_api_url,

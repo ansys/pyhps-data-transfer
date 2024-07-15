@@ -64,6 +64,13 @@ class ClientError(HPSError):
         super(ClientError, self).__init__(*args, **kwargs)
 
 
+class BinaryError(HPSError):
+    """Provides client-side related errors."""
+
+    def __init__(self, *args, **kwargs):
+        super(BinaryError, self).__init__(*args, **kwargs)
+
+
 def raise_for_status(response: httpx.Response):
     """Automatically checks HTTP errors.
 

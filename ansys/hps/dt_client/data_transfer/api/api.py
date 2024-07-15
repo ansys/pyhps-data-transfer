@@ -31,12 +31,6 @@ class DataTransferApi:
         self.dump_mode = "json"
         self.client = client
 
-    def start(self):
-        self.client.start()
-
-    def stop(self):
-        self.client.stop()
-
     @retry()
     def status(self, wait=False):
         url = "/"

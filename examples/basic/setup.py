@@ -29,7 +29,7 @@ if __name__ == "__main__":
     try:
         log.info("Connecting to the data transfer service client..")
         with Client(
-            data_transfer_url="https://localhost:8443/hps/dts/api/v1",
+            data_transfer_url="https://localhost:8443/hps/dt/api/v1",
             run_client_binary=True,
         ) as client:
             api = DataTransferApi(client)

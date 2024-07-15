@@ -32,12 +32,6 @@ class AsyncDataTransferApi:
         self.dump_mode = "json"
         self.client = client
 
-    def start(self):
-        self.client.start()
-
-    def stop(self):
-        self.client.stop()
-
     @retry()
     async def status(self):
         url = "/"
