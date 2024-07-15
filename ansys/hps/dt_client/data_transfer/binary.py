@@ -129,12 +129,21 @@ class Binary:
             t.daemon = True
             t.start()
 
-    def stop(self):
+    def stop(self, wait=5.0):
         if self._process is None:
             return
         self._stop.set()
         # TODO use /shutdown endpoint
-        self.process.kill()
+
+        start = time.time()
+        while True:
+            if self._process.poll() is not None:
+                break
+            if time.time() - start > wait:
+                log.warn("Worker did not stop in time, killing ...")
+                self.kill()
+                break
+            time.sleep(wait * 0.1)
 
     def args_str(self):
         return " ".join(self._args)

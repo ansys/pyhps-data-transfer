@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import time
 
@@ -43,10 +44,10 @@ class ClientBase:
         self.binary.start()
         self.base_api_url = self.binary.external_url + "/api/v1"
 
-    def stop(self):
+    def stop(self, wait=5.0):
         if self.binary is None:
             return
-        self.binary.stop()
+        self.binary.stop(wait=wait)
         self.binary = None
 
 
@@ -66,6 +67,30 @@ class AsyncClient(ClientBase):
         if token is not None:
             self.session.headers.setdefault("Authorization", f"Bearer {token}")
 
+    async def stop(self, wait=5.0):
+        if self.session is not None:
+            try:
+                await self.session.post(self.base_api_url + "/shutdown")
+                asyncio.sleep(0.1)
+            except:
+                pass
+        super().stop(wait=wait)
+
+    async def wait(self, timeout: float = 60.0, sleep=0.5):
+        start = time.time()
+        while time.time() - start < timeout:
+            try:
+                resp = await self.session.get(self.base_api_url)
+                if resp.status_code != 200:
+                    log.debug("Waiting for worker to start")
+                else:
+                    return
+            except Exception as ex:
+                if self._bin_config.debug:
+                    log.debug(f"Error waiting for worker to start: {ex}")
+            finally:
+                asyncio.sleep(backoff.full_jitter(sleep))
+
 
 class Client(ClientBase):
     def __init__(self):
@@ -83,11 +108,19 @@ class Client(ClientBase):
         if token is not None:
             self.session.headers.setdefault("Authorization", f"Bearer {token}")
 
+    def stop(self, wait=5.0):
+        if self.session is not None:
+            try:
+                self.session.post(self.base_api_url + "/shutdown")
+            except:
+                pass
+        super().stop(wait=wait)
+
     def wait(self, timeout: float = 60.0, sleep=0.5):
         start = time.time()
         while time.time() - start < timeout:
             try:
-                resp = httpx.get(self.base_api_url)
+                resp = self.session.get(self.base_api_url)
                 if resp.status_code != 200:
                     log.debug("Waiting for worker to start")
                 else:
