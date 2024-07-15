@@ -8,7 +8,7 @@ with open(os.path.join(root, "ansys", "hps", "dt_client", "data_transfer", "__ve
     exec(f.read(), about)
 
 install_requires = [
-    "pydantic==2.7.1",
+    "pydantic==2.8.2",
     "httpx==0.27.0",
     "backoff==2.2.1",
     "humanfriendly==10.0",
