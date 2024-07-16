@@ -89,7 +89,6 @@ class Binary:
 
         bin_path = self._config.path
         if not bin_path or not os.path.exists(bin_path):
-            # TODO - retrieve the binary?
             raise BinaryError(f"Binary not found: {bin_path}")
 
         # Mark binary as executable
@@ -117,7 +116,6 @@ class Binary:
             return
         self._stop.set()
         self._prepared.clear()
-        # TODO use /shutdown endpoint
 
         start = time.time()
         while True:

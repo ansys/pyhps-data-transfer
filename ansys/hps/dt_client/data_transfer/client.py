@@ -7,7 +7,6 @@ import httpx
 import urllib3
 
 from .binary import Binary, BinaryConfig
-from .exceptions import async_raise_for_status, raise_for_status
 
 urllib3.disable_warnings()
 
@@ -54,6 +53,65 @@ class ClientBase:
         self.binary.stop(wait=wait)
         self.binary = None
 
+    def _platform(self):
+        platform = ""
+        match platform.system():
+            case "Windows":
+                platform = "win"
+            case "Linux":
+                platform = "lin"
+            case "Darwin":
+                platform = "darwin"
+
+        if not platform:
+            raise BinaryError(f"Unsupported platform: {platform.system()}")
+
+        arch = ""
+        match os.uname().machine:
+            case "x86_64":
+                arch = "x64"
+            case "aarch64":
+                arch = "arm64"
+            case "arm64":
+                arch = "arm64"
+
+        if not arch:
+            raise BinaryError(f"Unsupported architecture: {os.uname().machine}")
+
+        return platform + arch
+
+    def _prepare_platform_binary(self):
+        dt_url = self._bin_config.data_transfer_url
+        session = self._create_session(dt_url)
+        resp = session.get("/")
+        if resp.status_code != 200:
+            raise BinaryError(f"Failed to download binary: {resp.text}")
+        d = resp.json()
+        log.debug(f"Server version: {d['build_info']}")
+        version_hash = d["build_info"]["version_hash"]
+
+        bin_ext = ".exe" if platform.system() == "Windows" else ""
+        bin_dir = "test_bin"
+        if not os.path.exists(bin_dir):
+            try:
+                os.makedirs(bin_dir)
+            except:
+                pass
+
+        bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
+        if os.path.exists(bin_path):
+            log.debug(f"Using existing binary: {bin_path}")
+            return bin_path
+
+        platform = self._platform()
+        log.debug(f"Downloading binary for platform: {platform}")
+        url = f"/binaries/client/{platform}/hpsdata"
+        resp = resp.session.stream("GET", url)
+        if resp.status_code != 200:
+            raise BinaryError(f"Failed to download binary for '{platform}': {resp.text}")
+        with open(bin_path, "wb") as f:
+            f.write(resp.iter_bytes())
+
 
 class AsyncClient(ClientBase):
     def __init__(self):
@@ -61,13 +119,7 @@ class AsyncClient(ClientBase):
 
     def start(self, verify: bool = True, token: str = None, **kwargs):
         super().start(**kwargs)
-        self.session = httpx.AsyncClient(
-            transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
-            base_url=self.base_api_url,
-            verify=verify,
-            follow_redirects=True,
-            event_hooks={"response": [async_raise_for_status]},
-        )
+        self.session = self._create_session(self.base_api_url)
         if token is not None:
             self.session.headers.setdefault("Authorization", f"Bearer {token}")
 
@@ -95,6 +147,15 @@ class AsyncClient(ClientBase):
             finally:
                 asyncio.sleep(backoff.full_jitter(sleep))
 
+    def _create_session(self, url):
+        return httpx.AsyncClient(
+            transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
+            base_url=self.base_api_url,
+            verify=verify,
+            follow_redirects=True,
+            # event_hooks={"response": [async_raise_for_status]},
+        )
+
 
 class Client(ClientBase):
     def __init__(self):
@@ -102,13 +163,7 @@ class Client(ClientBase):
 
     def start(self, verify: bool = True, token: str = None, **kwargs):
         super().start(**kwargs)
-        self.session = httpx.Client(
-            transport=httpx.HTTPTransport(retries=5, verify=verify),
-            base_url=self.base_api_url,
-            verify=verify,
-            follow_redirects=True,
-            event_hooks={"response": [raise_for_status]},
-        )
+        self.session = self._create_session(self.base_api_url)
         if token is not None:
             self.session.headers.setdefault("Authorization", f"Bearer {token}")
 
@@ -134,3 +189,12 @@ class Client(ClientBase):
                     log.debug(f"Error waiting for worker to start: {ex}")
             finally:
                 time.sleep(backoff.full_jitter(sleep))
+
+    def _create_session(self, url):
+        return httpx.Client(
+            transport=httpx.HTTPTransport(retries=5, verify=verify),
+            base_url=url,
+            verify=verify,
+            follow_redirects=True,
+            # event_hooks={"response": [raise_for_status]},
+        )
