@@ -110,7 +110,7 @@ class ClientBase:
 
         platform_str = self._platform()
         log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url}")
-        url = f"/binaries/client/{platform_str}/hpsdata"
+        url = f"/binaries/worker/{platform_str}/hpsdata"
         try:
             with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
                 resp.read()
