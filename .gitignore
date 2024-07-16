@@ -97,3 +97,5 @@ test_results-*.xml
 .DS_Store
 .DS_Store
 examples/permissions/downloaded
+dt_download/worker/*
+dt_download/*

@@ -1,5 +1,7 @@
 import asyncio
 import logging
+import os
+import platform
 import time
 
 import backoff
@@ -7,6 +9,7 @@ import httpx
 import urllib3
 
 from .binary import Binary, BinaryConfig
+from .exceptions import BinaryError
 
 urllib3.disable_warnings()
 
@@ -24,11 +27,9 @@ log = logging.getLogger(__name__)
 
 
 class ClientBase:
-    def __init__(
-        self,
-        bin_config: BinaryConfig = BinaryConfig(),
-    ):
+    def __init__(self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download"):
         self._bin_config = bin_config
+        self._download_dir = download_dir
         self.binary = None
         self.base_api_url = None
 
@@ -43,6 +44,10 @@ class ClientBase:
         if self.binary is not None:
             return
 
+        download_bin = self._bin_config.path is None or not os.path.exists(self._bin_config.path)
+        if download_bin:
+            self._prepare_platform_binary()
+
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
         self.base_api_url = self.binary.external_url + "/api/v1"
@@ -54,16 +59,16 @@ class ClientBase:
         self.binary = None
 
     def _platform(self):
-        platform = ""
+        plat = ""
         match platform.system():
             case "Windows":
-                platform = "win"
+                plat = "win"
             case "Linux":
-                platform = "lin"
+                plat = "lin"
             case "Darwin":
-                platform = "darwin"
+                plat = "darwin"
 
-        if not platform:
+        if not plat:
             raise BinaryError(f"Unsupported platform: {platform.system()}")
 
         arch = ""
@@ -78,7 +83,7 @@ class ClientBase:
         if not arch:
             raise BinaryError(f"Unsupported architecture: {os.uname().machine}")
 
-        return platform + arch
+        return plat + arch
 
     def _prepare_platform_binary(self):
         dt_url = self._bin_config.data_transfer_url
@@ -91,7 +96,7 @@ class ClientBase:
         version_hash = d["build_info"]["version_hash"]
 
         bin_ext = ".exe" if platform.system() == "Windows" else ""
-        bin_dir = "test_bin"
+        bin_dir = os.path.join(self._download_dir, "worker")
         if not os.path.exists(bin_dir):
             try:
                 os.makedirs(bin_dir)
@@ -103,22 +108,47 @@ class ClientBase:
             log.debug(f"Using existing binary: {bin_path}")
             return bin_path
 
-        platform = self._platform()
-        log.debug(f"Downloading binary for platform: {platform}")
-        url = f"/binaries/client/{platform}/hpsdata"
-        resp = resp.session.stream("GET", url)
-        if resp.status_code != 200:
-            raise BinaryError(f"Failed to download binary for '{platform}': {resp.text}")
-        with open(bin_path, "wb") as f:
-            f.write(resp.iter_bytes())
+        platform_str = self._platform()
+        log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url}")
+        url = f"/binaries/client/{platform_str}/hpsdata"
+        try:
+            with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
+                resp.read()
+                if resp.status_code != 200:
+                    raise BinaryError(f"Failed to download binary: {resp.text}")
+                for chunk in resp.iter_bytes():
+                    f.write(chunk)
+            self._bin_config.path = bin_path
+        except Exception as ex:
+            log.error(f"Failed to download binary: {ex}")
+            os.remove(bin_path)
+
+    def _create_session_obj(self, url, verify):
+        raise NotImplementedError
+
+    def _create_session(self, url):
+        verify = not self._bin_config.insecure
+
+        session = self._create_session_obj(url, verify)
+        session.base_url = url
+        session.verify = verify
+        session.follow_redirects = True
+
+        if self._bin_config.token is not None:
+            t = self._bin_config.token
+            if not t.startswith("Bearer "):
+                t = f"Bearer {t}"
+            session.headers.setdefault("Authorization", t)
+
+        return session
 
 
 class AsyncClient(ClientBase):
     def __init__(self):
         super().__init__()
 
-    def start(self, verify: bool = True, token: str = None, **kwargs):
-        super().start(**kwargs)
+    async def start(self, verify: bool = True, token: str = None):
+        super().start(verify=verify)
         self.session = self._create_session(self.base_api_url)
         if token is not None:
             self.session.headers.setdefault("Authorization", f"Bearer {token}")
@@ -147,12 +177,9 @@ class AsyncClient(ClientBase):
             finally:
                 asyncio.sleep(backoff.full_jitter(sleep))
 
-    def _create_session(self, url):
+    def _create_session_obj(self, url, verify):
         return httpx.AsyncClient(
             transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
-            base_url=self.base_api_url,
-            verify=verify,
-            follow_redirects=True,
             # event_hooks={"response": [async_raise_for_status]},
         )
 
@@ -161,11 +188,9 @@ class Client(ClientBase):
     def __init__(self):
         super().__init__()
 
-    def start(self, verify: bool = True, token: str = None, **kwargs):
-        super().start(**kwargs)
+    def start(self, verify: bool = True, token: str = None):
+        super().start()
         self.session = self._create_session(self.base_api_url)
-        if token is not None:
-            self.session.headers.setdefault("Authorization", f"Bearer {token}")
 
     def stop(self, wait=5.0):
         if self.session is not None:
@@ -190,11 +215,8 @@ class Client(ClientBase):
             finally:
                 time.sleep(backoff.full_jitter(sleep))
 
-    def _create_session(self, url):
+    def _create_session_obj(self, url, verify):
         return httpx.Client(
             transport=httpx.HTTPTransport(retries=5, verify=verify),
-            base_url=url,
-            verify=verify,
-            follow_redirects=True,
             # event_hooks={"response": [raise_for_status]},
         )
