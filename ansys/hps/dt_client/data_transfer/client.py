@@ -83,7 +83,7 @@ class ClientBase:
         if not arch:
             raise BinaryError(f"Unsupported architecture: {os.uname().machine}")
 
-        return plat + arch
+        return f"{plat}-{arch}"
 
     def _prepare_platform_binary(self):
         dt_url = self._bin_config.data_transfer_url
@@ -109,7 +109,7 @@ class ClientBase:
             return bin_path
 
         platform_str = self._platform()
-        log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url}")
+        log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}")
         url = f"/binaries/worker/{platform_str}/hpsdata"
         try:
             with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
