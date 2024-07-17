@@ -9,7 +9,7 @@ import httpx
 import urllib3
 
 from .binary import Binary, BinaryConfig
-from .exceptions import BinaryError, ClientError
+from .exceptions import BinaryError, ClientError, async_raise_for_status, raise_for_status
 
 urllib3.disable_warnings()
 
@@ -187,7 +187,7 @@ class AsyncClient(ClientBase):
     def _create_session_obj(self, url, verify):
         return httpx.AsyncClient(
             transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
-            # event_hooks={"response": [async_raise_for_status]},
+            event_hooks={"response": [async_raise_for_status]},
         )
 
 
@@ -233,5 +233,5 @@ class Client(ClientBase):
     def _create_session_obj(self, url, verify):
         return httpx.Client(
             transport=httpx.HTTPTransport(retries=5, verify=verify),
-            # event_hooks={"response": [raise_for_status]},
+            event_hooks={"response": [raise_for_status]},
         )
