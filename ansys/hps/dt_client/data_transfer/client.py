@@ -106,6 +106,7 @@ class ClientBase:
         bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
         if os.path.exists(bin_path):
             log.debug(f"Using existing binary: {bin_path}")
+            self._bin_config.path = bin_path
             return bin_path
 
         platform_str = self._platform()

@@ -7,12 +7,13 @@ from ansys.hps.dt_client.data_transfer.authenticate import authenticate
 
 log = logging.getLogger(__name__)
 
-auth_url = "https://localhost:8443/hps/auth/realms/rep"
+hps_url = "https://localhost:8443/hps"
+dt_url = f"{hps_url}/dt/api/v1"
+auth_url = f"{hps_url}/auth/realms/rep"
 
 if __name__ == "__main__":
     logger = logging.getLogger()
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG)
-    log.info("Connecting to the data transfer service client..")
 
     user_token = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)
