@@ -112,27 +112,27 @@ def client(binary_config):
 def user_client(user_binary_config):
     from ansys.hps.dt_client.data_transfer import Client
 
-    c = Client(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=user_access_token)
+    c = Client(bin_config=user_binary_config)
     c.start()
     yield c
     c.stop()
 
 
 @pytest.fixture(scope="session")
-def async_client(binary_config, event_loop):
+async def async_client(binary_config, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(binary_config)
-    c.start()
+    c = AsyncClient(bin_config=binary_config)
+    await c.start()
     yield c
-    c.stop()
+    await c.stop()
 
 
 @pytest.fixture(scope="session")
-def async_user_client(user_binary_config, event_loop):
+async def async_user_client(user_binary_config, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(user_binary_config)
-    c.start()
+    c = AsyncClient(bin_config=user_binary_config)
+    await c.start()
     yield c
-    c.stop()
+    await c.stop()

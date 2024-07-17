@@ -9,7 +9,7 @@ import httpx
 import urllib3
 
 from .binary import Binary, BinaryConfig
-from .exceptions import BinaryError
+from .exceptions import BinaryError, ClientError
 
 urllib3.disable_warnings()
 
@@ -145,21 +145,29 @@ class ClientBase:
 
 
 class AsyncClient(ClientBase):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._session = None
 
-    async def start(self, verify: bool = True, token: str = None):
-        super().start(verify=verify)
-        self.session = self._create_session(self.base_api_url)
+    @property
+    def session(self):
+        if self._session is None:
+            raise ClientError("Not started")
+        return self._session
+
+    async def start(self):
+        super().start()
+        self._session = self._create_session(self.base_api_url)
 
     async def stop(self, wait=5.0):
-        if self.session is not None:
+        if self._session is not None:
             try:
-                await self.session.post(self.base_api_url + "/shutdown")
-                asyncio.sleep(0.1)
+                await self._session.post(self.base_api_url + "/shutdown")
+                await asyncio.sleep(0.1)
             except:
                 pass
         super().stop(wait=wait)
+        self._session = None
 
     async def wait(self, timeout: float = 60.0, sleep=0.5):
         start = time.time()
@@ -174,7 +182,7 @@ class AsyncClient(ClientBase):
                 if self._bin_config.debug:
                     log.debug(f"Error waiting for worker to start: {ex}")
             finally:
-                asyncio.sleep(backoff.full_jitter(sleep))
+                await asyncio.sleep(backoff.full_jitter(sleep))
 
     def _create_session_obj(self, url, verify):
         return httpx.AsyncClient(
@@ -184,26 +192,34 @@ class AsyncClient(ClientBase):
 
 
 class Client(ClientBase):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._session = None
 
-    def start(self, verify: bool = True, token: str = None):
+    @property
+    def session(self):
+        if self._session is None:
+            raise ClientError("Not started")
+        return self._session
+
+    def start(self):
         super().start()
-        self.session = self._create_session(self.base_api_url)
+        self._session = self._create_session(self.base_api_url)
 
     def stop(self, wait=5.0):
-        if self.session is not None:
+        if self._session is not None:
             try:
-                self.session.post(self.base_api_url + "/shutdown")
+                self._session.post(self.base_api_url + "/shutdown")
             except:
                 pass
         super().stop(wait=wait)
+        self._session = None
 
     def wait(self, timeout: float = 60.0, sleep=0.5):
         start = time.time()
         while time.time() - start < timeout:
             try:
-                resp = self.session.get(self.base_api_url)
+                resp = self._session.get(self.base_api_url)
                 if resp.status_code != 200:
                     log.debug("Waiting for worker to start")
                 else:

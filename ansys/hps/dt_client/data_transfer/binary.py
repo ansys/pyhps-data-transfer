@@ -122,8 +122,8 @@ class Binary:
             if self._process.poll() is not None:
                 break
             if time.time() - start > wait:
-                log.warn("Worker did not stop in time, killing ...")
-                self.kill()
+                log.warning("Worker did not stop in time, killing ...")
+                self._process.kill()
                 break
             time.sleep(wait * 0.1)
 
@@ -158,7 +158,7 @@ class Binary:
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None:
-                    log.warn(f"Worker exited with code {ret_code}, restarting ...")
+                    log.warning(f"Worker exited with code {ret_code}, restarting ...")
                     self._process = None
                     time.sleep(1.0)
                     continue
