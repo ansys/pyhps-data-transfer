@@ -1,17 +1,15 @@
 import asyncio
-import os
-import sys
 
 from keycloak import KeycloakAdmin
 import pytest
 
 from ansys.hps.dt_client.data_transfer.authenticate import authenticate
+from ansys.hps.dt_client.data_transfer.binary import BinaryConfig
 
-
-@pytest.fixture(scope="session")
-def binary_path():
-    bin_ext = ".exe" if sys.platform == "win32" else ""
-    return os.environ.get("BINARY_PATH", os.path.join("bin", f"hpsdata{bin_ext}"))
+# @pytest.fixture(scope="session")
+# def binary_path():
+#     bin_ext = ".exe" if sys.platform == "win32" else ""
+#     return os.environ.get("BINARY_PATH", os.path.join("bin", f"hpsdata{bin_ext}"))
 
 
 @pytest.fixture(scope="session")
@@ -75,17 +73,43 @@ def event_loop():
 
 
 @pytest.fixture(scope="session")
-def client(binary_path, admin_access_token, dt_url):
+def binary_config(admin_access_token, dt_url):
+    cfg = BinaryConfig(
+        data_transfer_url=dt_url,
+        insecure=True,
+        verbosity=3,
+        debug=True,
+        # path=binary_path,
+        token=admin_access_token,
+    )
+    yield cfg
+
+
+@pytest.fixture(scope="session")
+def user_binary_config(user_access_token, dt_url):
+    cfg = BinaryConfig(
+        data_transfer_url=dt_url,
+        insecure=True,
+        verbosity=3,
+        debug=True,
+        # path=binary_path,
+        token=user_access_token,
+    )
+    yield cfg
+
+
+@pytest.fixture(scope="session")
+def client(binary_config):
     from ansys.hps.dt_client.data_transfer import Client
 
-    c = Client(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=admin_access_token)
+    c = Client(bin_config=binary_config)
     c.start()
     yield c
     c.stop()
 
 
 @pytest.fixture(scope="session")
-def user_client(binary_path, user_access_token, dt_url):
+def user_client(user_binary_config):
     from ansys.hps.dt_client.data_transfer import Client
 
     c = Client(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=user_access_token)
@@ -95,20 +119,20 @@ def user_client(binary_path, user_access_token, dt_url):
 
 
 @pytest.fixture(scope="session")
-def async_client(binary_path, admin_access_token, dt_url, event_loop):
+def async_client(binary_config, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=admin_access_token)
+    c = AsyncClient(binary_config)
     c.start()
     yield c
     c.stop()
 
 
 @pytest.fixture(scope="session")
-def async_user_client(binary_path, user_access_token, dt_url, event_loop):
+def async_user_client(user_binary_config, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=user_access_token)
+    c = AsyncClient(user_binary_config)
     c.start()
     yield c
     c.stop()

@@ -145,14 +145,12 @@ class ClientBase:
 
 
 class AsyncClient(ClientBase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     async def start(self, verify: bool = True, token: str = None):
         super().start(verify=verify)
         self.session = self._create_session(self.base_api_url)
-        if token is not None:
-            self.session.headers.setdefault("Authorization", f"Bearer {token}")
 
     async def stop(self, wait=5.0):
         if self.session is not None:
@@ -186,8 +184,8 @@ class AsyncClient(ClientBase):
 
 
 class Client(ClientBase):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def start(self, verify: bool = True, token: str = None):
         super().start()
