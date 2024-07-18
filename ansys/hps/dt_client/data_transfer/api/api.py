@@ -9,6 +9,7 @@ log = logging.getLogger(__name__)
 import humanfriendly as hf
 
 from ..client import Client
+from ..exceptions import TimeoutError
 from ..models.msg import (
     CheckPermissionsResponse,
     GetPermissionsResponse,
@@ -31,18 +32,29 @@ class DataTransferApi:
         self.client = client
 
     @retry()
-    def status(self, wait=False, sleep=5, jitter=True):
+    def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 30.0):
+        def sleep():
+            log.info("Waiting for the client to be ready...")
+            s = backoff.full_jitter(sleep) if jitter else sleep
+            time.sleep(s)
+
         url = "/"
+        start = time.time()
         while True:
-            resp = self.client.session.get(url)
-            json = resp.json()
-            s = Status(**json)
-            if wait and not s.ready:
-                log.info("Waiting for the client to be ready...")
-                s = backoff.full_jitter(sleep) if jitter else sleep
-                time.sleep(s)
-                continue
-            return s
+            if timeout is not None and (time.time() - start) > timeout:
+                raise TimeoutError("Timeout waiting for client to be ready")
+
+            try:
+                resp = self.client.session.get(url)
+                json = resp.json()
+                s = Status(**json)
+                if wait and not s.ready:
+                    sleep()
+                    continue
+                return s
+            except Exception as e:
+                log.debug(f"Error getting status: {e}")
+                sleep()
 
     @retry()
     def operations(self, ids: List[str]):

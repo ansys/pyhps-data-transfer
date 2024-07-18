@@ -7,6 +7,7 @@ import backoff
 import humanfriendly as hf
 
 from ..client import AsyncClient
+from ..exceptions import TimeoutError
 from ..models.msg import (
     CheckPermissionsResponse,
     GetPermissionsResponse,
@@ -31,18 +32,29 @@ class AsyncDataTransferApi:
         self.client = client
 
     @retry()
-    async def status(self, wait=False, sleep=5, jitter=True):
+    async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 30.0):
+        async def sleep():
+            log.info("Waiting for the client to be ready...")
+            s = backoff.full_jitter(sleep) if jitter else sleep
+            await asyncio.sleep(s)
+
         url = "/"
+        start = time.time()
         while True:
-            resp = await self.client.session.get(url)
-            json = resp.json()
-            s = Status(**json)
-            if wait and not s.ready:
-                log.info("Waiting for the client to be ready...")
-                s = backoff.full_jitter(sleep) if jitter else sleep
-                asyncio.sleep(s)
-                continue
-            return s
+            if timeout is not None and (time.time() - start) > timeout:
+                raise TimeoutError("Timeout waiting for client to be ready")
+
+            try:
+                resp = await self.client.session.get(url)
+                json = resp.json()
+                s = Status(**json)
+                if wait and not s.ready:
+                    await sleep()
+                    continue
+                return s
+            except Exception as e:
+                log.debug(f"Error getting status: {e}")
+                await sleep()
 
     @retry()
     async def operations(self, ids: List[str]):
