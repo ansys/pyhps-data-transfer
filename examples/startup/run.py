@@ -2,8 +2,8 @@ import json
 import logging
 import time
 
-from ansys.hps.dt_client.data_transfer import Client, DataTransferApi
-from ansys.hps.dt_client.data_transfer.authenticate import authenticate
+from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client.authenticate import authenticate
 
 log = logging.getLogger(__name__)
 

@@ -4,7 +4,7 @@ from setuptools import find_namespace_packages, setup
 
 root = os.path.abspath(os.path.dirname(__file__))
 about = {}
-with open(os.path.join(root, "ansys", "hps", "dt_client", "data_transfer", "__version__.py"), "r") as f:
+with open(os.path.join(root, "ansys", "hps", "data_transfer", "client", "__version__.py"), "r") as f:
     exec(f.read(), about)
 
 install_requires = [
@@ -20,8 +20,8 @@ install_requires = [
 
 def setup_package():
     metadata = dict(
-        name="ansys-hps-client-data-transfer",
-        version="0.1.0",
+        name="ansys-hps-data-transfer-client",
+        version=about["__version__"],
         packages=find_namespace_packages(include=["ansys.*"]),
         author="ANSYS, Inc.",
         description="HPS data transfer service client",

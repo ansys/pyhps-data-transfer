@@ -6,10 +6,10 @@ import traceback
 
 from keycloak import KeycloakAdmin
 
-from ansys.hps.dt_client.data_transfer import Client, DataTransferApi
-from ansys.hps.dt_client.data_transfer.authenticate import authenticate
-from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
-from ansys.hps.dt_client.data_transfer.models.permissions import (
+from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client.authenticate import authenticate
+from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models.permissions import (
     Resource,
     ResourceType,
     RoleAssignment,

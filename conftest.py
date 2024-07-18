@@ -6,8 +6,8 @@ from keycloak import KeycloakAdmin
 import pytest
 from slugify import slugify
 
-from ansys.hps.dt_client.data_transfer.authenticate import authenticate
-from ansys.hps.dt_client.data_transfer.binary import BinaryConfig
+from ansys.hps.data_transfer.client.authenticate import authenticate
+from ansys.hps.data_transfer.client.binary import BinaryConfig
 
 # @pytest.fixture(scope="session")
 # def binary_path():
@@ -143,14 +143,14 @@ def user_binary_config(user_access_token, dt_url):
 
 @pytest.fixture(scope="session")
 def client(binary_config, binary_dir):
-    from ansys.hps.dt_client.data_transfer import Client
+    from ansys.hps.data_transfer.client import Client
 
     c = Client(bin_config=binary_config, download_dir=binary_dir)
     c.start()
     yield c
 
-    from ansys.hps.dt_client.data_transfer import DataTransferApi
-    from ansys.hps.dt_client.data_transfer.models.msg import StoragePath
+    from ansys.hps.data_transfer.client import DataTransferApi
+    from ansys.hps.data_transfer.client.models.msg import StoragePath
 
     api = DataTransferApi(c)
     op = api.rmdir([StoragePath(path="python_client_tests")])
@@ -161,7 +161,7 @@ def client(binary_config, binary_dir):
 
 @pytest.fixture(scope="session")
 def user_client(user_binary_config, binary_dir):
-    from ansys.hps.dt_client.data_transfer import Client
+    from ansys.hps.data_transfer.client import Client
 
     c = Client(bin_config=user_binary_config, download_dir=binary_dir)
     c.start()
@@ -171,7 +171,7 @@ def user_client(user_binary_config, binary_dir):
 
 @pytest.fixture(scope="session")
 async def async_client(binary_config, binary_dir, event_loop):
-    from ansys.hps.dt_client.data_transfer import AsyncClient
+    from ansys.hps.data_transfer.client import AsyncClient
 
     c = AsyncClient(bin_config=binary_config, download_dir=binary_dir)
     await c.start()
@@ -182,7 +182,7 @@ async def async_client(binary_config, binary_dir, event_loop):
 
 @pytest.fixture(scope="session")
 async def async_user_client(user_binary_config, binary_dir, event_loop):
-    from ansys.hps.dt_client.data_transfer import AsyncClient
+    from ansys.hps.data_transfer.client import AsyncClient
 
     c = AsyncClient(bin_config=user_binary_config, download_dir=binary_dir)
     await c.start()

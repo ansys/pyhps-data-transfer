@@ -2,10 +2,10 @@ import tempfile
 
 import pytest
 
-from ansys.hps.dt_client.data_transfer import DataTransferApi
-from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
-from ansys.hps.dt_client.data_transfer.models.ops import OperationState
-from ansys.hps.dt_client.data_transfer.models.permissions import Resource, RoleAssignment, RoleQuery, Subject
+from ansys.hps.data_transfer.client import DataTransferApi
+from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models.ops import OperationState
+from ansys.hps.data_transfer.client.models.permissions import Resource, RoleAssignment, RoleQuery, Subject
 
 
 def test_permissions(storage_path, client, user_client, user_id):
