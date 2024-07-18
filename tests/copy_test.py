@@ -12,6 +12,8 @@ log = logging.getLogger(__name__)
 
 def test_copy(storage_path, client):
     api = DataTransferApi(client)
+    api.status(wait=True)
+
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
     temp_file_name = os.path.basename(temp_file.name)
@@ -33,6 +35,8 @@ def test_copy(storage_path, client):
 
 async def test_async_copy(storage_path, async_client):
     api = AsyncDataTransferApi(async_client)
+    await api.status(wait=True)
+
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
     temp_file_name = os.path.basename(temp_file.name)

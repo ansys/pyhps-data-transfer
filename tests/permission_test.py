@@ -10,7 +10,10 @@ from ansys.hps.dt_client.data_transfer.models.permissions import Resource, RoleA
 
 def test_permissions(storage_path, client, user_client, user_id):
     admin = DataTransferApi(client)
+    admin.status(wait=True)
     user = DataTransferApi(user_client)
+    user.status(wait=True)
+
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
 

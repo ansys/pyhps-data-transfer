@@ -5,6 +5,7 @@ from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 
 def test_mkdir(storage_path, client):
     api = DataTransferApi(client)
+    api.status(wait=True)
 
     dst = StoragePath(path=f"{storage_path}/a/b")
 
@@ -24,6 +25,7 @@ def test_mkdir(storage_path, client):
 
 async def test_async_mkdir(storage_path, async_client):
     api = AsyncDataTransferApi(async_client)
+    await api.status(wait=True)
 
     dst = StoragePath(path=f"{storage_path}/a/b")
 

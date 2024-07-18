@@ -8,6 +8,7 @@ from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 
 def test_remove(storage_path, client):
     api = DataTransferApi(client)
+    api.status(wait=True)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
@@ -47,6 +48,7 @@ def test_remove(storage_path, client):
 
 async def test_async_remove(storage_path, async_client):
     api = AsyncDataTransferApi(async_client)
+    await api.status(wait=True)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
