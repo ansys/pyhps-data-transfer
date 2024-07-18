@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     log.info("Creating a directory ...")
     base_dir = "basic-example"
-    mkdir_op = api.mkdir([StoragePath(path=f"{base_dir}/")])
+    mkdir_op = api.mkdir([StoragePath(path=f"{base_dir}")])
     api.wait_for([mkdir_op.id])
 
     log.info("Copying files ...")
