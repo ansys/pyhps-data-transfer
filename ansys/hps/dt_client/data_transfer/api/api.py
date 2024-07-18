@@ -33,7 +33,7 @@ class DataTransferApi:
 
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 30.0):
-        def sleep():
+        def _sleep():
             log.info("Waiting for the client to be ready...")
             s = backoff.full_jitter(sleep) if jitter else sleep
             time.sleep(s)
@@ -49,12 +49,12 @@ class DataTransferApi:
                 json = resp.json()
                 s = Status(**json)
                 if wait and not s.ready:
-                    sleep()
+                    _sleep()
                     continue
                 return s
             except Exception as e:
                 log.debug(f"Error getting status: {e}")
-                sleep()
+                _sleep()
 
     @retry()
     def operations(self, ids: List[str]):

@@ -33,7 +33,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 30.0):
-        async def sleep():
+        async def _sleep():
             log.info("Waiting for the client to be ready...")
             s = backoff.full_jitter(sleep) if jitter else sleep
             await asyncio.sleep(s)
@@ -49,12 +49,12 @@ class AsyncDataTransferApi:
                 json = resp.json()
                 s = Status(**json)
                 if wait and not s.ready:
-                    await sleep()
+                    await _sleep()
                     continue
                 return s
             except Exception as e:
                 log.debug(f"Error getting status: {e}")
-                await sleep()
+                await _sleep()
 
     @retry()
     async def operations(self, ids: List[str]):
