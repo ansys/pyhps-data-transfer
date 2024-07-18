@@ -90,8 +90,6 @@ def run_tests(args):
     try:
         base_cmd = f"{sys.executable} -m pytest -v --durations=10 --timeout={args.test_timeout}\
              --junitxml {args.test_results} -rf"
-        if args.num_workers > 1:
-            base_cmd += f" -n{args.num_workers}"
         if args.max_fail:
             base_cmd += f" --maxfail={args.max_fail}"
         if args.no_traceback:
@@ -110,7 +108,6 @@ if __name__ == "__main__":
     #     sys.exit(1)
 
     test_directory = "test_run"
-    num_workers = os.cpu_count()
 
     parser = argparse.ArgumentParser(description="Build and test")
     parser.set_defaults(func=build_dev)
@@ -139,13 +136,6 @@ if __name__ == "__main__":
         help="Where to dump test results",
     )
     tests.add_argument("-t", "--test_timeout", default=300, help="Time after which to kill the test, in seconds")
-    tests.add_argument(
-        "-j",
-        "--num_workers",
-        type=int,
-        default=num_workers,
-        help="Number of workers to use for running tasks",
-    )
     tests.add_argument(
         "-x",
         "--max_fail",

@@ -1,100 +1,236 @@
+import asyncio
+import logging
 import os
-import sys
+import platform
+import time
 
+import backoff
 import httpx
 import urllib3
 
-from .binary import Binary
-from .exceptions import async_raise_for_status, raise_for_status
+from .binary import Binary, BinaryConfig
+from .exceptions import BinaryError, ClientError, async_raise_for_status, raise_for_status
 
 urllib3.disable_warnings()
 
+httpx_log = logging.getLogger("httpx")
+httpx_log.setLevel(logging.CRITICAL)
+
+httpcore_log = logging.getLogger("httpcore")
+httpcore_log.setLevel(logging.CRITICAL)
+
+for n in ["httpx", "httpcore", "requests", "urllib3"]:
+    log = logging.getLogger(n)
+    log.setLevel(logging.CRITICAL)
+
+log = logging.getLogger(__name__)
+
 
 class ClientBase:
-    def __init__(
-        self,
-        data_transfer_url: str,
-        external_url: str = None,
-        run_client_binary: bool = False,
-        binary_path: str = None,
-        verify: bool = True,
-        token: str = None,
-        port: int = None,
-    ):
-        if binary_path is None:
-            bin_ext = ".exe" if sys.platform == "win32" else ""
-            binary_path = os.path.join(os.path.dirname(__file__), "bin", f"hpsdata{bin_ext}")
+    def __init__(self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download"):
+        self._bin_config = bin_config
+        self._download_dir = download_dir
+        self.binary = None
 
-        if run_client_binary:
-            self.binary = Binary(binary_path, data_transfer_url, external_url, token, port=port)
-            external_url = self.binary.external_url
-            self.base_api_url = external_url + "/api/v1"
-        else:
-            self.binary = None
-            # self.base_api_url = data_transfer_url
-            self.base_api_url = external_url or f"http://localhost:1091/api/v1"
+    @property
+    def binary_config(self):
+        return self._bin_config
+
+    @property
+    def base_api_url(self):
+        return self._bin_config.url
 
     def start(self):
-        if not self.binary:
+        if self.binary is not None:
             return
+
+        download_bin = self._bin_config.path is None or not os.path.exists(self._bin_config.path)
+        if download_bin:
+            self._prepare_platform_binary()
+
+        self.binary = Binary(config=self._bin_config)
         self.binary.start()
 
-    def stop(self):
-        if self.binary:
-            self.binary.stop()
+    def stop(self, wait=5.0):
+        if self.binary is None:
+            return
+        self.binary.stop(wait=wait)
+        self.binary = None
 
-    def __enter__(self):
-        # if self.binary:
-        #    self.binary.start()
-        return self
+    def _platform(self):
+        plat = ""
+        match platform.system():
+            case "Windows":
+                plat = "win"
+            case "Linux":
+                plat = "lin"
+            case "Darwin":
+                plat = "darwin"
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-        # if self.binary:
-        #     self.binary.stop()
+        if not plat:
+            raise BinaryError(f"Unsupported platform: {platform.system()}")
+
+        arch = ""
+        match os.uname().machine:
+            case "x86_64":
+                arch = "x64"
+            case "aarch64":
+                arch = "arm64"
+            case "arm64":
+                arch = "arm64"
+
+        if not arch:
+            raise BinaryError(f"Unsupported architecture: {os.uname().machine}")
+
+        return f"{plat}-{arch}"
+
+    def _prepare_platform_binary(self):
+        dt_url = self._bin_config.data_transfer_url
+        session = self._create_session(dt_url)
+        resp = session.get("/")
+        if resp.status_code != 200:
+            raise BinaryError(f"Failed to download binary: {resp.text}")
+        d = resp.json()
+        log.debug(f"Server version: {d['build_info']}")
+        version_hash = d["build_info"]["version_hash"]
+
+        bin_ext = ".exe" if platform.system() == "Windows" else ""
+        bin_dir = os.path.join(self._download_dir, "worker")
+        if not os.path.exists(bin_dir):
+            try:
+                os.makedirs(bin_dir)
+            except:
+                pass
+
+        bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
+        if os.path.exists(bin_path):
+            log.debug(f"Using existing binary: {bin_path}")
+            self._bin_config.path = bin_path
+            return bin_path
+
+        platform_str = self._platform()
+        log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}")
+        url = f"/binaries/worker/{platform_str}/hpsdata"
+        try:
+            with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
+                resp.read()
+                if resp.status_code != 200:
+                    raise BinaryError(f"Failed to download binary: {resp.text}")
+                for chunk in resp.iter_bytes():
+                    f.write(chunk)
+            self._bin_config.path = bin_path
+        except Exception as ex:
+            log.error(f"Failed to download binary: {ex}")
+            os.remove(bin_path)
+
+    def _create_session_obj(self, url, verify):
+        raise NotImplementedError
+
+    def _create_session(self, url):
+        verify = not self._bin_config.insecure
+
+        session = self._create_session_obj(url, verify)
+        session.base_url = url
+        session.verify = verify
+        session.follow_redirects = True
+
+        if self._bin_config.token is not None:
+            t = self._bin_config.token
+            if not t.startswith("Bearer "):
+                t = f"Bearer {t}"
+            session.headers.setdefault("Authorization", t)
+
+        return session
 
 
 class AsyncClient(ClientBase):
-    def __init__(
-        self,
-        data_transfer_url: str,
-        external_url: str = None,
-        run_client_binary: bool = False,
-        binary_path: str = None,
-        verify: bool = True,
-        token: str = None,
-        port: int = None,
-    ):
-        super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify, token, port)
-        self.session = httpx.AsyncClient(
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._session = None
+
+    @property
+    def session(self):
+        if self._session is None:
+            raise ClientError("Not started")
+        return self._session
+
+    async def start(self):
+        super().start()
+        self._session = self._create_session(self.base_api_url)
+
+    async def stop(self, wait=5.0):
+        if self._session is not None:
+            try:
+                await self._session.post(self.base_api_url + "/shutdown")
+                await asyncio.sleep(0.1)
+            except:
+                pass
+        super().stop(wait=wait)
+        self._session = None
+
+    async def wait(self, timeout: float = 60.0, sleep=0.5):
+        start = time.time()
+        while time.time() - start < timeout:
+            try:
+                resp = await self.session.get(self.base_api_url)
+                if resp.status_code != 200:
+                    log.debug("Waiting for worker to start")
+                else:
+                    return
+            except Exception as ex:
+                if self._bin_config.debug:
+                    log.debug(f"Error waiting for worker to start: {ex}")
+            finally:
+                await asyncio.sleep(backoff.full_jitter(sleep))
+
+    def _create_session_obj(self, url, verify):
+        return httpx.AsyncClient(
             transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
-            base_url=self.base_api_url,
-            verify=verify,
-            follow_redirects=True,
             event_hooks={"response": [async_raise_for_status]},
         )
-        if token is not None:
-            self.session.headers.setdefault("Authorization", f"Bearer {token}")
 
 
 class Client(ClientBase):
-    def __init__(
-        self,
-        data_transfer_url: str,
-        external_url: str = None,
-        run_client_binary: bool = False,
-        binary_path: str = None,
-        verify: bool = True,
-        token: str = None,
-        port: int = None,
-    ):
-        super().__init__(data_transfer_url, external_url, run_client_binary, binary_path, verify, token, port)
-        self.session = httpx.Client(
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._session = None
+
+    @property
+    def session(self):
+        if self._session is None:
+            raise ClientError("Not started")
+        return self._session
+
+    def start(self):
+        super().start()
+        self._session = self._create_session(self.base_api_url)
+
+    def stop(self, wait=5.0):
+        if self._session is not None:
+            try:
+                self._session.post(self.base_api_url + "/shutdown")
+            except:
+                pass
+        super().stop(wait=wait)
+        self._session = None
+
+    def wait(self, timeout: float = 60.0, sleep=0.5):
+        start = time.time()
+        while time.time() - start < timeout:
+            try:
+                resp = self._session.get(self.base_api_url)
+                if resp.status_code != 200:
+                    log.debug("Waiting for worker to start")
+                else:
+                    return
+            except Exception as ex:
+                if self._bin_config.debug:
+                    log.debug(f"Error waiting for worker to start: {ex}")
+            finally:
+                time.sleep(backoff.full_jitter(sleep))
+
+    def _create_session_obj(self, url, verify):
+        return httpx.Client(
             transport=httpx.HTTPTransport(retries=5, verify=verify),
-            base_url=self.base_api_url,
-            verify=verify,
-            follow_redirects=True,
             event_hooks={"response": [raise_for_status]},
         )
-        if token is not None:
-            self.session.headers.setdefault("Authorization", f"Bearer {token}")

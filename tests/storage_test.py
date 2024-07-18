@@ -2,12 +2,14 @@ from ansys.hps.dt_client.data_transfer import AsyncDataTransferApi, DataTransfer
 
 
 def test_storage(client):
-    api_instance = DataTransferApi(client)
-    resp = api_instance.storages()
+    api = DataTransferApi(client)
+    api.status(wait=True)
+    resp = api.storages()
     assert len(resp) > 0
 
 
 async def test_async_storage(async_client):
-    api_instance = AsyncDataTransferApi(async_client)
-    resp = await api_instance.storages()
+    api = AsyncDataTransferApi(async_client)
+    await api.status(wait=True)
+    resp = await api.storages()
     assert len(resp) > 0

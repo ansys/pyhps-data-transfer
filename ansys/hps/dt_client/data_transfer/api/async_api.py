@@ -1,14 +1,13 @@
 import asyncio
 import logging
-import mimetypes
-import os
-import tempfile
 import time
 from typing import List
 
+import backoff
 import humanfriendly as hf
 
 from ..client import AsyncClient
+from ..exceptions import TimeoutError
 from ..models.msg import (
     CheckPermissionsResponse,
     GetPermissionsResponse,
@@ -19,7 +18,7 @@ from ..models.msg import (
     StorageConfigResponse,
     StoragePath,
 )
-from ..models.ops import OperationState
+from ..models.ops import Operation, OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
 from .retry import retry
@@ -32,36 +31,30 @@ class AsyncDataTransferApi:
         self.dump_mode = "json"
         self.client = client
 
-    def start(self):
-        self.client.start()
-
-    def stop(self):
-        self.client.stop()
-
     @retry()
-    async def status(self):
+    async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 60.0):
+        async def _sleep():
+            log.info("Waiting for the client to be ready...")
+            s = backoff.full_jitter(sleep) if jitter else sleep
+            await asyncio.sleep(s)
+
         url = "/"
-        resp = await self.client.session.get(url)
-        json = resp.json()
-        return Status(**json)
+        start = time.time()
+        while True:
+            if timeout is not None and (time.time() - start) > timeout:
+                raise TimeoutError("Timeout waiting for client to be ready")
 
-    async def download_file(self, remote: str, path: str, dest: str = None):
-        url = f"/data/{remote}/{path}"
-        if not dest:
-            dest = os.path.join(tempfile.gettempdir(), os.path.basename(path))
-        async with self.client.session.stream("GET", url) as resp:
-            with open(dest, "wb") as file:
-                async for chunk in resp.aiter_bytes():
-                    file.write(chunk)
-        return dest
-
-    async def upload_file(self, remote: str, path: str, file_path: str):
-        url = f"/data/{remote}/{path}"
-        filename = os.path.basename(file_path)
-        mime_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
-        resp = await self.client.session.post(url, files={"file": (filename, open(file_path, "rb"), mime_type)})
-        json = resp.json()
-        return OpIdResponse(**json)
+            try:
+                resp = await self.client.session.get(url)
+                json = resp.json()
+                s = Status(**json)
+                if wait and not s.ready:
+                    await _sleep()
+                    continue
+                return s
+            except Exception as e:
+                log.debug(f"Error getting status: {e}")
+                await _sleep()
 
     @retry()
     async def operations(self, ids: List[str]):
@@ -134,7 +127,10 @@ class AsyncDataTransferApi:
         await self.client.session.post(url, json=payload)
         return None
 
-    async def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
+    async def wait_for(self, operation_ids: List[str | Operation], timeout: float | None = None, interval: float = 1.0):
+        if not isinstance(operation_ids, list):
+            operation_ids = [operation_ids]
+        operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]
         start = time.time()
         attempt = 0
         while True:

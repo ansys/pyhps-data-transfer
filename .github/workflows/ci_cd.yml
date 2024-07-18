@@ -97,7 +97,6 @@ jobs:
 
       - name: Run tests
         run: |
-          export BINARY_PATH="$(pwd)/release/hpsdata"
           python build.py tests
 
       - name: Stop containers
@@ -111,6 +110,28 @@ jobs:
         with:
           report_paths: '**/test*.xml'
           check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }} 
+
+    #   - name: Surface failing tests
+    #     if: always()
+    #     uses: pmeier/pytest-results-action@main
+    #     with:
+    #       # A list of JUnit XML files, directories containing the former, and wildcard
+    #       # patterns to process.
+    #       # See @actions/glob for supported patterns.
+    #       path: test_run/test_results.xml
+        
+    #       # (Optional) Add a summary of the results at the top of the report
+    #       summary: true
+        
+    #       # (Optional) Select which results should be included in the report.
+    #       # Follows the same syntax as `pytest -r`
+    #     #   display-options: fEX
+        
+    #       # (Optional) Fail the workflow if no JUnit XML was found.
+    #       fail-on-empty: true
+        
+    #       # (Optional) Title of the test results section in the workflow summary
+    #       title: Test results
 
   wheels: 
     name: Wheels
@@ -130,29 +151,6 @@ jobs:
         machine: github.com
         username: pyansys-ci-bot
         password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-
-    - name: Fetch windows data transfer client binary
-      uses: robinraju/release-downloader@v1.8
-      with:
-          repository: "ansys-internal/rep-data-transfer"
-          tag: "latest-dev"
-          fileName: "hpsdata.exe"
-          token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
-          out-file-path: "data-transfer-client-binary"
-
-    - name: Fetch linux data transfer client binary
-      uses: robinraju/release-downloader@v1.8
-      with:
-          repository: "ansys-internal/rep-data-transfer"
-          tag: "latest-dev"
-          fileName: "hpsdata"
-          token: ${{secrets.PYANSYS_CI_BOT_TOKEN}}
-          out-file-path: "data-transfer-client-binary"
-
-    - name: Move data transfer client binaries
-      run: |
-        mkdir ./ansys/hps/dt_client/data_transfer/bin
-        mv ./data-transfer-client-binary/* ./ansys/hps/dt_client/data_transfer/bin/
 
     - name: Install dependencies and build the library
       id: wheels      

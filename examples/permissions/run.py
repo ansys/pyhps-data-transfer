@@ -56,10 +56,18 @@ if __name__ == "__main__":
     assert user_token is not None
 
     log.info("### Preparing data transfer client for 'repuser' ...")
-    user = DataTransferApi(
-        Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=user_token, port=4444, verify=False)
+    user_client = Client()
+    user_client.binary_config.update(
+        verbosity=3,
+        debug=False,
+        insecure=True,
+        token=user_token,
+        data_transfer_url=dt_url,
     )
-    user.start()
+    user_client.start()
+
+    user = DataTransferApi(user_client)
+    user.status(wait=True)
 
     log.info("### Checking binary's status ...")
     status = user.status(wait=True)
@@ -101,10 +109,18 @@ if __name__ == "__main__":
     admin_token = admin_token.get("access_token", None)
 
     log.info("### Preparing data transfer client for 'repadmin' ...")
-    admin = DataTransferApi(
-        Client(data_transfer_url=dt_url, run_client_binary=run_bin, token=admin_token, port=5555, verify=False)
+    admin_client = Client()
+    admin_client.binary_config.update(
+        verbosity=3,
+        debug=False,
+        insecure=True,
+        token=admin_token,
+        data_transfer_url=dt_url,
     )
-    admin.start()
+    admin_client.start()
+
+    admin = DataTransferApi(admin_client)
+    admin.status(wait=True)
 
     log.info("### Granting 'repuser' the necessary permissions ...")
     user_id = get_user_id_from_keycloak()
@@ -175,5 +191,5 @@ if __name__ == "__main__":
 
     log.info("And that's all folks!")
 
-    admin.stop()
-    user.stop()
+    admin_client.stop()
+    user_client.stop()

@@ -1,55 +1,63 @@
+import logging
 import os
 import tempfile
-import time
 
 from ansys.hps.dt_client.data_transfer import AsyncDataTransferApi, DataTransferApi
-from ansys.hps.dt_client.data_transfer.models.msg import StoragePath
+from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 
+log = logging.getLogger(__name__)
 
-def test_list(client):
-    api_instance = DataTransferApi(client)
+
+def test_list(storage_path, client):
+    api = DataTransferApi(client)
+    api.status(wait=True)
+
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
     temp_file_name = os.path.basename(temp_file.name)
-    resp = api_instance.upload_file("any", temp_file_name, temp_file.name)
-    operation_id = resp.id
-    assert operation_id is not None
-    for _ in range(10):
-        time.sleep(1)
-        resp = api_instance.operations([operation_id])
-        if resp[0].state == OperationState.Succeeded:
-            break
-    resp = api_instance.list([StoragePath(path="")])
-    operation_id = resp.id
-    assert operation_id is not None
-    for _ in range(10):
-        time.sleep(1)
-        resp = api_instance.operations([operation_id])
-        if resp[0].state == OperationState.Succeeded:
-            break
-    assert temp_file_name in resp[0].result["any:"]
+
+    names = ["file_1", "file_2"]
+
+    src = StoragePath(path=temp_file.name, remote="local")
+    dsts = [StoragePath(path=f"{storage_path}/{name}") for name in names]
+    op = api.copy([SrcDst(src=src, dst=dst) for dst in dsts])
+    assert op.id is not None
+    op = api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    op = api.list([StoragePath(path=storage_path)])
+    assert op.id is not None
+    op = api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    result = next(iter(op[0].result.values()))
+    assert names[0] in result
+    assert names[1] in result
 
 
-async def test_async_list(async_client):
-    api_instance = AsyncDataTransferApi(async_client)
+async def test_async_list(storage_path, async_client):
+    api = AsyncDataTransferApi(async_client)
+    await api.status(wait=True)
+
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
     temp_file_name = os.path.basename(temp_file.name)
-    resp = await api_instance.upload_file("any", temp_file_name, temp_file.name)
-    operation_id = resp.id
-    assert operation_id is not None
-    for _ in range(10):
-        time.sleep(1)
-        resp = await api_instance.operations([operation_id])
-        if resp[0].state == OperationState.Succeeded:
-            break
-    resp = await api_instance.list([StoragePath(path="")])
-    operation_id = resp.id
-    assert operation_id is not None
-    for _ in range(10):
-        time.sleep(1)
-        resp = await api_instance.operations([operation_id])
-        if resp[0].state == OperationState.Succeeded:
-            break
-    assert temp_file_name in resp[0].result["any:"]
+
+    names = ["file_1", "file_2"]
+
+    src = StoragePath(path=temp_file.name, remote="local")
+    dsts = [StoragePath(path=f"{storage_path}/{name}") for name in names]
+    op = await api.copy([SrcDst(src=src, dst=dst) for dst in dsts])
+    assert op.id is not None
+    op = await api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    op = await api.list([StoragePath(path=storage_path)])
+    assert op.id is not None
+    op = await api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    result = next(iter(op[0].result.values()))
+    assert names[0] in result
+    assert names[1] in result

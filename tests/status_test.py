@@ -2,12 +2,14 @@ from ansys.hps.dt_client.data_transfer import AsyncDataTransferApi, DataTransfer
 
 
 def test_status(client):
-    api_instance = DataTransferApi(client)
-    resp = api_instance.status()
+    api = DataTransferApi(client)
+    api.status(wait=True)
+    resp = api.status()
     assert resp.build_info is not None
 
 
 async def test_async_status(async_client):
-    api_instance = AsyncDataTransferApi(async_client)
-    resp = await api_instance.status()
+    api = AsyncDataTransferApi(async_client)
+    await api.status(wait=True)
+    resp = await api.status()
     assert resp.build_info is not None

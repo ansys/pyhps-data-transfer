@@ -1,17 +1,58 @@
 import asyncio
 import os
-import sys
+import shutil
 
 from keycloak import KeycloakAdmin
 import pytest
+from slugify import slugify
 
 from ansys.hps.dt_client.data_transfer.authenticate import authenticate
+from ansys.hps.dt_client.data_transfer.binary import BinaryConfig
+
+# @pytest.fixture(scope="session")
+# def binary_path():
+#     bin_ext = ".exe" if sys.platform == "win32" else ""
+#     return os.environ.get("BINARY_PATH", os.path.join("bin", f"hpsdata{bin_ext}"))
+
+
+@pytest.fixture()
+def test_name(request):
+    return slugify(request.node.name)
 
 
 @pytest.fixture(scope="session")
-def binary_path():
-    bin_ext = ".exe" if sys.platform == "win32" else ""
-    return os.environ.get("BINARY_PATH", os.path.join("bin", f"hpsdata{bin_ext}"))
+def binary_dir():
+    return os.path.join(os.getcwd(), "test_run", "bin")
+
+
+@pytest.fixture()
+def storage_path(test_name):
+    return f"python_client_tests/{test_name}"
+
+
+@pytest.fixture(autouse=True)
+def for_every_test(request, test_name):
+    module_name = request.node.module.__name__.replace(".", "_")
+
+    test_run_directory = os.path.join(os.getcwd(), "test_run")
+    test_directory = os.path.join(test_run_directory, module_name, test_name)
+
+    if os.path.isdir(test_directory):
+        shutil.rmtree(test_directory)
+    os.makedirs(test_directory)
+
+    old_cwd = os.getcwd()
+    os.chdir(test_directory)
+
+    yield
+
+    os.chdir(old_cwd)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def remove_binaries(binary_dir):
+    if os.path.isdir(binary_dir):
+        shutil.rmtree(binary_dir)
 
 
 @pytest.fixture(scope="session")
@@ -75,40 +116,75 @@ def event_loop():
 
 
 @pytest.fixture(scope="session")
-def client(binary_path, admin_access_token, dt_url):
+def binary_config(admin_access_token, dt_url):
+    cfg = BinaryConfig(
+        data_transfer_url=dt_url,
+        insecure=True,
+        verbosity=3,
+        debug=True,
+        # path=binary_path,
+        token=admin_access_token,
+    )
+    yield cfg
+
+
+@pytest.fixture(scope="session")
+def user_binary_config(user_access_token, dt_url):
+    cfg = BinaryConfig(
+        data_transfer_url=dt_url,
+        insecure=True,
+        verbosity=3,
+        debug=True,
+        # path=binary_path,
+        token=user_access_token,
+    )
+    yield cfg
+
+
+@pytest.fixture(scope="session")
+def client(binary_config, binary_dir):
     from ansys.hps.dt_client.data_transfer import Client
 
-    c = Client(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=admin_access_token)
+    c = Client(bin_config=binary_config, download_dir=binary_dir)
     c.start()
     yield c
+
+    from ansys.hps.dt_client.data_transfer import DataTransferApi
+    from ansys.hps.dt_client.data_transfer.models.msg import StoragePath
+
+    api = DataTransferApi(c)
+    op = api.rmdir([StoragePath(path="python_client_tests")])
+    api.wait_for(op.id)
+
     c.stop()
 
 
 @pytest.fixture(scope="session")
-def user_client(binary_path, user_access_token, dt_url):
+def user_client(user_binary_config, binary_dir):
     from ansys.hps.dt_client.data_transfer import Client
 
-    c = Client(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=user_access_token)
+    c = Client(bin_config=user_binary_config, download_dir=binary_dir)
     c.start()
     yield c
     c.stop()
 
 
 @pytest.fixture(scope="session")
-def async_client(binary_path, admin_access_token, dt_url, event_loop):
+async def async_client(binary_config, binary_dir, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=admin_access_token)
-    c.start()
+    c = AsyncClient(bin_config=binary_config, download_dir=binary_dir)
+    await c.start()
     yield c
-    c.stop()
+
+    await c.stop()
 
 
 @pytest.fixture(scope="session")
-def async_user_client(binary_path, user_access_token, dt_url, event_loop):
+async def async_user_client(user_binary_config, binary_dir, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(data_transfer_url=dt_url, run_client_binary=True, binary_path=binary_path, token=user_access_token)
-    c.start()
+    c = AsyncClient(bin_config=user_binary_config, download_dir=binary_dir)
+    await c.start()
     yield c
-    c.stop()
+    await c.stop()
