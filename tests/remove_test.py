@@ -6,7 +6,7 @@ from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 
 
-def test_remove(test_name, client):
+def test_remove(storage_path, client):
     api = DataTransferApi(client)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
@@ -45,7 +45,7 @@ def test_remove(test_name, client):
     assert op[0].result == False
 
 
-async def test_async_remove(test_name, async_client):
+async def test_async_remove(storage_path, async_client):
     api = AsyncDataTransferApi(async_client)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:

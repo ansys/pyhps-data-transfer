@@ -25,6 +25,11 @@ def binary_dir():
     return os.path.join(os.getcwd(), "test_run", "bin")
 
 
+@pytest.fixture()
+def storage_path(test_name):
+    return f"python_client_tests/{test_name}"
+
+
 @pytest.fixture(autouse=True)
 def for_every_test(request, test_name):
     module_name = request.node.module.__name__.replace(".", "_")
@@ -163,6 +168,7 @@ async def async_client(binary_config, binary_dir, event_loop):
     c = AsyncClient(bin_config=binary_config, download_dir=binary_dir)
     await c.start()
     yield c
+
     await c.stop()
 
 

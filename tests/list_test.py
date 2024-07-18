@@ -9,7 +9,7 @@ from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 log = logging.getLogger(__name__)
 
 
-def test_list(test_name, client):
+def test_list(storage_path, client):
     api = DataTransferApi(client)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
@@ -19,13 +19,13 @@ def test_list(test_name, client):
     names = ["file_1", "file_2"]
 
     src = StoragePath(path=temp_file.name, remote="local")
-    dsts = [StoragePath(path=f"{test_name}/{name}") for name in names]
+    dsts = [StoragePath(path=f"{storage_path}/{name}") for name in names]
     op = api.copy([SrcDst(src=src, dst=dst) for dst in dsts])
     assert op.id is not None
     op = api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
 
-    op = api.list([StoragePath(path=test_name)])
+    op = api.list([StoragePath(path=storage_path)])
     assert op.id is not None
     op = api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
@@ -35,7 +35,7 @@ def test_list(test_name, client):
     assert names[1] in result
 
 
-async def test_async_list(test_name, async_client):
+async def test_async_list(storage_path, async_client):
     api = AsyncDataTransferApi(async_client)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
@@ -45,13 +45,13 @@ async def test_async_list(test_name, async_client):
     names = ["file_1", "file_2"]
 
     src = StoragePath(path=temp_file.name, remote="local")
-    dsts = [StoragePath(path=f"{test_name}/{name}") for name in names]
+    dsts = [StoragePath(path=f"{storage_path}/{name}") for name in names]
     op = await api.copy([SrcDst(src=src, dst=dst) for dst in dsts])
     assert op.id is not None
     op = await api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
 
-    op = await api.list([StoragePath(path=test_name)])
+    op = await api.list([StoragePath(path=storage_path)])
     assert op.id is not None
     op = await api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
