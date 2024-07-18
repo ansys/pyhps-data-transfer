@@ -1,6 +1,6 @@
-from ansys.hps.dt_client.data_transfer import AsyncDataTransferApi, DataTransferApi
-from ansys.hps.dt_client.data_transfer.models.msg import StoragePath
-from ansys.hps.dt_client.data_transfer.models.ops import OperationState
+from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
+from ansys.hps.data_transfer.client.models.msg import StoragePath
+from ansys.hps.data_transfer.client.models.ops import OperationState
 
 
 def test_mkdir(storage_path, client):

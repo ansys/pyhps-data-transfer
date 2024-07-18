@@ -3,9 +3,9 @@ import logging
 import os
 import tempfile
 
-from ansys.hps.dt_client.data_transfer import AsyncDataTransferApi, DataTransferApi
-from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
-from ansys.hps.dt_client.data_transfer.models.ops import OperationState
+from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
+from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models.ops import OperationState
 
 log = logging.getLogger(__name__)
 

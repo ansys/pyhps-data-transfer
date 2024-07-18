@@ -5,9 +5,9 @@ import glob
 import logging
 import os
 
-from ansys.hps.dt_client.data_transfer import Client, DataTransferApi
-from ansys.hps.dt_client.data_transfer.authenticate import authenticate
-from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client.authenticate import authenticate
+from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)
 
