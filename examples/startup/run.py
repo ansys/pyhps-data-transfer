@@ -37,6 +37,8 @@ if __name__ == "__main__":
     for d in api.storages():
         log.info(f"- {json.dumps(d, indent=4)}")
 
-    time.sleep(2)
+    for i in range(10):
+        log.info("Idling for a while...")
+        time.sleep(2)
 
     client.stop()
