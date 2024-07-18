@@ -148,6 +148,14 @@ def client(binary_config, binary_dir):
     c = Client(bin_config=binary_config, download_dir=binary_dir)
     c.start()
     yield c
+
+    from ansys.hps.dt_client.data_transfer import DataTransferApi
+    from ansys.hps.dt_client.data_transfer.models.msg import StoragePath
+
+    api = DataTransferApi(c)
+    op = api.rmdir([StoragePath(path="python_client_tests")])
+    api.wait_for(op.id)
+
     c.stop()
 
 
