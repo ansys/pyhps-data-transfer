@@ -114,12 +114,13 @@ if __name__ == "__main__":
         verbosity=3,
         debug=False,
         insecure=True,
-        token=user_token,
+        token=admin_token,
         data_transfer_url=dt_url,
     )
     admin_client.start()
 
     admin = DataTransferApi(admin_client)
+    admin.status(wait=True)
 
     log.info("### Granting 'repuser' the necessary permissions ...")
     user_id = get_user_id_from_keycloak()

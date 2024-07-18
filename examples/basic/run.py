@@ -4,24 +4,13 @@ Example script for file operations.
 import logging
 import os
 import pathlib
-import time
 import uuid
 
-from ansys.hps.dt_client.data_transfer import Client, DataTransferApi, HPSError
+from ansys.hps.dt_client.data_transfer import Client, DataTransferApi
 from ansys.hps.dt_client.data_transfer.authenticate import authenticate
 from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
-from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 
 log = logging.getLogger(__name__)
-
-
-def await_operation_completion(api: DataTransferApi, operation_id: str, max_attempts: int = 10):
-    for _ in range(max_attempts):
-        time.sleep(1)
-        resp = api.operations([operation_id])
-        if resp[0].state == OperationState.Succeeded:
-            return resp
-    raise HPSError("Exceeded max number of attempts for operation to complete")
 
 
 hps_url = "https://localhost:8443/hps"
