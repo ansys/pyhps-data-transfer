@@ -1,29 +1,41 @@
-import time
-
 from ansys.hps.dt_client.data_transfer import AsyncDataTransferApi, DataTransferApi
 from ansys.hps.dt_client.data_transfer.models.msg import StoragePath
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 
 
-def test_mkdir(client):
-    api_instance = DataTransferApi(client)
-    resp = api_instance.mkdir([StoragePath(path="test_mkdir")])
-    operation_id = resp.id
-    assert operation_id is not None
-    for _ in range(10):
-        time.sleep(1)
-        resp = api_instance.operations([operation_id])
-        if resp[0].state == OperationState.Succeeded:
-            break
+def test_mkdir(test_name, client):
+    api = DataTransferApi(client)
+
+    dst = StoragePath(path=f"{test_name}/a/b")
+
+    op = api.exists([dst])
+    op = api.wait_for(op.id)
+    assert op[0].result == False
+
+    op = api.mkdir([dst])
+    assert op.id is not None
+    op = api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    op = api.exists([dst])
+    op = api.wait_for(op.id)
+    assert op[0].result == True
 
 
-async def test_async_mkdir(async_client):
-    api_instance = AsyncDataTransferApi(async_client)
-    resp = await api_instance.mkdir([StoragePath(path="test_mkdir")])
-    operation_id = resp.id
-    assert operation_id is not None
-    for _ in range(10):
-        time.sleep(1)
-        resp = await api_instance.operations([operation_id])
-        if resp[0].state == OperationState.Succeeded:
-            break
+async def test_async_mkdir(test_name, async_client):
+    api = AsyncDataTransferApi(async_client)
+
+    dst = StoragePath(path=f"{test_name}/a/b")
+
+    op = await api.exists([dst])
+    op = await api.wait_for(op.id)
+    assert op[0].result == False
+
+    op = await api.mkdir([dst])
+    assert op.id is not None
+    op = await api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    op = await api.exists([dst])
+    op = await api.wait_for(op.id)
+    assert op[0].result == True
