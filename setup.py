@@ -20,7 +20,7 @@ install_requires = [
 
 def setup_package():
     metadata = dict(
-        name="ansys-hps-client-data-transfer",
+        name="ansys-hps-data-transfer-client",
         version="0.1.0",
         packages=find_namespace_packages(include=["ansys.*"]),
         author="ANSYS, Inc.",
