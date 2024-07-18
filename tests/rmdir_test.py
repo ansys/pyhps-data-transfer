@@ -17,6 +17,21 @@ def test_rmdir(storage_path, client):
     op = api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
 
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
+        temp_file.write("Mock file")
+    temp_file_name = os.path.basename(temp_file.name)
+
+    op = api.copy(
+        [
+            SrcDst(
+                src=StoragePath(path=temp_file.name, remote="local"),
+                dst=StoragePath(path=f"{dst.path}/{temp_file_name}"),
+            )
+        ]
+    )
+    op = api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
     op = api.exists([dst])
     op = api.wait_for(op.id)
     assert op[0].result == True
@@ -42,6 +57,17 @@ async def test_async_rmdir(storage_path, async_client):
 
     op = await api.mkdir([dst])
     assert op.id is not None
+    op = await api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    op = await api.copy(
+        [
+            SrcDst(
+                src=StoragePath(path=temp_file.name, remote="local"),
+                dst=StoragePath(path=f"{dst.path}/{temp_file_name}"),
+            )
+        ]
+    )
     op = await api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
 

@@ -1,9 +1,9 @@
 """
 Example script for file operations.
 """
+import glob
 import logging
 import os
-import pathlib
 
 from ansys.hps.dt_client.data_transfer import Client, DataTransferApi
 from ansys.hps.dt_client.data_transfer.authenticate import authenticate
@@ -40,60 +40,34 @@ if __name__ == "__main__":
     api = DataTransferApi(client)
     api.status(wait=True)
 
-    log.info("Query storages..")
+    log.info("Query storages ...")
     storages = api.storages()
     storage_names = [f"{storage['name']}({storage['type']})" for storage in storages]
     log.info(f"Available storages: {storage_names}")
-    local_remote = "local"
 
-    log.info("Creating a directory..")
-    base_dir = "basic_example"
+    log.info("Creating a directory ...")
+    base_dir = "basic-example"
     mkdir_op = api.mkdir([StoragePath(path=f"{base_dir}/")])
     api.wait_for([mkdir_op.id])
 
-    log.info("Uploading files..")
-    upload_path = pathlib.Path(__file__).parent / "files"
-    for file in os.listdir(f"{upload_path}"):
-        full_path = os.path.abspath(f"{upload_path}/{file}")
-        upload_op = api.upload_file(dst=f"{base_dir}/{file}", src=full_path)
-        api.wait_for([upload_op.id])
+    log.info("Copying files ...")
+    files = glob.glob(os.path.join(os.path.dirname(__file__), "files", "*.txt"))
+    srcs = [StoragePath(path=file, remote="local") for file in files]
+    dsts = [StoragePath(path=f"{base_dir}/{os.path.basename(file)}") for file in files]
 
-    log.info("Moving files..")
-    new_base_dir = f"{base_dir}/moved"
-    list_op = api.list([StoragePath(path=f"{base_dir}/")])
-    list_op_resp = api.wait_for([list_op.id])
+    op = api.copy([SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)])
+    op = api.wait_for([op.id])
+    log.info(f"Operation {op[0].state}")
 
-    move_items = []
-    log.warning(list_op_resp)
-    for file in list_op_resp[0].result[f"any:{base_dir}/"]:
-        move_items.append(
-            SrcDst(
-                src=StoragePath(path=f"{base_dir}/{file}"),
-                dst=StoragePath(path=f"{new_base_dir}/{file}"),
-            )
-        )
-    move_op = api.move(move_items)
-    api.wait_for([move_op.id], timeout=60)
+    log.info("Listing files ...")
+    op = api.list([StoragePath(path=base_dir)])
+    op = api.wait_for([op.id])
+    log.info(f"Operation {op[0].state}")
+    log.info(f"Files in {base_dir}: {op[0].result}")
 
-    log.info("Copying files..")
-    list_op = api.list([StoragePath(path=f"{new_base_dir}/")])
-    list_op_resp = api.wait_for([list_op.id])
-    copy_items = []
-    for file in list_op_resp[0].result[f"{s3_remote}:{new_base_dir}/"]:
-        copy_items.append(
-            SrcDst(
-                src=StoragePath(path=f"{base_dir}/{file}"),
-                dst=StoragePath(path=f"{file}", remote=local_remote),
-            )
-        )
-    copy_op = api.copy(copy_items)
-    api.wait_for([copy_op.id], timeout=60)
-
-    log.info("Downloading files..")
-    list_op = api.list([StoragePath(path=f"", remote=f"{local_remote}")])
-    list_op_resp = api.wait_for([list_op.id])
-    for file in list_op_resp[0].result[f"{local_remote}:/"]:
-        download_op = api.download_file(src=f"{base_dir}/{file}", dst=file)
-        api.wait_for([download_op.id])
+    log.info("Removing files ...")
+    op = api.rmdir([StoragePath(path=base_dir)])
+    op = api.wait_for([op.id])
+    log.info(f"Operation {op[0].state}")
 
     client.stop()
