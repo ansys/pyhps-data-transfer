@@ -14,6 +14,7 @@ install_requires = [
     "humanfriendly==10.0",
     "requests==2.32.3",
     "portend==3.2.0",
+    "python-slugify==8.0.4",
 ]
 
 

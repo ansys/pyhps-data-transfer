@@ -1,7 +1,4 @@
 import logging
-import mimetypes
-import os
-import tempfile
 import time
 from typing import List
 
@@ -22,7 +19,7 @@ from ..models.msg import (
     StorageConfigResponse,
     StoragePath,
 )
-from ..models.ops import OperationState
+from ..models.ops import Operation, OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
 from .retry import retry
@@ -46,24 +43,6 @@ class DataTransferApi:
                 time.sleep(s)
                 continue
             return s
-
-    def download_file(self, remote: str, path: str, dest: str = None):
-        url = f"/data/{remote}/{path}"
-        if not dest:
-            dest = os.path.join(tempfile.gettempdir(), os.path.basename(path))
-        with self.client.session.stream("GET", url) as resp:
-            with open(dest, "wb") as file:
-                for chunk in resp.iter_bytes():
-                    file.write(chunk)
-        return dest
-
-    def upload_file(self, remote: str, path: str, src: str):
-        url = f"/data/{remote}/{path}"
-        filename = os.path.basename(src)
-        mime_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
-        resp = self.client.session.post(url, files={"file": (filename, open(src, "rb"), mime_type)})
-        json = resp.json()
-        return OpIdResponse(**json)
 
     @retry()
     def operations(self, ids: List[str]):
@@ -106,7 +85,6 @@ class DataTransferApi:
         resp = self.client.session.post(url, json=payload)
         json = resp.json()
         r = OpIdResponse(**json)
-        log.warning("op id : %s", r.id)
         return r
 
     @retry()
@@ -139,7 +117,12 @@ class DataTransferApi:
         self.client.session.post(url, json=payload)
         return None
 
-    def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
+    def wait_for(
+        self, operation_ids: List[str | Operation | OpIdResponse], timeout: float | None = None, interval: float = 1.0
+    ):
+        if not isinstance(operation_ids, list):
+            operation_ids = [operation_ids]
+        operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]
         start = time.time()
         attempt = 0
         while True:

@@ -1,7 +1,10 @@
 import asyncio
+import os
+import shutil
 
 from keycloak import KeycloakAdmin
 import pytest
+from slugify import slugify
 
 from ansys.hps.dt_client.data_transfer.authenticate import authenticate
 from ansys.hps.dt_client.data_transfer.binary import BinaryConfig
@@ -10,6 +13,41 @@ from ansys.hps.dt_client.data_transfer.binary import BinaryConfig
 # def binary_path():
 #     bin_ext = ".exe" if sys.platform == "win32" else ""
 #     return os.environ.get("BINARY_PATH", os.path.join("bin", f"hpsdata{bin_ext}"))
+
+
+@pytest.fixture()
+def test_name(request):
+    return slugify(request.node.name)
+
+
+@pytest.fixture(scope="session")
+def binary_dir():
+    return os.path.join(os.getcwd(), "test_run", "bin")
+
+
+@pytest.fixture(autouse=True)
+def for_every_test(request, test_name):
+    module_name = request.node.module.__name__.replace(".", "_")
+
+    test_run_directory = os.path.join(os.getcwd(), "test_run")
+    test_directory = os.path.join(test_run_directory, module_name, test_name)
+
+    if os.path.isdir(test_directory):
+        shutil.rmtree(test_directory)
+    os.makedirs(test_directory)
+
+    old_cwd = os.getcwd()
+    os.chdir(test_directory)
+
+    yield
+
+    os.chdir(old_cwd)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def remove_binaries(binary_dir):
+    if os.path.isdir(binary_dir):
+        shutil.rmtree(binary_dir)
 
 
 @pytest.fixture(scope="session")
@@ -99,40 +137,40 @@ def user_binary_config(user_access_token, dt_url):
 
 
 @pytest.fixture(scope="session")
-def client(binary_config):
+def client(binary_config, binary_dir):
     from ansys.hps.dt_client.data_transfer import Client
 
-    c = Client(bin_config=binary_config)
+    c = Client(bin_config=binary_config, download_dir=binary_dir)
     c.start()
     yield c
     c.stop()
 
 
 @pytest.fixture(scope="session")
-def user_client(user_binary_config):
+def user_client(user_binary_config, binary_dir):
     from ansys.hps.dt_client.data_transfer import Client
 
-    c = Client(bin_config=user_binary_config)
+    c = Client(bin_config=user_binary_config, download_dir=binary_dir)
     c.start()
     yield c
     c.stop()
 
 
 @pytest.fixture(scope="session")
-async def async_client(binary_config, event_loop):
+async def async_client(binary_config, binary_dir, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(bin_config=binary_config)
+    c = AsyncClient(bin_config=binary_config, download_dir=binary_dir)
     await c.start()
     yield c
     await c.stop()
 
 
 @pytest.fixture(scope="session")
-async def async_user_client(user_binary_config, event_loop):
+async def async_user_client(user_binary_config, binary_dir, event_loop):
     from ansys.hps.dt_client.data_transfer import AsyncClient
 
-    c = AsyncClient(bin_config=user_binary_config)
+    c = AsyncClient(bin_config=user_binary_config, download_dir=binary_dir)
     await c.start()
     yield c
     await c.stop()

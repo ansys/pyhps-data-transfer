@@ -1,8 +1,5 @@
 import asyncio
 import logging
-import mimetypes
-import os
-import tempfile
 import time
 from typing import List
 
@@ -20,7 +17,7 @@ from ..models.msg import (
     StorageConfigResponse,
     StoragePath,
 )
-from ..models.ops import OperationState
+from ..models.ops import Operation, OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
 from .retry import retry
@@ -46,24 +43,6 @@ class AsyncDataTransferApi:
                 asyncio.sleep(s)
                 continue
             return s
-
-    async def download_file(self, remote: str, path: str, dest: str = None):
-        url = f"/data/{remote}/{path}"
-        if not dest:
-            dest = os.path.join(tempfile.gettempdir(), os.path.basename(path))
-        async with self.client.session.stream("GET", url) as resp:
-            with open(dest, "wb") as file:
-                async for chunk in resp.aiter_bytes():
-                    file.write(chunk)
-        return dest
-
-    async def upload_file(self, remote: str, path: str, file_path: str):
-        url = f"/data/{remote}/{path}"
-        filename = os.path.basename(file_path)
-        mime_type = mimetypes.guess_type(filename)[0] or "application/octet-stream"
-        resp = await self.client.session.post(url, files={"file": (filename, open(file_path, "rb"), mime_type)})
-        json = resp.json()
-        return OpIdResponse(**json)
 
     @retry()
     async def operations(self, ids: List[str]):
@@ -136,7 +115,10 @@ class AsyncDataTransferApi:
         await self.client.session.post(url, json=payload)
         return None
 
-    async def wait_for(self, operation_ids: List[str], timeout: float | None = None, interval: float = 1.0):
+    async def wait_for(self, operation_ids: List[str | Operation], timeout: float | None = None, interval: float = 1.0):
+        if not isinstance(operation_ids, list):
+            operation_ids = [operation_ids]
+        operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]
         start = time.time()
         attempt = 0
         while True:
