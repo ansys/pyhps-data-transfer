@@ -31,14 +31,14 @@ class ClientBase:
         self._bin_config = bin_config
         self._download_dir = download_dir
         self.binary = None
-        self.base_api_url = None
-
-        if bin_config.external_url is not None:
-            self.base_api_url = bin_config.external_url + "/api/v1"
 
     @property
     def binary_config(self):
         return self._bin_config
+
+    @property
+    def base_api_url(self):
+        return self._bin_config.url
 
     def start(self):
         if self.binary is not None:
@@ -50,7 +50,6 @@ class ClientBase:
 
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
-        self.base_api_url = self.binary.external_url + "/api/v1"
 
     def stop(self, wait=5.0):
         if self.binary is None:

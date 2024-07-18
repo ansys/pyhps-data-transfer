@@ -1,12 +1,12 @@
-import json
 import logging
 import os
-import socket
 import stat
 import subprocess
 import sys
 import threading
 import time
+
+import portend
 
 from .exceptions import BinaryError
 
@@ -23,13 +23,12 @@ class BinaryConfig:
         monitor_interval: float = 0.5,
         path: str = None,
         # Worker config settings
-        external_url: str = None,
         token: str = None,
+        host: str = "127.0.0.1",
         port: int = None,
         verbosity: int = 1,
         insecure: bool = False,
         debug: bool = False,
-        docs: bool = False,
     ):
         self.data_transfer_url = data_transfer_url
 
@@ -46,11 +45,11 @@ class BinaryConfig:
         self.debug = debug
         self.data_transfer_url = data_transfer_url
         self.verbosity = verbosity
-        self.port = port
+        self.host = host
+        self._selected_port = port
+        self._detected_port = None
         self.token = token
-        self.external_url = external_url
         self.insecure = insecure
-        self.docs = docs
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
@@ -58,6 +57,14 @@ class BinaryConfig:
                 setattr(self, key, value)
             else:
                 raise AttributeError(f"Unknown attribute {key}")
+
+    @property
+    def port(self):
+        return self._selected_port or self._detected_port
+
+    @property
+    def url(self):
+        return f"http://{self.host}:{self.port}/api/v1"
 
 
 class Binary:
@@ -72,10 +79,6 @@ class Binary:
         self._stop = threading.Event()
         self._prepared = threading.Event()
         self._process = None
-
-    @property
-    def external_url(self):
-        return self._config.external_url
 
     @property
     def config(self):
@@ -166,23 +169,16 @@ class Binary:
             time.sleep(self._config.monitor_interval)
 
     def _prepare(self):
-        if self._config.port is None:
-            self._config.port = self._get_open_port()
+        if self._config._selected_port is None:
+            self._config._detected_port = self._get_open_port()
 
         self._build_base_args()
-
-        if self._config.external_url is None:
-            self._fill_external_url()
 
         self._build_args()
         self._prepared.set()
 
     def _get_open_port(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(("", 0))
-        s.listen(1)
-        port = s.getsockname()[1]
-        s.close()
+        port = portend.find_available_local_port()
         return port
 
     def _build_base_args(self):
@@ -190,6 +186,8 @@ class Binary:
             self._config.path,
             "--log-types",
             "console",
+            "--host",
+            self._config.host,
             "--port",
             str(self._config.port),
         ]
@@ -212,22 +210,11 @@ class Binary:
             ]
         )
 
-        if self._config.docs:
-            self._args.append("--docs")
-
         if self._config.insecure:
             self._args.append("--insecure")
 
         if self._config.debug:
             self._args.append("--debug")
-
-        if self._config.external_url is not None:
-            self._args.extend(
-                [
-                    "--external-url",
-                    self._config.external_url,
-                ]
-            )
 
         if self._config.token is not None:
             self._args.extend(
@@ -236,10 +223,3 @@ class Binary:
                     f'"Bearer {self._config.token}"',
                 ]
             )
-
-    def _fill_external_url(self):
-        args = " ".join(self._base_args)
-        resp = subprocess.run(f"{args} config show", capture_output=True, text=True, shell=True)
-        loaded = json.loads(resp.stdout)
-        self._config.external_url = loaded.get("external_url", None)
-        log.debug(f"Detected external URL: {self._config.external_url}")
