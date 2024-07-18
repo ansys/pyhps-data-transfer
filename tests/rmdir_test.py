@@ -1,5 +1,8 @@
+import os
+import tempfile
+
 from ansys.hps.dt_client.data_transfer import AsyncDataTransferApi, DataTransferApi
-from ansys.hps.dt_client.data_transfer.models.msg import StoragePath
+from ansys.hps.dt_client.data_transfer.models.msg import SrcDst, StoragePath
 from ansys.hps.dt_client.data_transfer.models.ops import OperationState
 
 
@@ -59,6 +62,10 @@ async def test_async_rmdir(storage_path, async_client):
     assert op.id is not None
     op = await api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
+        temp_file.write("Mock file")
+    temp_file_name = os.path.basename(temp_file.name)
 
     op = await api.copy(
         [
