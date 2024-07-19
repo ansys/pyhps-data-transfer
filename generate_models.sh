@@ -10,7 +10,8 @@ dev_env/bin/datamodel-codegen --input ./out/openapi.json --input-file-type opena
 
 pushd ansys/hps/data_transfer/client/models
 # Weird syntax due to mac ...
-sed "s/from \. import ops, permissions/from \. import ops, permissions #noqa: F401/g" msg.py | tee msg.py &> /dev/null
+sed "s/from \. import ops, permissions/from \. import ops, permissions as perms #noqa: F401/g" msg.py | tee msg.py &> /dev/null
+sed "s/permissions\./perms\./g" ansys/hps/data_transfer/client/models/msg.py msg.py | tee msg.py &> /dev/null
 popd
 
 black ansys/hps/data_transfer/client/models
