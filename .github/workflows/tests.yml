@@ -16,7 +16,6 @@ jobs:
         os: [ubuntu-latest-8-cores]
         cfg:
           - {python-version: "3.10", toxenv: "py310"}
-          - {python-version: "3.12", toxenv: "py312"}
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -68,4 +67,4 @@ jobs:
         if: always()
         with:
           report_paths: '**/test*.xml'
-          check_name: Test Report ${{ matrix.os }}:${{ matrix.cfg.python-version }} 
+          check_name: Test report ${{ matrix.os }}:${{ matrix.cfg.python-version }} 

@@ -36,7 +36,7 @@ jobs:
       - name: Create venv
         run: |
             python3 -m venv dev_env
-            dev_env/bin/python -m pip install -r requirements/requirements_build.txt
+            dev_env/bin/python build.py dev
 
       - name: Generate models
         run: |
@@ -44,6 +44,17 @@ jobs:
             ./generate_models.sh
             ls -lah
             sudo rm -rf out
+
+      - name: Run tests
+        run: |
+            dev_env/bin/python build.py tests
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: '**/test*.xml'
+          check_name: Test report
 
       - name: "Create PR if changes detected"
         id: create-pr

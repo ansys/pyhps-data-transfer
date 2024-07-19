@@ -2,7 +2,8 @@ name: CI-CD
 
 on:
   workflow_dispatch:
-      force_release:
+    inputs:  
+        force_release:
           type: boolean
           default: false
           description: Force to push a release now
