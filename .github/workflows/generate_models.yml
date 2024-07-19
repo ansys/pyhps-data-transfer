@@ -27,7 +27,6 @@ jobs:
         with:
           submodules: recursive
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-          path: client
 
       - uses: actions/checkout@v4
         with:
@@ -48,8 +47,7 @@ jobs:
 
       - name: Generate models
         run: |
-            cp core/docs/client/swagger.json client/openapi2.json
-            cd client
+            cp core/docs/client/swagger.json openapi2.json
             ./generate_models.sh
 
       - name: "Create PR if changes detected"
@@ -62,4 +60,4 @@ jobs:
           delete-branch: true
           reviewers: nezgrath
           add-paths: |
-            core/ansys/hps/data_transfer/client/models
+            ansys/hps/data_transfer/client/models
