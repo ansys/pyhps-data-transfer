@@ -99,3 +99,4 @@ test_results-*.xml
 examples/permissions/downloaded
 dt_download/worker/*
 dt_download/*
+openapi.json
