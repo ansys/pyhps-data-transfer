@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from . import ops, permissions
+from . import ops
 
 
 class BuildInfo(BaseModel):
