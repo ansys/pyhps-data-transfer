@@ -41,7 +41,6 @@ jobs:
 
       - name: Create venv
         run: |
-            cd client
             python3 -m venv dev_env
             dev_env/bin/python -m pip install -r requirements/requirements_build.txt
 
