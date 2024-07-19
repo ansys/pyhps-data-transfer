@@ -2,27 +2,7 @@ name: "[callable] Tests"
 
 on:
   workflow_dispatch:
-    inputs:
-      py-version:
-        default: "3.12"
-        type: string
-        description: Python version
-      ssh-enabled:
-        default: false
-        type: boolean
-        description: Allow SSH connection on failure
-
   workflow_call:
-    inputs:
-      py-version:
-        required: true
-        type: string
-        description: Python version
-      ssh-enabled:
-        required: false
-        type: boolean
-        description: Allow SSH connection on failure
-    
 
 jobs:
   linux:

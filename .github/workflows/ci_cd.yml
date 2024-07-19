@@ -43,9 +43,6 @@ jobs:
     uses: ./.github/workflows/tests.yml
     name: Tests
     secrets: inherit
-    with:
-      py-version: ${{ env.PYTHON_VERSION }}
-      ssh-enabled: ${{ github.event.inputs.ssh-enabled == 'true' }}
 
   wheels: 
     name: Wheels
