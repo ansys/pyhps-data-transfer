@@ -101,4 +101,4 @@ dt_download/worker/*
 dt_download/*
 openapi.json
 openapi*.json
-./out
+out
