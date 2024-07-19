@@ -15,13 +15,7 @@ jobs:
   
   generate:
     name: Model generation
-    runs-on: ${{ matrix.os }}
-    strategy:
-      # max-parallel: 1
-      matrix:
-        os: [ubuntu-latest]
-      fail-fast: false
-
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,6 +42,7 @@ jobs:
         run: |
             cp core/docs/client/swagger.json openapi2.json
             ./generate_models.sh
+            rm -rf out
 
       - name: "Create PR if changes detected"
         id: create-pr
