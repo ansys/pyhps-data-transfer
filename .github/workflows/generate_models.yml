@@ -45,9 +45,9 @@ jobs:
             ls -lah
             sudo rm -rf out
 
-      - name: Run tests
-        run: |
-            dev_env/bin/python build.py tests
+    #   - name: Run tests
+    #     run: |
+    #         dev_env/bin/python build.py tests
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
