@@ -15,4 +15,4 @@ popd
 black ansys/hps/data_transfer/client/models
 dev_env/bin/python -m pip install autoflake
 dev_env/bin/autoflake --recursive --ignore-init-module-imports --remove-all-unused-imports --in-place ansys/hps/data_transfer/client/models
-dev_env/bin/pre-commit run --all-files
+# dev_env/bin/pre-commit run --all-files; echo "Done"
