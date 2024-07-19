@@ -1,0 +1,66 @@
+name: CI-CD
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 1-5"
+
+env:
+  PYTHON_VERSION: '3.12'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  
+  generate:
+    name: Model generation
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # max-parallel: 1
+      matrix:
+        os: [ubuntu-latest]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          path: client
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ansys-internal/rep-data-transfer
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          path: core
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Create venv
+        run: |
+            cd client
+            python3 -m venv dev_env
+            dev_env/bin/python -m pip install -r requirements/requirements_build.txt
+
+      - name: Generate models
+        run: |
+            cp core/docs/client/swagger.json client/openapi2.json
+            cd client
+            ./generate_models.sh
+
+      - name: "Create PR if changes detected"
+        id: create-pr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "[Auto] Update pydantic models"
+          base: main
+          branch: model_updates
+          delete-branch: true
+          reviewers: nezgrath
+          add-paths: |
+            ansys/hps/data_transfer/client/models
