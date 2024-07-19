@@ -1,5 +1,4 @@
-name: CI-CD
-
+name: "[daily] Update pydantic models"
 on:
   workflow_dispatch:
   schedule:
