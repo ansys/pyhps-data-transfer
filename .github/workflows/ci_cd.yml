@@ -40,7 +40,7 @@ jobs:
         run: tox -e style
 
   tests:
-    uses: ./.github/workflows/tests.yaml
+    uses: ./.github/workflows/tests.yml
     name: Tests
     secrets: inherit
     with:
