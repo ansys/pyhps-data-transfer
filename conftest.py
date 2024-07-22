@@ -1,6 +1,8 @@
 import asyncio
+import logging
 import os
 import shutil
+import traceback
 
 import backoff
 from keycloak import KeycloakAdmin
@@ -10,10 +12,35 @@ from slugify import slugify
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.binary import BinaryConfig
 
+log = logging.getLogger(__name__)
+
 # @pytest.fixture(scope="session")
 # def binary_path():
 #     bin_ext = ".exe" if sys.platform == "win32" else ""
 #     return os.environ.get("BINARY_PATH", os.path.join("bin", f"hpsdata{bin_ext}"))
+
+
+def _backoff_handler(details, title, exc_info=True):
+    try:
+        title = f"{title[0].upper()}{title[1:]}"
+        msg = "{title}, backing off {wait:0.1f} seconds after {tries} tries: {exception}".format(title=title, **details)
+        log.info(msg)
+        if exc_info:
+            try:
+                ex_str = "\n".join(traceback.format_exception(details["exception"]))
+                log.debug(f"Backoff caused by:\n{ex_str}")
+            except:
+                pass
+    except Exception as ex:
+        log.warning(f"Failed to log in backoff handler: {ex}")
+
+
+def _success_handler(details, title):
+    try:
+        title = f"{title[0].upper()}{title[1:]}"
+        log.debug("{title}, succeeded after {tries} tries".format(title=title, **details))
+    except Exception as ex:
+        log.warning(f"Failed to log in success handler: {ex}")
 
 
 @pytest.fixture()
@@ -56,29 +83,35 @@ def remove_binaries(binary_dir):
         shutil.rmtree(binary_dir)
 
 
+@pytest.fixture(scope="session")
 @backoff.on_exception(
     backoff.expo,
     Exception,
     max_time=120,
+    # max_tries=20,
     jitter=backoff.full_jitter,
     raise_on_giveup=True,
-    logger=None,
+    on_backoff=lambda details: _backoff_handler(details, "getting admin access token"),
+    on_success=lambda details: _success_handler(details, "getting admin access token"),
+    logger=__name__,
 )
-@pytest.fixture(scope="session")
 def admin_access_token(auth_url):
     tokens = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     return tokens.get("access_token", None)
 
 
+@pytest.fixture(scope="session")
 @backoff.on_exception(
     backoff.expo,
     Exception,
     max_time=120,
+    # max_tries=20,
     jitter=backoff.full_jitter,
     raise_on_giveup=True,
-    logger=None,
+    on_backoff=lambda details: _backoff_handler(details, "getting user access token"),
+    on_success=lambda details: _success_handler(details, "getting user access token"),
+    logger=__name__,
 )
-@pytest.fixture(scope="session")
 def user_access_token(auth_url):
     tokens = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
     return tokens.get("access_token", None)
