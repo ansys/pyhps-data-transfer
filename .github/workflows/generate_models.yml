@@ -58,6 +58,7 @@ jobs:
 
       - name: "Create PR if changes detected"
         id: create-pr
+        if: startsWith(github.ref, 'refs/heads/main')
         uses: peter-evans/create-pull-request@v6
         with:
           title: "[Auto] Update pydantic models"
