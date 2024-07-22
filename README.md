@@ -34,16 +34,6 @@ python build.py dist
 python build.py tests
 ```
 
-### Openapi Version Conversion
-To convert the Data Transfer Service Client Openapi version from 2.0 to 3.0 pull and run the following docker image:
-
-```
-docker pull swaggerapi/swagger-converter:v1.0.5
-docker run -it -p 8080:8080 --name swagger-converter swaggerapi/swagger-converter:v1.0.5
-```
-
-The image contains a REST HTTP Endpoint (http://localhost:8080/index.html) that can be used to perform conversion.
-
 ### Generate Models
 To generate the Data Transfer Service Client pydantic models, first download the Data Transfer Service Client OpenAPI specification and place it at the root folder, calling the file openapi2.json.
 Then execute the `generate_models.sh` script. This will update the spec to openapi3, generate the models and attempt to format it. 
