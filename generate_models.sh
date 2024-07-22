@@ -17,6 +17,7 @@ fi
 pushd ansys/hps/data_transfer/client/models
 $sed_cmd -i 's/from \. import ops, permissions/from \. import ops, permissions as perms #noqa: F401/g' msg.py
 $sed_cmd -i 's/permissions\./perms\./g' msg.py
+$sed_cmd -i 's/result: Optional\[Dict\[str, Any\]\] = None/result: Optional\[Any\] = None/g' ops.py
 popd
 
 # black ansys/hps/data_transfer/client/models
