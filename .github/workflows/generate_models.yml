@@ -47,7 +47,14 @@ jobs:
 
       - name: Run tests
         run: |
+            docker-compose pull
+            docker-compose up -d
             dev_env/bin/python build.py tests
+
+      - name: Stop services
+        if: always()
+        run: |
+            docker-compose down -v
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
