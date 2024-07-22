@@ -2,6 +2,7 @@ import asyncio
 import os
 import shutil
 
+import backoff
 from keycloak import KeycloakAdmin
 import pytest
 from slugify import slugify
@@ -55,12 +56,28 @@ def remove_binaries(binary_dir):
         shutil.rmtree(binary_dir)
 
 
+@backoff.on_exception(
+    backoff.expo,
+    Exception,
+    max_time=120,
+    jitter=backoff.full_jitter,
+    raise_on_giveup=True,
+    logger=None,
+)
 @pytest.fixture(scope="session")
 def admin_access_token(auth_url):
     tokens = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     return tokens.get("access_token", None)
 
 
+@backoff.on_exception(
+    backoff.expo,
+    Exception,
+    max_time=120,
+    jitter=backoff.full_jitter,
+    raise_on_giveup=True,
+    logger=None,
+)
 @pytest.fixture(scope="session")
 def user_access_token(auth_url):
     tokens = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
