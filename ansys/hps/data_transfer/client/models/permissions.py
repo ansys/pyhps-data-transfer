@@ -9,28 +9,28 @@ from pydantic import BaseModel
 
 
 class ResourceType(Enum):
-    Doc = 'document'
+    Doc = "document"
 
 
 class RoleType(Enum):
-    Reader = 'reader'
-    Writer = 'writer'
-    Admin = 'admin'
+    Reader = "reader"
+    Writer = "writer"
+    Admin = "admin"
 
 
 class SubjectType(Enum):
-    User = 'user'
-    Group = 'group'
-    Any = 'any'
+    User = "user"
+    Group = "group"
+    Any = "any"
 
 
 class Resource(BaseModel):
-    path: Optional[str] = 'my/path/to/data/file.txt'
+    path: Optional[str] = "my/path/to/data/file.txt"
     type: Optional[ResourceType] = None
 
 
 class Subject(BaseModel):
-    id: Optional[str] = '946991ec-828c-4de4-acbe-962ada8bc441'
+    id: Optional[str] = "946991ec-828c-4de4-acbe-962ada8bc441"
     type: Optional[SubjectType] = None
 
 

@@ -6,4 +6,4 @@ from pydantic import BaseModel, Field
 
 
 class FieldDataRemotePathPostRequest(BaseModel):
-    file: bytes = Field(..., description='File')
+    file: bytes = Field(..., description="File")

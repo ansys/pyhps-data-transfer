@@ -6,7 +6,8 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from . import ops, permissions as perms #noqa: F401
+from . import ops
+from . import permissions as perms  # noqa: F401
 
 
 class BuildInfo(BaseModel):
@@ -23,8 +24,8 @@ class CheckPermissionsResponse(BaseModel):
 
 
 class OpIdResponse(BaseModel):
-    id: Optional[str] = '2diK2kCkpgeHAQSNthIZ1JYyPte'
-    location: Optional[str] = '/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte'
+    id: Optional[str] = "2diK2kCkpgeHAQSNthIZ1JYyPte"
+    location: Optional[str] = "/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte"
 
 
 class OpsRequest(BaseModel):
@@ -47,7 +48,7 @@ class StorageConfigResponse(BaseModel):
 
 class StoragePath(BaseModel):
     path: str
-    remote: Optional[str] = 'any'
+    remote: Optional[str] = "any"
 
 
 class PathOperations(BaseModel):
