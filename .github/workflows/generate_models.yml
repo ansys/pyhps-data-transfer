@@ -33,6 +33,17 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - uses: KengoTODA/actions-setup-docker-compose@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Authenticate container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: pyansys-ci-bot
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create venv
         run: |
             python3 -m venv dev_env
@@ -45,9 +56,20 @@ jobs:
             ls -lah
             sudo rm -rf out
 
+
+      - name: Start services
+        run: |
+            docker-compose pull
+            docker-compose up -d
+
       - name: Run tests
         run: |
             dev_env/bin/python build.py tests
+
+      - name: Stop services
+        if: always()
+        run: |
+            docker-compose down -v
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
@@ -58,6 +80,7 @@ jobs:
 
       - name: "Create PR if changes detected"
         id: create-pr
+        if: startsWith(github.ref, 'refs/heads/main')
         uses: peter-evans/create-pull-request@v6
         with:
           title: "[Auto] Update pydantic models"
