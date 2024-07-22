@@ -56,10 +56,14 @@ jobs:
             ls -lah
             sudo rm -rf out
 
-      - name: Run tests
+
+      - name: Start services
         run: |
             docker-compose pull
             docker-compose up -d
+
+      - name: Run tests
+        run: |
             dev_env/bin/python build.py tests
 
       - name: Stop services
