@@ -33,6 +33,10 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - uses: KengoTODA/actions-setup-docker-compose@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create venv
         run: |
             python3 -m venv dev_env
