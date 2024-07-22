@@ -78,7 +78,6 @@ test_run/
 test_results.xml
 docs/schema/*
 *.pdb
-core.*
 content.txt
 replaced_content.txt
 [Oo]bj/
