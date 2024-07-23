@@ -75,7 +75,7 @@ class ClientBase:
             match platform.uname().machine:
                 case "AMD64":
                     arch = "x64"
-        else:        
+        else:
             match os.uname().machine:
                 case "x86_64":
                     arch = "x64"
