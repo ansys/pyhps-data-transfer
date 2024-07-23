@@ -71,13 +71,18 @@ class ClientBase:
             raise BinaryError(f"Unsupported platform: {platform.system()}")
 
         arch = ""
-        match os.uname().machine:
-            case "x86_64":
-                arch = "x64"
-            case "aarch64":
-                arch = "arm64"
-            case "arm64":
-                arch = "arm64"
+        if plat == "win":
+            match platform.uname().machine:
+                case "AMD64":
+                    arch = "x64"
+        else:        
+            match os.uname().machine:
+                case "x86_64":
+                    arch = "x64"
+                case "aarch64":
+                    arch = "arm64"
+                case "arm64":
+                    arch = "arm64"
 
         if not arch:
             raise BinaryError(f"Unsupported architecture: {os.uname().machine}")
