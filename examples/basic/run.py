@@ -19,7 +19,7 @@ auth_url = f"{hps_url}/auth/realms/rep"
 
 if __name__ == "__main__":
     logger = logging.getLogger()
-    logging.basicConfig(format="%(message)s", level=logging.DEBUG)
+    logging.basicConfig(format="%(asctime)s %(levelname)8s > %(message)s", level=logging.DEBUG)
 
     token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     token = token.get("access_token", None)
