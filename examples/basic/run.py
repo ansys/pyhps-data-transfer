@@ -65,6 +65,12 @@ if __name__ == "__main__":
     log.info(f"Operation {op[0].state}")
     log.info(f"Files in {base_dir}: {op[0].result}")
 
+    log.info("Getting metadata ...")
+    op = api.get_metadata([StoragePath(path=f"{base_dir}/2.txt")])
+    op = api.wait_for(op.id)
+    md = op[0].result[f"{base_dir}/2.txt"]
+    log.info(f"Metadata for {base_dir}/2.txt: {md}")
+
     log.info("Removing files ...")
     op = api.rmdir([StoragePath(path=base_dir)])
     op = api.wait_for([op.id])

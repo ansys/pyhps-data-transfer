@@ -2,7 +2,6 @@ import logging
 import os
 import stat
 import subprocess
-import sys
 import threading
 import time
 
@@ -35,11 +34,7 @@ class BinaryConfig:
         # Process related settings
         self.capture_log = log
         self.monitor_interval = monitor_interval
-        if path is None:
-            bin_ext = ".exe" if sys.platform == "win32" else ""
-            self.path = os.path.join(os.getcwd(), "bin", f"hpsdata{bin_ext}")
-        else:
-            self.path = path
+        self.path = path
 
         # Worker config settings
         self.debug = debug

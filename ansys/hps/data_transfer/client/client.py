@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 import platform
+import shutil
 import time
 
 import backoff
@@ -27,9 +28,10 @@ log = logging.getLogger(__name__)
 
 
 class ClientBase:
-    def __init__(self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download"):
+    def __init__(self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download", clean=False):
         self._bin_config = bin_config
         self._download_dir = download_dir
+        self._clean = clean
         self.binary = None
 
     @property
@@ -44,9 +46,13 @@ class ClientBase:
         if self.binary is not None:
             return
 
-        download_bin = self._bin_config.path is None or not os.path.exists(self._bin_config.path)
-        if download_bin:
-            self._prepare_platform_binary()
+        if self._clean and os.path.exists(self._download_dir):
+            try:
+                shutil.rmtree(self._download_dir)
+            except:
+                pass
+
+        self._prepare_platform_binary()
 
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
@@ -89,32 +95,55 @@ class ClientBase:
 
         return f"{plat}-{arch}"
 
+    def _check_binary(self, build_info):
+        log.debug(f"Server version: {build_info}")
+        version_hash = build_info["version_hash"]
+        branch = build_info["branch"]
+
+        # Figure out binary download path
+        bin_ext = ".exe" if platform.system() == "Windows" else ""
+        bin_dir = os.path.join(self._download_dir, "worker")
+        bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
+
+        # Check if we need to download the binary
+        reason = None
+        if self._bin_config.path is not None and not os.path.exists(self._bin_config.path):
+            reason = "binary not found"
+        elif not os.path.exists(bin_path):
+            reason = "binary version not found"
+        # elif branch == "dev":
+        #     reason = "dev branch"
+
+        # Use downloaded binary if nothing else was specified
+        if self._bin_config.path is None and os.path.exists(bin_path):
+            self._bin_config.path = bin_path
+
+        return reason, bin_path
+
     def _prepare_platform_binary(self):
+        # Get service build info
         dt_url = self._bin_config.data_transfer_url
-        session = self._create_session(dt_url)
+        session = self._create_session(dt_url, sync=True)
         resp = session.get("/")
         if resp.status_code != 200:
             raise BinaryError(f"Failed to download binary: {resp.text}")
-        d = resp.json()
-        log.debug(f"Server version: {d['build_info']}")
-        version_hash = d["build_info"]["version_hash"]
 
-        bin_ext = ".exe" if platform.system() == "Windows" else ""
-        bin_dir = os.path.join(self._download_dir, "worker")
+        d = resp.json()
+        reason, bin_path = self._check_binary(d["build_info"])
+        if reason is None:
+            log.debug(f"Using existing binary: {self._bin_config.path}")
+            return
+
+        bin_dir = os.path.dirname(bin_path)
+        bin_ext = os.path.splitext(bin_path)[1]
         if not os.path.exists(bin_dir):
             try:
                 os.makedirs(bin_dir)
             except:
                 pass
 
-        bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
-        if os.path.exists(bin_path):
-            log.debug(f"Using existing binary: {bin_path}")
-            self._bin_config.path = bin_path
-            return bin_path
-
         platform_str = self._platform()
-        log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}")
+        log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}, reason: {reason}")
         url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
         try:
             with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
@@ -128,13 +157,25 @@ class ClientBase:
             log.error(f"Failed to download binary: {ex}")
             os.remove(bin_path)
 
-    def _create_session_obj(self, url, verify):
-        raise NotImplementedError
+    def _create_async_session(self, verify):
+        return httpx.AsyncClient(
+            transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
+            event_hooks={"response": [async_raise_for_status]},
+        )
 
-    def _create_session(self, url):
+    def _create_sync_session(self, verify):
+        return httpx.Client(
+            transport=httpx.HTTPTransport(retries=5, verify=verify),
+            event_hooks={"response": [raise_for_status]},
+        )
+
+    def _create_session(self, url: str, *, sync: bool):
         verify = not self._bin_config.insecure
 
-        session = self._create_session_obj(url, verify)
+        if sync:
+            session = self._create_sync_session(verify)
+        else:
+            session = self._create_async_session(verify)
         session.base_url = url
         session.verify = verify
         session.follow_redirects = True
@@ -161,7 +202,7 @@ class AsyncClient(ClientBase):
 
     async def start(self):
         super().start()
-        self._session = self._create_session(self.base_api_url)
+        self._session = self._create_session(self.base_api_url, sync=False)
 
     async def stop(self, wait=5.0):
         if self._session is not None:
@@ -188,12 +229,6 @@ class AsyncClient(ClientBase):
             finally:
                 await asyncio.sleep(backoff.full_jitter(sleep))
 
-    def _create_session_obj(self, url, verify):
-        return httpx.AsyncClient(
-            transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
-            event_hooks={"response": [async_raise_for_status]},
-        )
-
 
 class Client(ClientBase):
     def __init__(self, *args, **kwargs):
@@ -208,7 +243,7 @@ class Client(ClientBase):
 
     def start(self):
         super().start()
-        self._session = self._create_session(self.base_api_url)
+        self._session = self._create_session(self.base_api_url, sync=True)
 
     def stop(self, wait=5.0):
         if self._session is not None:
@@ -233,9 +268,3 @@ class Client(ClientBase):
                     log.debug(f"Error waiting for worker to start: {ex}")
             finally:
                 time.sleep(backoff.full_jitter(sleep))
-
-    def _create_session_obj(self, url, verify):
-        return httpx.Client(
-            transport=httpx.HTTPTransport(retries=5, verify=verify),
-            event_hooks={"response": [raise_for_status]},
-        )
