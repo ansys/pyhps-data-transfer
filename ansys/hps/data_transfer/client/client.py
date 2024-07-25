@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 import platform
+import shutil
 import time
 
 import backoff
@@ -27,9 +28,10 @@ log = logging.getLogger(__name__)
 
 
 class ClientBase:
-    def __init__(self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download"):
+    def __init__(self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download", clean=False):
         self._bin_config = bin_config
         self._download_dir = download_dir
+        self._clean = clean
         self.binary = None
 
     @property
@@ -44,6 +46,11 @@ class ClientBase:
         if self.binary is not None:
             return
 
+        if self._clean and os.path.exists(self._download_dir):
+            try:
+                shutil.rmtree(self._download_dir)
+            except:
+                pass
         download_bin = self._bin_config.path is None or not os.path.exists(self._bin_config.path)
         if download_bin:
             self._prepare_platform_binary()
