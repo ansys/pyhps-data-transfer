@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import stat
@@ -10,6 +11,16 @@ import portend
 from .exceptions import BinaryError
 
 log = logging.getLogger(__name__)
+
+level_map = {
+    "trace": logging.DEBUG,
+    "debug": logging.DEBUG,
+    "info": logging.INFO,
+    "warn": logging.WARNING,
+    "error": logging.ERROR,
+    "fatal": logging.CRITICAL,
+    "panic": logging.CRITICAL,
+}
 
 
 class BinaryConfig:
@@ -138,11 +149,39 @@ class Binary:
                 if not line:
                     break
                 line = line.decode().strip()
-                log.info("Worker: %s" % line)
+                # log.info("Worker: %s" % line)
+                self._log_line(line)
+            except json.decoder.JSONDecodeError:
+                pass
             except Exception as e:
                 if self._config.debug:
                     log.debug(f"Error reading worker output: {e}")
                 time.sleep(1)
+
+    def _log_line(self, line):
+        d = json.loads(line)
+        # log.warning(f"Worker: {d}")
+
+        level = d.pop("level", "info")
+        if not self._config.debug:
+            time = d.pop("time", None)
+            caller = d.pop("caller", None)
+        msg = d.pop("message", None)
+
+        if msg is None:
+            return
+
+        msg = msg.capitalize()
+        level_no = level_map.get(level, logging.INFO)
+        other = ""
+        for k, v in d.items():
+            if " " in v:
+                v = f'"{v}"'
+            other += f"{k}={v} "
+        other = other.strip()
+        if other:
+            msg += f" {other}"
+        log.log(level_no, f"{msg}")
 
     def _monitor(self):
         while not self._stop.is_set():
@@ -180,7 +219,7 @@ class Binary:
         self._base_args = [
             self._config.path,
             "--log-types",
-            "console",
+            "diode",
             "--host",
             self._config.host,
             "--port",
