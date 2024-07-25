@@ -129,6 +129,14 @@ class DataTransferApi:
         self.client.session.post(url, json=payload)
         return None
 
+    @retry()
+    def get_metadata(self, operations: List[StoragePath]):
+        url = "/metadata:get"
+        payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
+        resp = self.client.session.post(url, json=payload)
+        json = resp.json()
+        return OpIdResponse(**json)
+
     def wait_for(
         self, operation_ids: List[str | Operation | OpIdResponse], timeout: float | None = None, interval: float = 1.0
     ):
