@@ -51,9 +51,8 @@ class ClientBase:
                 shutil.rmtree(self._download_dir)
             except:
                 pass
-        download_bin = self._bin_config.path is None or not os.path.exists(self._bin_config.path)
-        if download_bin:
-            self._prepare_platform_binary()
+
+        self._prepare_platform_binary()
 
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
@@ -97,6 +96,7 @@ class ClientBase:
         return f"{plat}-{arch}"
 
     def _prepare_platform_binary(self):
+        # Get service build info
         dt_url = self._bin_config.data_transfer_url
         session = self._create_session(dt_url)
         resp = session.get("/")
@@ -105,23 +105,38 @@ class ClientBase:
         d = resp.json()
         log.debug(f"Server version: {d['build_info']}")
         version_hash = d["build_info"]["version_hash"]
+        branch = d["build_info"]["branch"]
 
+        # Figure out binary download path
         bin_ext = ".exe" if platform.system() == "Windows" else ""
         bin_dir = os.path.join(self._download_dir, "worker")
+        bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
+
+        # Check if we need to download the binary
+        reason = None
+        if self._bin_config.path is not None and not os.path.exists(self._bin_config.path):
+            reason = "binary not found"
+        elif not os.path.exists(bin_path):
+            reason = "binary version not found"
+        elif branch == "dev":
+            reason = "dev branch"
+
+        # Use downloaded binary if nothing else was specified
+        if self._bin_config.path is None and os.path.exists(bin_path):
+            self._bin_config.path = bin_path
+
+        if reason is None:
+            log.debug(f"Using existing binary: {self._bin_config.path}")
+            return
+
         if not os.path.exists(bin_dir):
             try:
                 os.makedirs(bin_dir)
             except:
                 pass
 
-        bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
-        if os.path.exists(bin_path):
-            log.debug(f"Using existing binary: {bin_path}")
-            self._bin_config.path = bin_path
-            return bin_path
-
         platform_str = self._platform()
-        log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}")
+        log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}, reason: {reason}")
         url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
         try:
             with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
