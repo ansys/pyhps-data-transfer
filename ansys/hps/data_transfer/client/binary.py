@@ -175,7 +175,7 @@ class Binary:
         level_no = level_map.get(level, logging.INFO)
         other = ""
         for k, v in d.items():
-            if " " in v:
+            if isinstance(v, str) and " " in v:
                 v = f'"{v}"'
             other += f"{k}={v} "
         other = other.strip()
