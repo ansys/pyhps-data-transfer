@@ -54,6 +54,7 @@ class BinaryConfig:
         self.host = host
         self._selected_port = port
         self._detected_port = None
+        self._default_port = 1091
         self.token = token
         self.insecure = insecure
 
@@ -66,7 +67,11 @@ class BinaryConfig:
 
     @property
     def port(self):
-        return self._selected_port or self._detected_port
+        return self._selected_port or self._detected_port or self._default_port
+
+    @port.setter
+    def port(self, value):
+        self._selected_port = value
 
     @property
     def url(self):
@@ -164,8 +169,9 @@ class Binary:
 
         level = d.pop("level", "info")
         if not self._config.debug:
-            time = d.pop("time", None)
-            caller = d.pop("caller", None)
+            d.pop("time", None)
+            d.pop("caller", None)
+            d.pop("mode", None)
         msg = d.pop("message", None)
 
         if msg is None:

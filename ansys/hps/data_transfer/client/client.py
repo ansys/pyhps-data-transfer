@@ -10,7 +10,7 @@ import httpx
 import urllib3
 
 from .binary import Binary, BinaryConfig
-from .exceptions import BinaryError, ClientError, async_raise_for_status, raise_for_status
+from .exceptions import BinaryError, async_raise_for_status, raise_for_status
 
 urllib3.disable_warnings()
 
@@ -197,7 +197,7 @@ class AsyncClient(ClientBase):
     @property
     def session(self):
         if self._session is None:
-            raise ClientError("Not started")
+            self._session = self._create_session(self.base_api_url, sync=False)
         return self._session
 
     async def start(self):
@@ -238,7 +238,7 @@ class Client(ClientBase):
     @property
     def session(self):
         if self._session is None:
-            raise ClientError("Not started")
+            self._session = self._create_session(self.base_api_url, sync=True)
         return self._session
 
     def start(self):
