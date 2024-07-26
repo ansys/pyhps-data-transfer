@@ -34,6 +34,15 @@ class ClientBase:
         self._clean = clean
         self.binary = None
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_session"]
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self._session = None
+
     @property
     def binary_config(self):
         return self._bin_config

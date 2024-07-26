@@ -87,9 +87,16 @@ class Binary:
 
         self._base_args = []
         self._args = []
-        self._stop = threading.Event()
-        self._prepared = threading.Event()
+        self._stop = None
+        self._prepared = None
         self._process = None
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_stop"]
+        del state["_prepared"]
+        del state["_process"]
+        return state
 
     @property
     def config(self):
@@ -99,7 +106,8 @@ class Binary:
         if self._process is not None and self._process.returncode is None:
             raise BinaryError("Worker already started.")
 
-        self._stop.clear()
+        self._stop = threading.Event()
+        self._prepared = threading.Event()
 
         bin_path = self._config.path
         if not bin_path or not os.path.exists(bin_path):
@@ -128,6 +136,7 @@ class Binary:
     def stop(self, wait=5.0):
         if self._process is None:
             return
+
         self._stop.set()
         self._prepared.clear()
 
