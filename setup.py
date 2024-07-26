@@ -12,7 +12,7 @@ install_requires = [
     "httpx==0.27.0",
     "backoff==2.2.1",
     "humanfriendly==10.0",
-    "requests==2.32.3",
+    "requests==2.32.2",
     "portend==3.2.0",
     "python-slugify==8.0.4",
 ]

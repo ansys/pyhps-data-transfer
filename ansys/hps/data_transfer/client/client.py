@@ -194,6 +194,11 @@ class AsyncClient(ClientBase):
         super().__init__(*args, **kwargs)
         self._session = None
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_session"]
+        return state
+
     @property
     def session(self):
         if self._session is None:
@@ -268,3 +273,8 @@ class Client(ClientBase):
                     log.debug(f"Error waiting for worker to start: {ex}")
             finally:
                 time.sleep(backoff.full_jitter(sleep))
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_session"]
+        return state

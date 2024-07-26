@@ -91,6 +91,13 @@ class Binary:
         self._prepared = threading.Event()
         self._process = None
 
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state["_stop"]
+        del state["_prepared"]
+        del state["_process"]
+        return state
+
     @property
     def config(self):
         return self._config
