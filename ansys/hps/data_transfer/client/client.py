@@ -28,10 +28,14 @@ log = logging.getLogger(__name__)
 
 
 class ClientBase:
+    class Meta:
+        is_async = False
+
     def __init__(self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download", clean=False):
         self._bin_config = bin_config
         self._download_dir = download_dir
         self._clean = clean
+        self._session = None
         self.binary = None
 
     def __getstate__(self):
@@ -51,6 +55,12 @@ class ClientBase:
     def base_api_url(self):
         return self._bin_config.url
 
+    @property
+    def session(self):
+        if self._session is None:
+            self._session = self._create_session(self.base_api_url, sync=not self.Meta.is_async)
+        return self._session
+
     def start(self):
         if self.binary is not None:
             return
@@ -66,11 +76,14 @@ class ClientBase:
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
 
+        # self._session = self._create_session(self.base_api_url)
+
     def stop(self, wait=5.0):
         if self.binary is None:
             return
         self.binary.stop(wait=wait)
         self.binary = None
+        self._session = None
 
     def _platform(self):
         plat = ""
@@ -166,25 +179,19 @@ class ClientBase:
             log.error(f"Failed to download binary: {ex}")
             os.remove(bin_path)
 
-    def _create_async_session(self, verify):
-        return httpx.AsyncClient(
-            transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
-            event_hooks={"response": [async_raise_for_status]},
-        )
-
-    def _create_sync_session(self, verify):
-        return httpx.Client(
-            transport=httpx.HTTPTransport(retries=5, verify=verify),
-            event_hooks={"response": [raise_for_status]},
-        )
-
-    def _create_session(self, url: str, *, sync: bool):
+    def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
 
         if sync:
-            session = self._create_sync_session(verify)
+            session = httpx.Client(
+                transport=httpx.HTTPTransport(retries=5, verify=verify),
+                event_hooks={"response": [raise_for_status]},
+            )
         else:
-            session = self._create_async_session(verify)
+            session = httpx.AsyncClient(
+                transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
+                event_hooks={"response": [async_raise_for_status]},
+            )
         session.base_url = url
         session.verify = verify
         session.follow_redirects = True
@@ -199,15 +206,11 @@ class ClientBase:
 
 
 class AsyncClient(ClientBase):
+    class Meta(ClientBase.Meta):
+        is_async = True
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._session = None
-
-    @property
-    def session(self):
-        if self._session is None:
-            self._session = self._create_session(self.base_api_url, sync=False)
-        return self._session
 
     async def start(self):
         super().start()
@@ -221,7 +224,6 @@ class AsyncClient(ClientBase):
             except:
                 pass
         super().stop(wait=wait)
-        self._session = None
 
     async def wait(self, timeout: float = 60.0, sleep=0.5):
         start = time.time()
@@ -240,19 +242,11 @@ class AsyncClient(ClientBase):
 
 
 class Client(ClientBase):
+    class Meta(ClientBase.Meta):
+        is_async = False
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._session = None
-
-    @property
-    def session(self):
-        if self._session is None:
-            self._session = self._create_session(self.base_api_url, sync=True)
-        return self._session
-
-    def start(self):
-        super().start()
-        self._session = self._create_session(self.base_api_url, sync=True)
 
     def stop(self, wait=5.0):
         if self._session is not None:
@@ -261,7 +255,6 @@ class Client(ClientBase):
             except:
                 pass
         super().stop(wait=wait)
-        self._session = None
 
     def wait(self, timeout: float = 60.0, sleep=0.5):
         start = time.time()
