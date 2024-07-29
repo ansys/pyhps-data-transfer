@@ -31,6 +31,7 @@ def test_get_basic_metadata(storage_path, client):
     assert md is not None
     assert md["size"] == os.path.getsize(temp_file.name)
     assert md["checksum"] != ""
+    assert md["checksum"] == "ac2390bba2edaa01"
 
 
 async def test_async_get_basic_metadata(storage_path, async_client):
@@ -56,3 +57,4 @@ async def test_async_get_basic_metadata(storage_path, async_client):
     assert md is not None
     assert md["size"] == os.path.getsize(temp_file.name)
     assert md["checksum"] != ""
+    assert md["checksum"] == "ac2390bba2edaa01"
