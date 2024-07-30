@@ -102,6 +102,10 @@ class Binary:
     def config(self):
         return self._config
 
+    @property
+    def is_started(self):
+        return self._process is not None and self._process.returncode is None
+
     def start(self):
         if self._process is not None and self._process.returncode is None:
             raise BinaryError("Worker already started.")

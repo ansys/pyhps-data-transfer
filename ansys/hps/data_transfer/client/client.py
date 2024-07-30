@@ -61,6 +61,10 @@ class ClientBase:
             self._session = self._create_session(self.base_api_url, sync=not self.Meta.is_async)
         return self._session
 
+    @property
+    def is_started(self):
+        return self.binary is not None and self.binary.is_started
+
     def start(self):
         if self.binary is not None:
             return
