@@ -43,7 +43,7 @@ class BinaryConfig:
         self.data_transfer_url = data_transfer_url
 
         # Process related settings
-        self.capture_log = log
+        self.log = log
         self.monitor_interval = monitor_interval
         self.path = path
 
@@ -129,7 +129,7 @@ class Binary:
         t.daemon = True
         t.start()
 
-        if self._config.capture_log:
+        if self._config.log:
             t = threading.Thread(target=self._log_output, args=())
             t.daemon = True
             t.start()
