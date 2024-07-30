@@ -112,6 +112,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
         log.info(f"- {fname}: {'Success' if success else 'Failed'}")
         assert success, f"File {fname} comparison failed!"
 
+
 def main(
     local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards")],
     remote_path: Annotated[str, typer.Option(help="Optional path to the remote directory to transfer files to")] = None,
