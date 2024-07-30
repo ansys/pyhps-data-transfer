@@ -15,6 +15,7 @@ install_requires = [
     "requests==2.32.2",
     "portend==3.2.0",
     "python-slugify==8.0.4",
+    "filelock==3.15.4",
 ]
 
 

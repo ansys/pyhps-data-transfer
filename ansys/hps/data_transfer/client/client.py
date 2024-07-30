@@ -6,6 +6,7 @@ import shutil
 import time
 
 import backoff
+import filelock
 import httpx
 import urllib3
 
@@ -133,8 +134,8 @@ class ClientBase:
             reason = "binary not found"
         elif not os.path.exists(bin_path):
             reason = "binary version not found"
-        # elif branch == "dev":
-        #     reason = "dev branch"
+        elif branch == "dev":
+            reason = "dev branch"
 
         # Use downloaded binary if nothing else was specified
         if self._bin_config.path is None and os.path.exists(bin_path):
@@ -151,33 +152,45 @@ class ClientBase:
             raise BinaryError(f"Failed to download binary: {resp.text}")
 
         d = resp.json()
+
         reason, bin_path = self._check_binary(d["build_info"])
+
+        lock_name = f"{os.path.splitext(os.path.basename(bin_path))[0]}.lock"
+        lock_path = os.path.join(os.path.dirname(bin_path), lock_name)
+        lock = filelock.FileLock(lock_path, timeout=120)
+
         if reason is None:
             log.debug(f"Using existing binary: {self._bin_config.path}")
             return
 
-        bin_dir = os.path.dirname(bin_path)
-        bin_ext = os.path.splitext(bin_path)[1]
-        if not os.path.exists(bin_dir):
-            try:
-                os.makedirs(bin_dir)
-            except:
-                pass
-
-        platform_str = self._platform()
-        log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}, reason: {reason}")
-        url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
         try:
-            with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
-                resp.read()
-                if resp.status_code != 200:
-                    raise BinaryError(f"Failed to download binary: {resp.text}")
-                for chunk in resp.iter_bytes():
-                    f.write(chunk)
-            self._bin_config.path = bin_path
-        except Exception as ex:
-            log.error(f"Failed to download binary: {ex}")
-            os.remove(bin_path)
+            lock.acquire()
+            bin_dir = os.path.dirname(bin_path)
+            bin_ext = os.path.splitext(bin_path)[1]
+            if not os.path.exists(bin_dir):
+                try:
+                    os.makedirs(bin_dir)
+                except:
+                    pass
+
+            platform_str = self._platform()
+            log.debug(f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}, reason: {reason}")
+            url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
+            try:
+                with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
+                    resp.read()
+                    if resp.status_code != 200:
+                        raise BinaryError(f"Failed to download binary: {resp.text}")
+                    for chunk in resp.iter_bytes():
+                        f.write(chunk)
+                self._bin_config.path = bin_path
+            except Exception as ex:
+                log.error(f"Failed to download binary: {ex}")
+                os.remove(bin_path)
+        except filelock.Timeout:
+            raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}")
+        finally:
+            lock.release()
 
     def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
