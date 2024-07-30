@@ -196,6 +196,7 @@ def client(binary_config, binary_dir):
     from ansys.hps.data_transfer.client import Client
 
     c = Client(bin_config=binary_config, download_dir=binary_dir)
+    c._clean_dev = False
     c.start()
     yield c
 
@@ -214,6 +215,7 @@ def user_client(user_binary_config, binary_dir):
     from ansys.hps.data_transfer.client import Client
 
     c = Client(bin_config=user_binary_config, download_dir=binary_dir)
+    c._clean_dev = False
     c.start()
     yield c
     c.stop()
@@ -224,6 +226,7 @@ async def async_client(binary_config, binary_dir, event_loop):
     from ansys.hps.data_transfer.client import AsyncClient
 
     c = AsyncClient(bin_config=binary_config, download_dir=binary_dir)
+    c._clean_dev = False
     await c.start()
     yield c
 
@@ -235,6 +238,7 @@ async def async_user_client(user_binary_config, binary_dir, event_loop):
     from ansys.hps.data_transfer.client import AsyncClient
 
     c = AsyncClient(bin_config=user_binary_config, download_dir=binary_dir)
+    c._clean_dev = False
     await c.start()
     yield c
     await c.stop()
