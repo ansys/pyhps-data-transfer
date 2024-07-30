@@ -15,10 +15,12 @@ def test_get_basic_metadata(storage_path, client):
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
-    temp_file_name = os.path.basename(temp_file.name)
 
-    src = StoragePath(path=temp_file.name, remote="local")
-    dst = StoragePath(path=f"{storage_path}/{temp_file_name}")
+    file_path = temp_file.name
+    file_name = os.path.basename(file_path)
+
+    src = StoragePath(path=file_path, remote="local")
+    dst = StoragePath(path=f"{storage_path}/{file_name}")
     op = api.copy([SrcDst(src=src, dst=dst)])
     assert op.id is not None
     op = api.wait_for(op.id)
@@ -29,7 +31,7 @@ def test_get_basic_metadata(storage_path, client):
     assert op.state == OperationState.Succeeded, op.messages
     md = op.result[dst.path]
     assert md is not None
-    assert md["size"] == os.path.getsize(temp_file.name)
+    assert md["size"] == os.path.getsize(file_path)
     assert md["checksum"] != ""
     assert md["checksum"] == "ac2390bba2edaa01"
 
@@ -40,10 +42,12 @@ async def test_async_get_basic_metadata(storage_path, async_client):
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
-    temp_file_name = os.path.basename(temp_file.name)
 
-    src = StoragePath(path=temp_file.name, remote="local")
-    dst = StoragePath(path=f"{storage_path}/{temp_file_name}")
+    file_path = temp_file.name
+    file_name = os.path.basename(file_path)
+
+    src = StoragePath(path=file_path, remote="local")
+    dst = StoragePath(path=f"{storage_path}/{file_name}")
     op = await api.copy([SrcDst(src=src, dst=dst)])
     assert op.id is not None
     op = await api.wait_for(op.id)
