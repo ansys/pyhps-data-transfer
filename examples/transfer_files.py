@@ -4,20 +4,21 @@ Basic script to transfer files to remote backends and back using new data transf
 Example usage:
 
     python examples\transfer_files.py --local-path=examples\basic\files\* --remote-path=hello --debug
-    python examples\transfer_files.py --local-path=D:\ANSYSDev\models\Rolls-Royce-Large-Assembly-Models\Large_Dummy_Engine_67M\d3* --debug
+    python examples\transfer_files.py --local-path=D:\ANSYSDev\models\rolls-royce-large-engine\d3* --debug
 
 """
 
+import filecmp
 import glob
 import logging
 import os
-import filecmp
-from typing import List, Optional
+from pathlib import Path
+from time import perf_counter
+from typing import Optional
+
 from humanfriendly import format_size
 import typer
 from typing_extensions import Annotated
-from time import perf_counter
-from pathlib import Path
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
@@ -27,7 +28,6 @@ log = logging.getLogger(__name__)
 
 
 def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
-
     if not remote_path:
         remote_path = Path(local_path).parent.name
     local_dir = os.path.dirname(local_path)
