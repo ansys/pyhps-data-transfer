@@ -110,7 +110,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     for fname in fnames:
         success = filecmp.cmp(f"{local_dir}/{fname}", f"{local_dir}_downloaded/{fname}", shallow=True)
         log.info(f"- {fname}: {'Success' if success else 'Failed'}")
-
+        assert success, f"File {fname} comparison failed!"
 
 def main(
     local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards")],
