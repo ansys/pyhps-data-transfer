@@ -41,7 +41,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     log.debug(f"Operation {op[0].state}")
 
     log.info("== Create remote directory ...")
-    mkdir_op = api.mkdir([StoragePath(path=f"{remote_path}")])
+    mkdir_op = api.mkdir([StoragePath(path=remote_path)])
     api.wait_for([mkdir_op.id])
     log.info(f"Directory {remote_path} created")
 
