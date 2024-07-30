@@ -195,8 +195,7 @@ def user_binary_config(user_access_token, dt_url):
 def client(binary_config, binary_dir):
     from ansys.hps.data_transfer.client import Client
 
-    c = Client(bin_config=binary_config, download_dir=binary_dir)
-    c._clean_dev = False
+    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
     c.start()
     yield c
 
@@ -214,8 +213,7 @@ def client(binary_config, binary_dir):
 def user_client(user_binary_config, binary_dir):
     from ansys.hps.data_transfer.client import Client
 
-    c = Client(bin_config=user_binary_config, download_dir=binary_dir)
-    c._clean_dev = False
+    c = Client(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
     c.start()
     yield c
     c.stop()
@@ -225,8 +223,7 @@ def user_client(user_binary_config, binary_dir):
 async def async_client(binary_config, binary_dir, event_loop):
     from ansys.hps.data_transfer.client import AsyncClient
 
-    c = AsyncClient(bin_config=binary_config, download_dir=binary_dir)
-    c._clean_dev = False
+    c = AsyncClient(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
     await c.start()
     yield c
 
@@ -237,8 +234,7 @@ async def async_client(binary_config, binary_dir, event_loop):
 async def async_user_client(user_binary_config, binary_dir, event_loop):
     from ansys.hps.data_transfer.client import AsyncClient
 
-    c = AsyncClient(bin_config=user_binary_config, download_dir=binary_dir)
-    c._clean_dev = False
+    c = AsyncClient(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
     await c.start()
     yield c
     await c.stop()

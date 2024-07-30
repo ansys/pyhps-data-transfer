@@ -32,12 +32,14 @@ class ClientBase:
     class Meta:
         is_async = False
 
-    def __init__(self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download", clean=False):
+    def __init__(
+        self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download", clean=False, clean_dev=True
+    ):
         self._bin_config = bin_config
         self._download_dir = download_dir
         self._clean = clean
         self._session = None
-        self._clean_dev = True
+        self._clean_dev = clean_dev
         self.binary = None
 
     def __getstate__(self):
