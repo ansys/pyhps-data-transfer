@@ -8,13 +8,13 @@ with open(os.path.join(root, "ansys", "hps", "data_transfer", "client", "__versi
     exec(f.read(), about)
 
 install_requires = [
-    "pydantic==2.7.1",
-    "httpx==0.27.0",
-    "backoff==2.2.1",
-    "humanfriendly==10.0",
-    "requests==2.32.2",
-    "portend==3.2.0",
-    "python-slugify==8.0.4",
+    "pydantic>=2.7.1",
+    "httpx>=0.27.0",
+    "backoff>=2.2.1",
+    "humanfriendly>=10.0",
+    "requests>=2.32.2",
+    "portend>=3.2.0",
+    "python-slugify>=8.0.4",
     "filelock>=3.14.0",
 ]
 
