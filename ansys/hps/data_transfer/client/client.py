@@ -173,6 +173,7 @@ class ClientBase:
             return
 
         try:
+            log.warning("##### TEST MARKER")
             with lock:
                 bin_dir = os.path.dirname(bin_path)
                 bin_ext = os.path.splitext(bin_path)[1]
