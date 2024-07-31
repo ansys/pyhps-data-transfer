@@ -4,10 +4,12 @@ import os
 import platform
 import shutil
 import time
+import traceback
 
 import backoff
 import filelock
 import httpx
+import requests
 import urllib3
 
 from .binary import Binary, BinaryConfig
@@ -186,6 +188,7 @@ class ClientBase:
                 )
                 url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
                 try:
+                    resp = requests.get(f"{dt_url}{url}", verify=False)
                     with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
                         resp.read()
                         if resp.status_code != 200:
@@ -198,6 +201,10 @@ class ClientBase:
                     os.remove(bin_path)
         except filelock.Timeout:
             raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}")
+        except Exception as ex:
+            if self._bin_config.debug:
+                log.debug(traceback.format_exc())
+            raise
 
     def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
