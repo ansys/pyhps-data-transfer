@@ -9,7 +9,6 @@ import traceback
 import backoff
 import filelock
 import httpx
-import requests
 import urllib3
 
 from .binary import Binary, BinaryConfig
@@ -189,7 +188,6 @@ class ClientBase:
                 )
                 url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
                 try:
-                    resp = requests.get(f"{dt_url}{url}", verify=False)
                     with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
                         resp.read()
                         if resp.status_code != 200:
@@ -198,14 +196,12 @@ class ClientBase:
                             f.write(chunk)
                     self._bin_config.path = bin_path
                 except Exception as ex:
+                    if self._bin_config.debug:
+                        log.debug(traceback.format_exc())
                     log.error(f"Failed to download binary: {ex}")
                     os.remove(bin_path)
         except filelock.Timeout:
             raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}")
-        except Exception as ex:
-            if self._bin_config.debug:
-                log.debug(traceback.format_exc())
-            raise
 
     def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
@@ -213,15 +209,13 @@ class ClientBase:
 
         if sync:
             session = httpx.Client(
-                # transport=httpx.HTTPTransport(retries=5, verify=verify),
+                transport=httpx.HTTPTransport(retries=5, verify=verify),
                 event_hooks={"response": [raise_for_status]},
-                verify=verify,
             )
         else:
             session = httpx.AsyncClient(
-                # transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
+                transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
                 event_hooks={"response": [async_raise_for_status]},
-                verify=verify,
             )
         session.base_url = url
         session.verify = verify
