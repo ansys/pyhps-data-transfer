@@ -205,13 +205,13 @@ class ClientBase:
 
         if sync:
             session = httpx.Client(
-                transport=httpx.HTTPTransport(retries=5, verify=verify),
+                # transport=httpx.HTTPTransport(retries=5, verify=verify),
                 event_hooks={"response": [raise_for_status]},
                 verify=verify,
             )
         else:
             session = httpx.AsyncClient(
-                transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
+                # transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
                 event_hooks={"response": [async_raise_for_status]},
                 verify=verify,
             )
