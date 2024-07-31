@@ -186,11 +186,10 @@ class ClientBase:
                 )
                 url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
                 try:
-                    resp = session.get(url)
-                    if resp.status_code != 200:
-                        raise BinaryError(f"Failed to download binary: {resp.text}")
-
-                    with open(bin_path, "wb") as f:  # , session.stream("GET", url) as resp:
+                    with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
+                        resp.read()
+                        if resp.status_code != 200:
+                            raise BinaryError(f"Failed to download binary: {resp.text}")
                         for chunk in resp.iter_bytes():
                             f.write(chunk)
                     self._bin_config.path = bin_path
