@@ -201,6 +201,7 @@ class ClientBase:
 
     def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
+        log.debug("Creating session for %s with verify=%s", url, verify)
 
         if sync:
             session = httpx.Client(
