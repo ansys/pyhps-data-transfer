@@ -109,7 +109,7 @@ if __name__ == "__main__":
     admin_token = admin_token.get("access_token", None)
 
     log.info("### Preparing data transfer client for 'repadmin' ...")
-    admin_client = Client()
+    admin_client = Client(clean_dev=False)
     admin_client.binary_config.update(
         verbosity=3,
         debug=False,
