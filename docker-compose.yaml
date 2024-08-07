@@ -175,6 +175,7 @@ services:
 
   data-transfer:
     image: ${DOCKER_REPO}/hps/datad:${DTS_TAG}
+    platform: linux/amd64
     deploy:
       replicas: 1
     expose:
