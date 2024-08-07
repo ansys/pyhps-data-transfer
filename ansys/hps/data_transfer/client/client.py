@@ -1,4 +1,5 @@
 import asyncio
+import atexit
 import logging
 import os
 import platform
@@ -9,10 +10,11 @@ import traceback
 import backoff
 import filelock
 import httpx
+import psutil
 import urllib3
 
-from .binary import Binary, BinaryConfig
-from .exceptions import BinaryError, async_raise_for_status, raise_for_status
+from ansys.hps.data_transfer.client.binary import Binary, BinaryConfig
+from ansys.hps.data_transfer.client.exceptions import BinaryError, async_raise_for_status, raise_for_status
 
 urllib3.disable_warnings()
 
@@ -29,18 +31,41 @@ for n in ["httpx", "httpcore", "requests", "urllib3"]:
 log = logging.getLogger(__name__)
 
 
+def bin_in_use(bin_path):
+    for proc in psutil.process_iter():
+        try:
+            cmd = proc.cmdline()
+            for c in cmd:
+                if bin_path in c:
+                    return True
+        except psutil.NoSuchProcess as err:
+            pass
+        except psutil.AccessDenied as err:
+            pass
+        except Exception as err:
+            log.debug(f"Error checking process: {err}")
+    return False
+
+
 class ClientBase:
     class Meta:
         is_async = False
 
     def __init__(
-        self, bin_config: BinaryConfig = BinaryConfig(), download_dir: str = "dt_download", clean=False, clean_dev=True
+        self,
+        bin_config: BinaryConfig = BinaryConfig(),
+        download_dir: str = "dt_download",
+        clean=False,
+        clean_dev=True,
+        check_in_use=True,
     ):
         self._bin_config = bin_config
         self._download_dir = download_dir
         self._clean = clean
-        self._session = None
         self._clean_dev = clean_dev
+        self._check_in_use = check_in_use
+
+        self._session = None
         self.binary = None
 
     def __getstate__(self):
@@ -84,6 +109,8 @@ class ClientBase:
 
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
+
+        atexit.register(self.stop)
 
         # self._session = self._create_session(self.base_api_url)
 
@@ -162,6 +189,10 @@ class ClientBase:
         d = resp.json()
 
         reason, bin_path = self._check_binary(d["build_info"])
+
+        if self._check_in_use and bin_in_use(bin_path):
+            log.info(f"Skipping download, binary in use: {bin_path}")
+            return
 
         lock_name = f"{os.path.splitext(os.path.basename(bin_path))[0]}.lock"
         lock_path = os.path.join(os.path.dirname(bin_path), lock_name)
