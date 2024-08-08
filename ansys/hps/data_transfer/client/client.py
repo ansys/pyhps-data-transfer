@@ -191,6 +191,7 @@ class ClientBase:
         d = resp.json()
 
         reason, bin_path = self._check_binary(d["build_info"])
+        bin_path = os.path.abspath(bin_path)
 
         if self._check_in_use and bin_in_use(bin_path):
             log.info(f"Skipping download, binary in use: {bin_path}")
