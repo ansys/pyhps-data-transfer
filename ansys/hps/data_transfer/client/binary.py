@@ -56,7 +56,8 @@ class BinaryConfig:
         self._selected_port = port
         self._detected_port = None
         self._default_port = 1091
-        self.token = token
+        self._token = token
+        self._token_modified = time.time()
         self.insecure = insecure
 
     def update(self, **kwargs):
@@ -73,6 +74,19 @@ class BinaryConfig:
     @port.setter
     def port(self, value):
         self._selected_port = value
+
+    @property
+    def token(self):
+        return self._token
+
+    @token.setter
+    def token(self, value):
+        self._token = value
+        self._token_modified = time.time()
+
+    @property
+    def token_modified(self):
+        return self._token_modified
 
     @property
     def url(self):
