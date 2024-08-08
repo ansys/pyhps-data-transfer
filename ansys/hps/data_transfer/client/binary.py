@@ -9,6 +9,7 @@ import time
 import portend
 
 from .exceptions import BinaryError
+from .token import prepare_token
 
 log = logging.getLogger(__name__)
 
@@ -273,6 +274,6 @@ class Binary:
             self._args.extend(
                 [
                     "-t",
-                    f'"Bearer {self._config.token}"',
+                    f'"{prepare_token(self._config.token)}"',
                 ]
             )
