@@ -1,7 +1,7 @@
-from random import randint
+from random import uniform
 
 
-def get_expo_backoff(base: int, attempts: int = 1, cap: int = 100_000_000, jitter: bool = True):
+def get_expo_backoff(base: float, attempts: int = 1, cap: float = 100_000_000, jitter: bool = True):
     """
     Returns a backoff value https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
     :param base: The time to sleep in the first attempt.
@@ -12,6 +12,6 @@ def get_expo_backoff(base: int, attempts: int = 1, cap: int = 100_000_000, jitte
     # Full jitter formula
     # https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
     if jitter:
-        return randint(base, min(cap, base * 2 ** (attempts - 1)))
+        return uniform(base, min(cap, base * 2 ** (attempts - 1)))
     else:
         return min(cap, base * 2 ** (attempts - 1))
