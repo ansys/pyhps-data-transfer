@@ -16,6 +16,8 @@ import urllib3
 from ansys.hps.data_transfer.client.binary import Binary, BinaryConfig
 from ansys.hps.data_transfer.client.exceptions import BinaryError, async_raise_for_status, raise_for_status
 
+from .token import prepare_token
+
 urllib3.disable_warnings()
 
 httpx_log = logging.getLogger("httpx")
@@ -253,9 +255,7 @@ class ClientBase:
 
         if self._bin_config.token is not None:
             t = self._bin_config.token
-            if not t.startswith("Bearer "):
-                t = f"Bearer {t}"
-            session.headers.setdefault("Authorization", t)
+            session.headers.setdefault("Authorization", prepare_token(t))
 
         return session
 
