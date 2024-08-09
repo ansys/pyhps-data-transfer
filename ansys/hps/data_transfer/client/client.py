@@ -4,6 +4,7 @@ import logging
 import os
 import platform
 import shutil
+import stat
 import time
 import traceback
 
@@ -237,6 +238,10 @@ class ClientBase:
                         log.debug(traceback.format_exc())
                     log.error(f"Failed to download binary: {ex}")
                     os.remove(bin_path)
+
+                log.debug(f"Marking binary as executable: {bin_path}")
+                st = os.stat(bin_path)
+                os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
         except filelock.Timeout:
             raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}")
 
