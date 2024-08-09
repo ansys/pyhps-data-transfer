@@ -19,9 +19,12 @@ class OperationState(Enum):
 class Operation(BaseModel):
     children: Optional[List[str]] = None
     description: Optional[str] = None
+    ended_at: Optional[str] = None
     error: Optional[str] = None
     id: Optional[str] = None
     messages: Optional[List[str]] = None
     progress: Optional[float] = None
+    queued_at: Optional[str] = None
     result: Optional[Any] = None
+    started_at: Optional[str] = None
     state: Optional[OperationState] = None
