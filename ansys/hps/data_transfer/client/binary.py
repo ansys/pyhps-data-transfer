@@ -137,8 +137,6 @@ class Binary:
             log.debug(f"Marking binary as executable: {bin_path}")
             st = os.stat(bin_path)
             os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
-        else:
-            log.debug(f"Binary mode {stat.filemode(os.stat(bin_path).st_mode)}")
 
         self._process = None
 
