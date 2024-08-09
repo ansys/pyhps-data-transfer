@@ -56,13 +56,13 @@ class ClientBase:
 
     def __init__(
         self,
-        bin_config: BinaryConfig = BinaryConfig(),
+        bin_config: BinaryConfig = None,
         download_dir: str = "dt_download",
         clean=False,
         clean_dev=True,
         check_in_use=True,
     ):
-        self._bin_config = bin_config
+        self._bin_config = bin_config or BinaryConfig()
         self._download_dir = download_dir
         self._clean = clean
         self._clean_dev = clean_dev

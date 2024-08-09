@@ -55,7 +55,6 @@ class BinaryConfig:
         self.host = host
         self._selected_port = port
         self._detected_port = None
-        self._default_port = 1091
         self._token = token
         self._token_modified = time.time()
         self.insecure = insecure
@@ -69,7 +68,7 @@ class BinaryConfig:
 
     @property
     def port(self):
-        return self._selected_port or self._detected_port or self._default_port
+        return self._selected_port or self._detected_port
 
     @port.setter
     def port(self, value):
@@ -232,6 +231,7 @@ class Binary:
                 if ret_code is not None:
                     log.warning(f"Worker exited with code {ret_code}, restarting ...")
                     self._process = None
+                    self._prepared.clear()
                     time.sleep(1.0)
                     continue
 
