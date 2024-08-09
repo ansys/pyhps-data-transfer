@@ -197,7 +197,7 @@ class Binary:
 
         level = d.pop("level", "info")
         if not self._config.debug:
-            d.pop("time", None)
+            # d.pop("time", None)
             d.pop("caller", None)
             d.pop("mode", None)
         msg = d.pop("message", None)
