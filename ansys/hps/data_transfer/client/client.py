@@ -243,7 +243,7 @@ class ClientBase:
                 log.debug(f"Marking binary as executable: {bin_path}")
                 os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
                 if self._bin_config.debug:
-                    log.debug(f"Binary mode: {stat.filemode(st = os.stat(bin_path).st_mode)}")
+                    log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
         except filelock.Timeout:
             raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}")
 
