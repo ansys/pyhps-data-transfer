@@ -134,6 +134,7 @@ class Binary:
 
         # Mark binary as executable
         if not os.access(bin_path, os.X_OK):
+            log.debug(f"Marking binary as executable: {bin_path}")
             st = os.stat(bin_path)
             os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
 
