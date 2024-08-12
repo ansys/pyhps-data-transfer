@@ -31,6 +31,7 @@ class BinaryConfig:
         data_transfer_url: str = "https://localhost:8443/hps/dt/api/v1",
         # Process related settings
         log: bool = True,
+        log_to_file: bool = False,
         monitor_interval: float = 0.5,
         path: str = None,
         # Worker config settings
@@ -45,6 +46,7 @@ class BinaryConfig:
 
         # Process related settings
         self.log = log
+        self.log_to_file = log_to_file
         self.monitor_interval = monitor_interval
         self.path = path
 
@@ -251,10 +253,14 @@ class Binary:
         return port
 
     def _build_base_args(self):
+        log_types = ["diode"]
+        if self._config.log_to_file:
+            log_types.append("file")
+
         self._base_args = [
             self._config.path,
             "--log-types",
-            "diode",
+            ",".join(log_types),
             "--host",
             self._config.host,
             "--port",
