@@ -1,4 +1,5 @@
 import logging
+import textwrap
 import time
 from typing import List
 
@@ -145,9 +146,12 @@ class DataTransferApi:
         operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]
         start = time.time()
         attempt = 0
+        op_str = textwrap.wrap(", ".join(operation_ids), width=100, placeholder="...")
+        log.debug(f"Waiting for operations to complete: {op_str}")
         while True:
             attempt += 1
             ops = self.operations(operation_ids)
+
             if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                 break
 
@@ -156,6 +160,9 @@ class DataTransferApi:
 
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=10)
-            log.debug(f"Waiting for {hf.format_timespan(duration)} ...")
+            log.debug(f"Waiting for {hf.format_timespan(duration)} ... {operation_ids}")
             time.sleep(duration)
+
+        duration = hf.format_timespan(time.time() - start)
+        log.debug(f"Operations completed after {duration}: {op_str}")
         return ops
