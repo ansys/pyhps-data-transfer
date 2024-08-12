@@ -146,21 +146,23 @@ class DataTransferApi:
         operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]
         start = time.time()
         attempt = 0
-        op_str = textwrap.wrap(", ".join(operation_ids), width=100, placeholder="...")
+        op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")
         log.debug(f"Waiting for operations to complete: {op_str}")
         while True:
             attempt += 1
-            ops = self.operations(operation_ids)
-
-            if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
-                break
+            try:
+                ops = self.operations(operation_ids)
+                if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
+                    break
+            except Exception as e:
+                log.debug(f"Error getting operations: {e}")
 
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for operations to complete")
 
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=10)
-            log.debug(f"Waiting for {hf.format_timespan(duration)} ... {operation_ids}")
+            log.debug(f"Waiting for {hf.format_timespan(duration)} ...")
             time.sleep(duration)
 
         duration = hf.format_timespan(time.time() - start)
