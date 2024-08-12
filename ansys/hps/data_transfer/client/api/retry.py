@@ -6,7 +6,7 @@ import backoff
 log = logging.getLogger(__name__)
 
 
-def _on_backoff(details, exc_info=False):
+def _on_backoff(details, exc_info=True):
     try:
         msg = "Backing off {wait:0.1f} seconds after {tries} tries: {exception}".format(**details)
         log.info(msg)
