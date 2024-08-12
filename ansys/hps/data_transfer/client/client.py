@@ -279,6 +279,9 @@ class AsyncClient(ClientBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    async def start(self):
+        super().start()
+
     async def stop(self, wait=5.0):
         if self._session is not None:
             try:
