@@ -59,10 +59,7 @@ class DataTransferApi:
 
     @retry()
     def operations(self, ids: List[str]):
-        url = "/operations"
-        resp = self.client.session.get(url, params={"ids": ids})
-        json = resp.json()
-        return OpsResponse(**json).operations
+        return self._operations(ids)
 
     def storages(self):
         url = "/storage"
@@ -99,6 +96,12 @@ class DataTransferApi:
         json = resp.json()
         r = OpIdResponse(**json)
         return r
+
+    def _operations(self, ids: List[str]):
+        url = "/operations"
+        resp = self.client.session.get(url, params={"ids": ids})
+        json = resp.json()
+        return OpsResponse(**json).operations
 
     @retry()
     def check_permissions(self, permissions: List[RoleAssignment]):
@@ -151,7 +154,7 @@ class DataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = self.operations(operation_ids)
+                ops = self._operations(operation_ids)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:

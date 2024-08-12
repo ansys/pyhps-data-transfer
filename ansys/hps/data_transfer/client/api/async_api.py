@@ -59,6 +59,9 @@ class AsyncDataTransferApi:
 
     @retry()
     async def operations(self, ids: List[str]):
+        return await self._operations(ids)
+
+    async def _operations(self, ids: List[str]):
         url = "/operations"
         resp = await self.client.session.get(url, params={"ids": ids})
         json = resp.json()
@@ -147,7 +150,7 @@ class AsyncDataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = await self.operations(operation_ids)
+                ops = await self._operations(operation_ids)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
