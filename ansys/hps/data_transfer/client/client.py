@@ -111,7 +111,6 @@ class ClientBase:
         self._prepare_platform_binary()
 
         self.binary = Binary(config=self._bin_config)
-        self._bin_config._on_token_update = self._update_token
         self.binary.start()
 
         # Make sure the status endpoint is called from time to time to keep the token in the worker up-to-date
@@ -268,14 +267,6 @@ class ClientBase:
 
         return session
 
-    def _update_token(self):
-        try:
-            self._session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
-            # Make sure the token gets intercepted by the worker
-            r = self.session.get("/")
-        except Exception as e:
-            log.debug(f"Error updating token: {e}")
-
 
 class AsyncClient(ClientBase):
     class Meta(ClientBase.Meta):
@@ -286,6 +277,7 @@ class AsyncClient(ClientBase):
 
     async def start(self):
         super().start()
+        self._bin_config._on_token_update = self._update_token
 
     async def stop(self, wait=5.0):
         if self._session is not None:
@@ -311,6 +303,14 @@ class AsyncClient(ClientBase):
             finally:
                 await asyncio.sleep(backoff.full_jitter(sleep))
 
+    async def _update_token(self):
+        try:
+            self._session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
+            # Make sure the token gets intercepted by the worker
+            await self.session.get("/")
+        except Exception as e:
+            log.debug(f"Error updating token: {e}")
+
 
 class Client(ClientBase):
     class Meta(ClientBase.Meta):
@@ -318,6 +318,10 @@ class Client(ClientBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def start(self):
+        super().start()
+        self._bin_config._on_token_update = self._update_token
 
     def stop(self, wait=5.0):
         if self._session is not None:
@@ -341,3 +345,11 @@ class Client(ClientBase):
                     log.debug(f"Error waiting for worker to start: {ex}")
             finally:
                 time.sleep(backoff.full_jitter(sleep))
+
+    def _update_token(self):
+        try:
+            self._session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
+            # Make sure the token gets intercepted by the worker
+            self.session.get("/")
+        except Exception as e:
+            log.debug(f"Error updating token: {e}")
