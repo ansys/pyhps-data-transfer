@@ -142,7 +142,7 @@ class DataTransferApi:
         return OpIdResponse(**json)
 
     def wait_for(
-        self, operation_ids: List[str | Operation | OpIdResponse], timeout: float | None = None, interval: float = 1.0
+        self, operation_ids: List[str | Operation | OpIdResponse], timeout: float | None = None, interval: float = 0.2
     ):
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
