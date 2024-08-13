@@ -167,7 +167,7 @@ class AsyncDataTransferApi:
                 log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
                 for op in ops:
                     log.debug(f"- Operation '{op.description}' id={op.id} state={op.state} start={op.started_at}")
-            log.debug(f"Sleeping for {hf.format_timespan(duration)} () ...")
+            log.debug(f"Sleeping for {hf.format_timespan(duration)} ...")
 
             await asyncio.sleep(duration)
 
