@@ -150,7 +150,7 @@ class DataTransferApi:
         start = time.time()
         attempt = 0
         op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")
-        log.debug(f"Waiting for operations to complete: {op_str}")
+        # log.debug(f"Waiting for operations to complete: {op_str}")
         while True:
             attempt += 1
             try:
@@ -165,10 +165,12 @@ class DataTransferApi:
 
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=interval * 2.0)
-            log.debug(f"Waiting for {hf.format_timespan(duration)} ...")
             if self.client.binary_config.debug:
+                so_far = hf.format_timespan(time.time() - start)
+                log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
                 for op in ops:
-                    log.debug(f"- Operation '{op.description}' ({op.id}) State: {op.state}")
+                    log.debug(f"- Operation '{op.description}' id={op.id} state={op.state} start={op.started_at}")
+            log.debug(f"Sleeping for {hf.format_timespan(duration)} () ...")
 
             time.sleep(duration)
 
