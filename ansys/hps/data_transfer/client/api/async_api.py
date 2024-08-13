@@ -162,6 +162,10 @@ class AsyncDataTransferApi:
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=10)
             log.debug(f"Waiting for {hf.format_timespan(duration)} ...")
+            if self.client.binary_config.debug:
+                for op in ops:
+                    log.debug(f"- Operation '{op.description}' ({op.id}) State: {op.state}")
+
             await asyncio.sleep(duration)
 
         duration = hf.format_timespan(time.time() - start)
