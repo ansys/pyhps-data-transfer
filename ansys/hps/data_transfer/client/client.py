@@ -67,7 +67,6 @@ class ClientBase:
         self._clean = clean
         self._clean_dev = clean_dev
         self._check_in_use = check_in_use
-        self._token_modified = None
 
         self._session = None
         self.binary = None
@@ -93,9 +92,6 @@ class ClientBase:
     def session(self):
         if self._session is None:
             self._session = self._create_session(self.base_api_url, sync=not self.Meta.is_async)
-        if self._token_modified is None or self._bin_config.token_modified > self._token_modified:
-            self._session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
-            self._token_modified = self._bin_config.token_modified
         return self._session
 
     @property
@@ -115,8 +111,10 @@ class ClientBase:
         self._prepare_platform_binary()
 
         self.binary = Binary(config=self._bin_config)
+        self._bin_config._on_token_update = self._update_token
         self.binary.start()
 
+        # Make sure the status endpoint is called from time to time to keep the token in the worker up-to-date
         atexit.register(self.stop)
 
         # self._session = self._create_session(self.base_api_url)
@@ -266,10 +264,17 @@ class ClientBase:
         session.follow_redirects = True
 
         if self._bin_config.token is not None:
-            t = self._bin_config.token
-            session.headers.setdefault("Authorization", prepare_token(t))
+            session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
 
         return session
+
+    def _update_token(self):
+        try:
+            self._session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
+            # Make sure the token gets intercepted by the worker
+            r = self.session.get("/")
+        except Exception as e:
+            log.debug(f"Error updating token: {e}")
 
 
 class AsyncClient(ClientBase):

@@ -58,8 +58,9 @@ class BinaryConfig:
         self._selected_port = port
         self._detected_port = None
         self._token = token
-        self._token_modified = time.time()
         self.insecure = insecure
+
+        self._on_token_update = None
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
@@ -83,11 +84,8 @@ class BinaryConfig:
     @token.setter
     def token(self, value):
         self._token = value
-        self._token_modified = time.time()
-
-    @property
-    def token_modified(self):
-        return self._token_modified
+        if self._on_token_update is not None:
+            self._on_token_update()
 
     @property
     def url(self):
