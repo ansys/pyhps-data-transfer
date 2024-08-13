@@ -234,8 +234,8 @@ class Binary:
                     self._prepared.clear()
                     time.sleep(1.0)
                     continue
-                elif self._config.debug:
-                    log.debug(f"Worker running ...")
+                # elif self._config.debug:
+                #     log.debug(f"Worker running ...")
 
             time.sleep(self._config.monitor_interval)
 
