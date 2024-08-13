@@ -24,7 +24,7 @@ def retry():
     return backoff.on_exception(
         backoff.expo,
         Exception,
-        max_tries=3,
+        max_tries=10,
         max_time=60,
         jitter=backoff.full_jitter,
         raise_on_giveup=True,
