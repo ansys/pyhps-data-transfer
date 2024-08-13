@@ -61,12 +61,6 @@ class AsyncDataTransferApi:
     async def operations(self, ids: List[str]):
         return await self._operations(ids)
 
-    async def _operations(self, ids: List[str]):
-        url = "/operations"
-        resp = await self.client.session.get(url, params={"ids": ids})
-        json = resp.json()
-        return OpsResponse(**json).operations
-
     async def storages(self):
         url = "/storage"
         resp = await self.client.session.get(url)
@@ -94,12 +88,19 @@ class AsyncDataTransferApi:
     async def rmdir(self, operations: List[StoragePath]):
         return await self._exec_async_operation_req("rmdir", operations)
 
+    @retry()
     async def _exec_async_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return OpIdResponse(**json)
+
+    async def _operations(self, ids: List[str]):
+        url = "/operations"
+        resp = await self.client.session.get(url, params={"ids": ids})
+        json = resp.json()
+        return OpsResponse(**json).operations
 
     @retry()
     async def check_permissions(self, permissions: List[RoleAssignment]):
