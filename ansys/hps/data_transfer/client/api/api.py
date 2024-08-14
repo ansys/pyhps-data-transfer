@@ -155,6 +155,11 @@ class DataTransferApi:
             attempt += 1
             try:
                 ops = self._operations(operation_ids)
+                if self.client.binary_config.debug:
+                    so_far = hf.format_timespan(time.time() - start)
+                    log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
+                    for op in ops:
+                        log.debug(f"- Operation '{op.description}' id={op.id} state={op.state} start={op.started_at}")
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
@@ -165,13 +170,7 @@ class DataTransferApi:
 
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=interval * 2.0)
-            if self.client.binary_config.debug:
-                so_far = hf.format_timespan(time.time() - start)
-                log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
-                for op in ops:
-                    log.debug(f"- Operation '{op.description}' id={op.id} state={op.state} start={op.started_at}")
             log.debug(f"Sleeping for {hf.format_timespan(duration)} ...")
-
             time.sleep(duration)
 
         duration = hf.format_timespan(time.time() - start)
