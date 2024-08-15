@@ -33,7 +33,7 @@ class DataTransferApi:
         self.client = client
 
     @retry()
-    def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 60.0):
+    def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 120.0):
         def _sleep():
             log.info("Waiting for the worker to be ready...")
             s = backoff.full_jitter(sleep) if jitter else sleep
