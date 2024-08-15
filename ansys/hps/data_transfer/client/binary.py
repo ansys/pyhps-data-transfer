@@ -196,8 +196,8 @@ class Binary:
         # log.warning(f"Worker: {d}")
 
         level = d.pop("level", "info")
+        d.pop("time", None)
         if not self._config.debug:
-            d.pop("time", None)
             d.pop("caller", None)
             d.pop("mode", None)
         msg = d.pop("message", None)
