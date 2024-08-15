@@ -35,7 +35,7 @@ class AsyncDataTransferApi:
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 120.0):
         async def _sleep():
-            log.info("Waiting for the worker to be ready...")
+            log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
             s = backoff.full_jitter(sleep) if jitter else sleep
             await asyncio.sleep(s)
 
