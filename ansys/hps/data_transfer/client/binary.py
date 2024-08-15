@@ -181,7 +181,7 @@ class Binary:
                 line = self._process.stdout.readline()
                 if not line:
                     break
-                line = line.decode().strip()
+                line = line.decode(errors="strip").strip()
                 # log.info("Worker: %s" % line)
                 self._log_line(line)
             except json.decoder.JSONDecodeError:
