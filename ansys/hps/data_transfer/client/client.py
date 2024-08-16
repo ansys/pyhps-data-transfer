@@ -157,7 +157,7 @@ class ClientBase:
 
         return f"{plat}-{arch}"
 
-    def _check_binary(self, build_info):
+    def _prepare_bin_path(self, build_info):
         log.debug(f"Server version: {build_info}")
         version_hash = build_info["version_hash"]
         branch = build_info["branch"]
@@ -166,6 +166,10 @@ class ClientBase:
         bin_ext = ".exe" if platform.system() == "Windows" else ""
         bin_dir = os.path.join(self._download_dir, "worker")
         bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
+        return bin_path
+
+    def _check_binary(self, build_info, bin_path):
+        branch = build_info["branch"]
 
         # Check if we need to download the binary
         reason = None
@@ -192,23 +196,24 @@ class ClientBase:
 
         d = resp.json()
 
-        reason, bin_path = self._check_binary(d["build_info"])
-        bin_path = os.path.abspath(bin_path)
-
-        if self._check_in_use and bin_in_use(bin_path):
-            log.info(f"Skipping download, binary in use: {bin_path}")
-            return
-
+        bin_path = self._prepare_bin_path(d["build_info"])
         lock_name = f"{os.path.splitext(os.path.basename(bin_path))[0]}.lock"
         lock_path = os.path.join(os.path.dirname(bin_path), lock_name)
         lock = filelock.SoftFileLock(lock_path, timeout=60)
 
-        if reason is None:
-            log.debug(f"Using existing binary: {self._bin_config.path}")
-            return
-
         try:
             with lock:
+                reason, bin_path = self._check_binary(d["build_info"], bin_path)
+                bin_path = os.path.abspath(bin_path)
+
+                if self._check_in_use and bin_in_use(bin_path):
+                    log.info(f"Skipping download, binary in use: {bin_path}")
+                    return
+
+                if reason is None:
+                    log.debug(f"Using existing binary: {self._bin_config.path}")
+                    return
+
                 bin_dir = os.path.dirname(bin_path)
                 bin_ext = os.path.splitext(bin_path)[1]
                 if not os.path.exists(bin_dir):

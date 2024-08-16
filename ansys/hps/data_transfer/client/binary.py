@@ -124,6 +124,8 @@ class Binary:
         if self._process is not None and self._process.returncode is None:
             raise BinaryError("Worker already started.")
 
+        log.debug("Starting worker ...")
+
         self._stop = threading.Event()
         self._prepared = threading.Event()
 
