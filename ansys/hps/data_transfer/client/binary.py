@@ -228,7 +228,7 @@ class Binary:
                 self._process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             else:
                 ret_code = self._process.poll()
-                if ret_code is not None:
+                if ret_code is not None and ret_code != 0:
                     log.warning(f"Worker exited with code {ret_code}, restarting ...")
                     self._process = None
                     self._prepared.clear()
