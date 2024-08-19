@@ -14,7 +14,6 @@ install_requires = [
     "humanfriendly>=10.0",
     "requests>=2.32.2",
     "portend>=3.2.0",
-    "python-slugify>=8.0.4",
     "filelock>=3.14.0",
     "psutil>=5.9.1",
 ]
