@@ -268,7 +268,7 @@ class ClientBase:
         session.follow_redirects = True
 
         if self._bin_config.token is not None:
-            session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
+            session.headers["Authorization"] = prepare_token(self._bin_config.token)
 
         return session
 
@@ -309,9 +309,9 @@ class AsyncClient(ClientBase):
                 await asyncio.sleep(backoff.full_jitter(sleep))
 
     async def _update_token(self):
-        log.debug("Updating auth token")
+        log.debug("Updating auth token, ends in %s", self._bin_config.token[-10:])
         try:
-            self._session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
+            self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
             # Make sure the token gets intercepted by the worker
             await self.session.get("/")
         except Exception as e:
@@ -353,10 +353,11 @@ class Client(ClientBase):
                 time.sleep(backoff.full_jitter(sleep))
 
     def _update_token(self):
-        log.debug("Updating auth token")
+        log.debug("Updating auth token, ends in %s", self._bin_config.token[-10:])
         try:
-            self._session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
+            self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
             # Make sure the token gets intercepted by the worker
-            self.session.get("/")
+            resp = self.session.get("/")
+            log.warning(f"resp status: {resp.status_code}")
         except Exception as e:
             log.debug(f"Error updating token: {e}")
