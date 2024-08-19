@@ -279,10 +279,10 @@ class AsyncClient(ClientBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._bin_config._on_token_update = self._update_token
 
     async def start(self):
         super().start()
-        self._bin_config._on_token_update = self._update_token
 
     async def stop(self, wait=5.0):
         if self._session is not None:
@@ -309,6 +309,7 @@ class AsyncClient(ClientBase):
                 await asyncio.sleep(backoff.full_jitter(sleep))
 
     async def _update_token(self):
+        log.debug("Updating auth token")
         try:
             self._session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
             # Make sure the token gets intercepted by the worker
@@ -323,10 +324,10 @@ class Client(ClientBase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self._bin_config._on_token_update = self._update_token
 
     def start(self):
         super().start()
-        self._bin_config._on_token_update = self._update_token
 
     def stop(self, wait=5.0):
         if self._session is not None:
@@ -352,6 +353,7 @@ class Client(ClientBase):
                 time.sleep(backoff.full_jitter(sleep))
 
     def _update_token(self):
+        log.debug("Updating auth token")
         try:
             self._session.headers.setdefault("Authorization", prepare_token(self._bin_config.token))
             # Make sure the token gets intercepted by the worker
