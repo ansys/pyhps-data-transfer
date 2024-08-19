@@ -8,7 +8,6 @@ import stat
 import time
 import traceback
 
-import asyncio_atexit
 import backoff
 import filelock
 import httpx
@@ -290,7 +289,7 @@ class AsyncClient(ClientBase):
             except:
                 pass
         super().stop(wait=wait)
-        asyncio_atexit.register(self.stop)
+        # asyncio_atexit.register(self.stop)
 
     async def wait(self, timeout: float = 60.0, sleep=0.5):
         start = time.time()
