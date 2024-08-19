@@ -16,6 +16,7 @@ install_requires = [
     "portend>=3.2.0",
     "filelock>=3.14.0",
     "psutil>=5.9.1",
+    "asyncio-atexit>=1.0.0",
 ]
 
 

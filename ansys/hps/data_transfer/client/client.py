@@ -8,6 +8,7 @@ import stat
 import time
 import traceback
 
+import asyncio_atexit
 import backoff
 import filelock
 import httpx
@@ -112,9 +113,6 @@ class ClientBase:
 
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
-
-        # Make sure the status endpoint is called from time to time to keep the token in the worker up-to-date
-        atexit.register(self.stop)
 
         # self._session = self._create_session(self.base_api_url)
 
@@ -292,6 +290,7 @@ class AsyncClient(ClientBase):
             except:
                 pass
         super().stop(wait=wait)
+        asyncio_atexit.register(self.stop)
 
     async def wait(self, timeout: float = 60.0, sleep=0.5):
         start = time.time()
@@ -328,6 +327,7 @@ class Client(ClientBase):
 
     def start(self):
         super().start()
+        atexit.register(self.stop)
 
     def stop(self, wait=5.0):
         if self._session is not None:
