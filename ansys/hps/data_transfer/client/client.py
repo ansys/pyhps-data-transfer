@@ -357,6 +357,5 @@ class Client(ClientBase):
             self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
             # Make sure the token gets intercepted by the worker
             resp = self.session.get("/")
-            log.warning(f"resp status: {resp.status_code}")
         except Exception as e:
             log.debug(f"Error updating token: {e}")
