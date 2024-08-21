@@ -176,7 +176,7 @@ class Binary:
 
     def _log_output(self):
         while not self._stop.is_set():
-            if self._process is None:
+            if self._process is None or self._process.stdout is None:
                 time.sleep(1)
                 continue
             try:
@@ -227,7 +227,8 @@ class Binary:
                 if self._config.debug:
                     s = args.replace(self._config.token, "***")
                     log.debug(f"Starting worker: {s}")
-                self._process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                self._process = subprocess.Popen(args, shell=True)
+                # self._process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
