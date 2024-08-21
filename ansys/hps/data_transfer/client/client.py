@@ -306,14 +306,15 @@ class AsyncClient(ClientBase):
             finally:
                 await asyncio.sleep(backoff.full_jitter(sleep))
 
-    async def _update_token(self):
+    def _update_token(self):
+        loop = asyncio.get_running_loop()
         if self._session is None:
             return
         log.debug("Updating auth token, ends in %s", self._bin_config.token[-10:])
         try:
             self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
             # Make sure the token gets intercepted by the worker
-            await self.session.get("/")
+            loop.run_until_complete(self.session.get("/"))
         except Exception as e:
             log.debug(f"Error updating token: {e}")
 
