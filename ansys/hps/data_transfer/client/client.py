@@ -307,6 +307,8 @@ class AsyncClient(ClientBase):
                 await asyncio.sleep(backoff.full_jitter(sleep))
 
     async def _update_token(self):
+        if self._session is None:
+            return
         log.debug("Updating auth token, ends in %s", self._bin_config.token[-10:])
         try:
             self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
@@ -352,6 +354,8 @@ class Client(ClientBase):
                 time.sleep(backoff.full_jitter(sleep))
 
     def _update_token(self):
+        if self._session is None:
+            return
         log.debug("Updating auth token, ends in %s", self._bin_config.token[-10:])
         try:
             self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
