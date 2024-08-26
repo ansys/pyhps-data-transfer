@@ -64,6 +64,7 @@ dist
 *.err.*
 dev_env
 venv
+.venv
 *.egg-info
 conan_imports_manifest.txt
 conanbuildinfo.txt

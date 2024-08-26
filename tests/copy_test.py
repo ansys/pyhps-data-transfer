@@ -54,3 +54,19 @@ async def test_async_copy(storage_path, async_client):
     op = await api.wait_for([op])
     assert op[0].state == OperationState.Succeeded, op[0].messages
     assert filecmp.cmp(temp_file.name, dst.path, shallow=False)
+
+
+def test_copy_empty_file(storage_path, client):
+    api = DataTransferApi(client)
+    api.status(wait=True)
+
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
+        pass
+    temp_file_name = os.path.basename(temp_file.name)
+
+    src = StoragePath(path=temp_file.name, remote="local")
+    dst = StoragePath(path=f"{storage_path}/{temp_file_name}")
+    op = api.copy([SrcDst(src=src, dst=dst)])
+    assert op.id is not None
+    op = api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
