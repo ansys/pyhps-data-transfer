@@ -25,6 +25,7 @@ class Operation(BaseModel):
     messages: Optional[List[str]] = None
     progress: Optional[float] = None
     queued_at: Optional[str] = None
+    remotes: Optional[List[str]] = None
     result: Optional[Any] = None
     started_at: Optional[str] = None
     state: Optional[OperationState] = None
