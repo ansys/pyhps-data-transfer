@@ -5,7 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class OperationState(Enum):
@@ -25,7 +25,7 @@ class Operation(BaseModel):
     messages: Optional[List[str]] = None
     progress: Optional[float] = None
     queued_at: Optional[str] = None
-    remotes: Optional[List[str]] = None
     result: Optional[Any] = None
     started_at: Optional[str] = None
     state: Optional[OperationState] = None
+    succeeded_on: Optional[List[str]] = Field(None, description="Remotes that the operation succeeded on")
