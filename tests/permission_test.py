@@ -22,8 +22,10 @@ def test_permissions(storage_path, client, user_client, user_id):
     op = admin.wait_for([op], timeout=10)[0]
     assert op.state == OperationState.Succeeded
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception) as err_info:
         user.copy([SrcDst(src=StoragePath(path=remote_path), dst=StoragePath(path=f"{storage_path}/my_file_copy.txt"))])
+
+    assert "403" in str(err_info.value)
 
     try:
         admin.set_permissions(
