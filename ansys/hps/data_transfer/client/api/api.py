@@ -43,7 +43,7 @@ class DataTransferApi:
         start = time.time()
         while True:
             if timeout is not None and (time.time() - start) > timeout:
-                raise TimeoutError("Timeout waiting for client to be ready")
+                raise TimeoutError("Timeout waiting for worker to be ready")
 
             try:
                 resp = self.client.session.get(url)
