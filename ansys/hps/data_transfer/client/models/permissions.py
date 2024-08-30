@@ -21,6 +21,7 @@ class RoleType(Enum):
 class SubjectType(Enum):
     User = "user"
     Group = "group"
+    Any = "any"
 
 
 class Resource(BaseModel):
