@@ -142,7 +142,11 @@ class DataTransferApi:
         return OpIdResponse(**json)
 
     def wait_for(
-        self, operation_ids: List[str | Operation | OpIdResponse], timeout: float | None = None, interval: float = 0.2
+        self,
+        operation_ids: List[str | Operation | OpIdResponse],
+        timeout: float | None = None,
+        interval: float = 0.1,
+        cap: float = 2.0,
     ):
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
@@ -175,8 +179,8 @@ class DataTransferApi:
                 raise TimeoutError("Timeout waiting for operations to complete")
 
             # TODO: Adjust based on transfer speed and file size
-            duration = get_expo_backoff(interval, attempts=attempt, cap=interval * 2.0)
-            log.debug(f"Sleeping for {hf.format_timespan(duration)} ...")
+            duration = get_expo_backoff(interval, attempts=attempt, cap=cap, jitter=True)
+            log.debug(f"Waiting for {hf.format_timespan(duration)} before retrying ...")
             time.sleep(duration)
 
         duration = hf.format_timespan(time.time() - start)
