@@ -29,3 +29,4 @@ class Operation(BaseModel):
     started_at: Optional[str] = None
     state: Optional[OperationState] = None
     succeeded_on: Optional[List[str]] = Field(None, description="Remotes that the operation succeeded on")
+    user_id: Optional[str] = None
