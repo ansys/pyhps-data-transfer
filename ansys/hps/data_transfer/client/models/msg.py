@@ -10,6 +10,12 @@ from . import ops
 from . import permissions as perms  # noqa: F401
 
 
+class BinaryInfo(BaseModel):
+    name: Optional[str] = None
+    platform: Optional[str] = None
+    type: Optional[str] = None
+
+
 class BuildInfo(BaseModel):
     branch: Optional[str] = None
     mode: Optional[str] = None
@@ -49,6 +55,10 @@ class StorageConfigResponse(BaseModel):
 class StoragePath(BaseModel):
     path: str
     remote: Optional[str] = "any"
+
+
+class Binaries(BaseModel):
+    available: Optional[List[BinaryInfo]] = None
 
 
 class PathOperations(BaseModel):
