@@ -2,20 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
-from pydantic import BaseModel, Field
-
-from . import storage
+from pydantic import BaseModel
 
 
-class TokenResponse(BaseModel):
-    pass
-
-
-class TokenRequest(BaseModel):
-    other: Optional[Dict[str, Any]] = Field(None, description="For custom use")
-    read: Optional[List[str]] = None
-    recursive: Optional[bool] = None
-    type: Optional[storage.PathType] = None
-    write: Optional[List[str]] = None
+class CompatCopyRequest(BaseModel):
+    destination: Optional[str] = None
