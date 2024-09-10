@@ -133,9 +133,10 @@ class AsyncDataTransferApi:
         return None
 
     @retry()
-    async def get_metadata(self, operations: List[StoragePath]):
+    async def get_metadata(self, paths: List[str | StoragePath]):
         url = "/metadata:get"
-        payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
+        paths = [p if isinstance(p, str) else p.path for p in paths]
+        payload = {"paths": paths}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
         return OpIdResponse(**json)
