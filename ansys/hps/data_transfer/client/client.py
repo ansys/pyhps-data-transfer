@@ -295,11 +295,12 @@ class AsyncClient(ClientBase):
         start = time.time()
         while time.time() - start < timeout:
             try:
-                resp = await self.session.get(self.base_api_url)
-                if resp.status_code != 200:
-                    log.debug("Waiting for worker to start")
-                else:
-                    return
+                if self._session is not None:
+                    resp = await self.session.get(self.base_api_url)
+                    if resp.status_code != 200:
+                        log.debug("Waiting for worker to start")
+                    else:
+                        return
             except Exception as ex:
                 if self._bin_config.debug:
                     log.debug(f"Error waiting for worker to start: {ex}")
@@ -343,11 +344,12 @@ class Client(ClientBase):
         start = time.time()
         while time.time() - start < timeout:
             try:
-                resp = self._session.get(self.base_api_url)
-                if resp.status_code != 200:
-                    log.debug("Waiting for worker to start")
-                else:
-                    return
+                if self._session is not None:
+                    resp = self._session.get(self.base_api_url)
+                    if resp.status_code != 200:
+                        log.debug("Waiting for worker to start")
+                    else:
+                        return
             except Exception as ex:
                 if self._bin_config.debug:
                     log.debug(f"Error waiting for worker to start: {ex}")
