@@ -132,7 +132,6 @@ class ClientBase:
 
     @property
     def base_api_url(self):
-        log.warning(f"Base API URL: {self._bin_config.url}")
         return self._bin_config.url
 
     @property
