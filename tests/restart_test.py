@@ -33,7 +33,7 @@ async def test_async_restart(async_client):
     await asyncio.sleep(0.2)
 
     # Kill the binary and wait for it to restart
-    p = psutil.Process(client.binary._process.pid)
+    p = psutil.Process(async_client.binary._process.pid)
     p.kill()
     await asyncio.sleep(0.2)
     # assert client.binary._process.poll() is not None
