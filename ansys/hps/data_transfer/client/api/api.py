@@ -45,17 +45,13 @@ class DataTransferApi:
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for worker to be ready")
 
-            try:
-                resp = self.client.session.get(url)
-                json = resp.json()
-                s = Status(**json)
-                if wait and not s.ready:
-                    _sleep()
-                    continue
-                return s
-            except Exception as e:
-                log.debug(f"Error getting status: {e}")
+            resp = self.client.session.get(url)
+            json = resp.json()
+            s = Status(**json)
+            if wait and not s.ready:
                 _sleep()
+                continue
+            return s
 
     @retry()
     def operations(self, ids: List[str]):

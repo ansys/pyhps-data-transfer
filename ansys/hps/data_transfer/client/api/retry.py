@@ -2,6 +2,9 @@ import logging
 import traceback
 
 import backoff
+import httpx
+
+from ..exceptions import HPSError, NotReadyError, TimeoutError
 
 log = logging.getLogger(__name__)
 
@@ -20,14 +23,34 @@ def _on_backoff(details, exc_info=True):
         log.warning(f"Failed to log in backoff handler: {ex}")
 
 
-def retry():
+def _giveup(e):
+    log.warn(e.__class__)
+    if isinstance(e, httpx.ConnectError):
+        return False
+    elif isinstance(e, TimeoutError):
+        return True
+    elif isinstance(e, NotReadyError):
+        return False
+    elif isinstance(e, HPSError) and e.give_up:
+        return True
+
+    return False
+
+
+def retry(
+    max_tries=20,
+    max_time=60,
+    raise_on_giveup=True,
+    jitter=backoff.full_jitter,
+):
     return backoff.on_exception(
         backoff.expo,
         Exception,
-        max_tries=20,
-        max_time=60,
-        jitter=backoff.full_jitter,
-        raise_on_giveup=True,
+        max_tries=max_tries,
+        max_time=max_time,
+        jitter=jitter,
+        raise_on_giveup=raise_on_giveup,
         on_backoff=_on_backoff,
         logger=None,
+        giveup=_giveup,
     )

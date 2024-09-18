@@ -47,6 +47,7 @@ class HPSError(RequestException):
     def __init__(self, *args, **kwargs):
         self.reason = kwargs.pop("reason", None)
         self.description = kwargs.pop("description", None)
+        self.give_up = kwargs.pop("give_up", False)
         super(HPSError, self).__init__(*args, **kwargs)
 
 
@@ -71,6 +72,13 @@ class BinaryError(HPSError):
         super(BinaryError, self).__init__(*args, **kwargs)
 
 
+class NotReadyError(ClientError):
+    """Provides client-side related errors."""
+
+    def __init__(self, *args, **kwargs):
+        super(NotReadyError, self).__init__(*args, **kwargs)
+
+
 class TimeoutError(ClientError):
     """Provides client-side related errors."""
 
@@ -83,46 +91,59 @@ def raise_for_status(response: httpx.Response):
 
     This method mimics the requests.Response.raise_for_status() method.
     """
-    if 400 <= response.status_code < 600:
-        if getattr(response, "is_error", False):
-            response.read()
 
-        r_content = {}
-        try:
-            r_content = response.json()
-        except ValueError:
-            pass
+    if response.status_code < 400 or response.status_code >= 600:
+        return
 
-        reason = r_content.get("title", None)  # jms api
-        if not reason:
-            reason = r_content.get("error", None)  # auth api
-        if not reason:
-            reason = getattr(response, "reason", None)
+    if getattr(response, "is_error", False):
+        response.read()
 
-        description = r_content.get("description", None)  # jms api
-        if not description:
-            description = r_content.get("error_description", None)  # auth api
+    r_content = {}
+    try:
+        r_content = response.json()
+    except ValueError:
+        pass
 
-        if 400 <= response.status_code < 500:
-            error_msg = "%s Client Error: %s for: %s %s" % (
-                response.status_code,
-                reason,
-                response.request.method,
-                response.url,
-            )
-            if description:
-                error_msg += f"\n{description}"
-            raise ClientError(error_msg, reason=reason, description=description, response=response)
-        elif 500 <= response.status_code < 600:
-            error_msg = "%s Server Error: %s for: %s %s" % (
-                response.status_code,
-                reason,
-                response.request.method,
-                response.url,
-            )
-            if description:
-                error_msg += f"\n{description}"
-            raise APIError(error_msg, reason=reason, description=description, response=response)
+    reason = r_content.get("title", None)  # jms api
+    if not reason:
+        reason = r_content.get("error", None)  # auth api
+    if not reason:
+        reason = getattr(response, "reason", None)
+
+    description = r_content.get("description", None)  # jms api
+    if not description:
+        description = r_content.get("error_description", None)  # auth api
+
+    if response.status_code == 425:
+        raise NotReadyError(
+            response.status_code,
+            reason=reason,
+            description=description,
+            response=response,
+        )
+
+    if 400 <= response.status_code < 500:
+        error_msg = "%s Client Error: %s for: %s %s" % (
+            response.status_code,
+            reason,
+            response.request.method,
+            response.url,
+        )
+        if description:
+            error_msg += f"\n{description}"
+
+        give_up = response.status_code in [401, 403]
+        raise ClientError(error_msg, reason=reason, description=description, response=response, give_up=give_up)
+    elif 500 <= response.status_code < 600:
+        error_msg = "%s Server Error: %s for: %s %s" % (
+            response.status_code,
+            reason,
+            response.request.method,
+            response.url,
+        )
+        if description:
+            error_msg += f"\n{description}"
+        raise APIError(error_msg, reason=reason, description=description, response=response)
     return response
 
 
