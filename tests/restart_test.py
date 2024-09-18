@@ -25,9 +25,9 @@ def test_restart(client):
     api.status(wait=True, timeout=20)
 
 
-async def test_async_restart(client):
+async def test_async_restart(async_client):
     # Let it start up
-    api = AsyncDataTransferApi(client)
+    api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 
     await asyncio.sleep(0.2)
