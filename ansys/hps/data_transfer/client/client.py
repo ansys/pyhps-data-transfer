@@ -156,6 +156,8 @@ class ClientBase:
 
         self._prepare_platform_binary()
 
+        self._bin_config._on_port_changed = self._on_port_changed
+
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
 
@@ -170,6 +172,7 @@ class ClientBase:
         self.binary.stop(wait=wait)
         self.binary = None
         self._session = None
+        self._bin_config._on_port_changed = None
 
     def _platform(self):
         plat = ""
@@ -318,6 +321,10 @@ class ClientBase:
 
         return session
 
+    def _on_port_changed(self, port):
+        log.debug(f"Port changed to {port}")
+        self._session = None
+
 
 class AsyncClient(ClientBase):
     class Meta(ClientBase.Meta):
@@ -374,7 +381,6 @@ class AsyncClient(ClientBase):
 
         def _on_process_died(ret_code):
             state.reset()
-            self._session = None
 
         self.binary_config._on_process_died = _on_process_died
 
@@ -451,7 +457,6 @@ class Client(ClientBase):
 
         def _on_process_died(ret_code):
             state.reset()
-            self._session = None
 
         self.binary_config._on_process_died = _on_process_died
 

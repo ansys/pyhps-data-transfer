@@ -62,6 +62,7 @@ class BinaryConfig:
 
         self._on_token_update = None
         self._on_process_died = None
+        self._on_port_changed = None
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
@@ -250,6 +251,8 @@ class Binary:
     def _prepare(self):
         if self._config._selected_port is None:
             self._config._detected_port = self._get_open_port()
+            if self._config._on_port_changed is not None:
+                self._config._on_port_changed(self._config._detected_port)
 
         self._build_base_args()
 
