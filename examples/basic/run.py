@@ -28,13 +28,7 @@ if __name__ == "__main__":
     log.info("Connecting to the data transfer service client..")
     client = Client()
 
-    client.binary_config.update(
-        verbosity=3,
-        debug=False,
-        insecure=True,
-        token=token,
-        data_transfer_url=dt_url,
-    )
+    client.binary_config.update(verbosity=3, debug=True, insecure=True, token=token, data_transfer_url=dt_url, log=True)
     client.start()
 
     api = DataTransferApi(client)
