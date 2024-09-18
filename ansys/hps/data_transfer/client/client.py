@@ -5,6 +5,7 @@ import os
 import platform
 import shutil
 import stat
+import threading
 import time
 import traceback
 
@@ -50,6 +51,49 @@ def bin_in_use(bin_path):
     return False
 
 
+class MonitorState:
+    def __init__(self):
+        self.reset()
+        self._sleep_not_started = 2
+        self._sleep_while_running = 5
+
+    @property
+    def sleep_for(self):
+        return self._sleep_while_running if self._was_ready else self._sleep_not_started
+
+    def reset(self):
+        self._ok_reported = False
+        self._was_ready = False
+        self._failed = False
+        self._last_exc = None
+
+    def mark_ready(self, ready):
+        self._was_ready = True
+        msg = f"Worker is running, reporting {'' if ready else 'not '}ready"
+        if ready:
+            if not self._ok_reported:
+                log.info(msg)
+                self._ok_reported = True
+        else:
+            self._ok_reported = False
+            log.warning(msg)
+
+    def mark_failed(self, exc=None):
+        exc_str = "" if exc is None else f": {exc}"
+        log.warning(f"Worker failure detected{exc_str}")
+
+        self._ok_reported = False
+        self._failed = True
+        self._last_exc = exc
+
+    def report(self, binary):
+        if self._failed and self._was_ready:
+            descr = "running" if binary.is_started else "not running"
+            if self._last_exc is not None:
+                descr += f", last exception: {self._last_exc}"
+            log.warning(f"Worker failure detected, binary is {descr}")
+
+
 class ClientBase:
     class Meta:
         is_async = False
@@ -71,6 +115,8 @@ class ClientBase:
         self._session = None
         self.binary = None
 
+        self._monitor_stop = threading.Event()
+
     def __getstate__(self):
         state = self.__dict__.copy()
         del state["_session"]
@@ -86,6 +132,7 @@ class ClientBase:
 
     @property
     def base_api_url(self):
+        log.warning(f"Base API URL: {self._bin_config.url}")
         return self._bin_config.url
 
     @property
@@ -113,11 +160,14 @@ class ClientBase:
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
 
+        self._monitor_stop.clear()
+
         # self._session = self._create_session(self.base_api_url)
 
     def stop(self, wait=5.0):
         if self.binary is None:
             return
+        self._monitor_stop.set()
         self.binary.stop(wait=wait)
         self.binary = None
         self._session = None
@@ -280,6 +330,7 @@ class AsyncClient(ClientBase):
 
     async def start(self):
         super().start()
+        asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
         if self._session is not None:
@@ -319,6 +370,33 @@ class AsyncClient(ClientBase):
         except Exception as e:
             log.debug(f"Error updating token: {e}")
 
+    async def _monitor(self):
+        state = MonitorState()
+
+        def _on_process_died(ret_code):
+            state.reset()
+            self._session = None
+
+        self.binary_config._on_process_died = _on_process_died
+
+        while not self._monitor_stop.is_set():
+            await asyncio.sleep(state.sleep_for)
+
+            if self._session is None or self.binary is None:
+                continue
+            try:
+                resp = await self._session.get(self.base_api_url)
+
+                if resp.status_code == 200:
+                    ready = resp.json().get("ready", False)
+                    state.mark_ready(ready)
+                    continue
+            except Exception as ex:
+                state.mark_failed(ex)
+                continue
+
+            state.report(self.binary)
+
 
 class Client(ClientBase):
     class Meta(ClientBase.Meta):
@@ -327,10 +405,12 @@ class Client(ClientBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._bin_config._on_token_update = self._update_token
+        self._monitor_thread = threading.Thread(target=self._monitor, args=(), daemon=True)
 
     def start(self):
         super().start()
         atexit.register(self.stop)
+        self._monitor_thread.start()
 
     def stop(self, wait=5.0):
         if self._session is not None:
@@ -366,3 +446,30 @@ class Client(ClientBase):
             resp = self.session.get("/")
         except Exception as e:
             log.debug(f"Error updating token: {e}")
+
+    def _monitor(self):
+        state = MonitorState()
+
+        def _on_process_died(ret_code):
+            state.reset()
+            self._session = None
+
+        self.binary_config._on_process_died = _on_process_died
+
+        while not self._monitor_stop.is_set():
+            time.sleep(state.sleep_for)
+
+            if self._session is None or self.binary is None:
+                continue
+            try:
+                resp = self._session.get(self.base_api_url)
+
+                if resp.status_code == 200:
+                    ready = resp.json().get("ready", False)
+                    state.mark_ready(ready)
+                    continue
+            except Exception as ex:
+                state.mark_failed(ex)
+                continue
+
+            state.report(self.binary)

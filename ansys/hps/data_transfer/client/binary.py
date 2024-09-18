@@ -61,6 +61,7 @@ class BinaryConfig:
         self.insecure = insecure
 
         self._on_token_update = None
+        self._on_process_died = None
 
     def update(self, **kwargs):
         for key, value in kwargs.items():
@@ -118,7 +119,10 @@ class Binary:
 
     @property
     def is_started(self):
-        return self._process is not None and self._process.returncode is None
+        try:
+            return self._process is not None and self._process.returncode is None
+        except Exception:
+            return False
 
     def start(self):
         if self._process is not None and self._process.returncode is None:
@@ -234,6 +238,8 @@ class Binary:
                     log.warning(f"Worker exited with code {ret_code}, restarting ...")
                     self._process = None
                     self._prepared.clear()
+                    if self.config._on_process_died is not None:
+                        self.config._on_process_died(ret_code)
                     time.sleep(1.0)
                     continue
                 # elif self._config.debug:

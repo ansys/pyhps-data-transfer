@@ -24,7 +24,6 @@ def _on_backoff(details, exc_info=True):
 
 
 def _giveup(e):
-    log.warn(e.__class__)
     if isinstance(e, httpx.ConnectError):
         return False
     elif isinstance(e, TimeoutError):
