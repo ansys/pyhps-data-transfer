@@ -191,7 +191,7 @@ def user_binary_config(user_access_token, dt_url):
     yield cfg
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def client(binary_config, binary_dir):
     from ansys.hps.data_transfer.client import Client
 
@@ -209,7 +209,7 @@ def client(binary_config, binary_dir):
     c.stop()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def user_client(user_binary_config, binary_dir):
     from ansys.hps.data_transfer.client import Client
 
@@ -219,7 +219,7 @@ def user_client(user_binary_config, binary_dir):
     c.stop()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 async def async_client(binary_config, binary_dir, event_loop):
     from ansys.hps.data_transfer.client import AsyncClient
 
@@ -230,7 +230,7 @@ async def async_client(binary_config, binary_dir, event_loop):
     await c.stop()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 async def async_user_client(user_binary_config, binary_dir, event_loop):
     from ansys.hps.data_transfer.client import AsyncClient
 
