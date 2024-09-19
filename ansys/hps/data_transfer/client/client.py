@@ -115,16 +115,19 @@ class ClientBase:
         self._session = None
         self.binary = None
 
-        self._monitor_stop = threading.Event()
+        self._monitor_stop = None
+        self._monitor_state = MonitorState()
 
     def __getstate__(self):
         state = self.__dict__.copy()
         del state["_session"]
+        del state["_monitor_stop"]
         return state
 
     def __setstate__(self, state):
         self.__dict__.update(state)
         self._session = None
+        self._monitor_stop = None
 
     @property
     def binary_config(self):
@@ -154,14 +157,15 @@ class ClientBase:
             except:
                 pass
 
+        self._monitor_stop = threading.Event()
+        self._monitor_state.reset()
         self._prepare_platform_binary()
 
         self._bin_config._on_port_changed = self._on_port_changed
+        self._bin_config._on_process_died = self._on_process_died
 
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
-
-        self._monitor_stop.clear()
 
         # self._session = self._create_session(self.base_api_url)
 
@@ -325,6 +329,9 @@ class ClientBase:
         log.debug(f"Port changed to {port}")
         self._session = None
 
+    def _on_process_died(self, ret_code):
+        self._monitor_state.reset()
+
 
 class AsyncClient(ClientBase):
     class Meta(ClientBase.Meta):
@@ -377,15 +384,8 @@ class AsyncClient(ClientBase):
             log.debug(f"Error updating token: {e}")
 
     async def _monitor(self):
-        state = MonitorState()
-
-        def _on_process_died(ret_code):
-            state.reset()
-
-        self.binary_config._on_process_died = _on_process_died
-
         while not self._monitor_stop.is_set():
-            await asyncio.sleep(state.sleep_for)
+            await asyncio.sleep(self._monitor_state.sleep_for)
 
             if self._session is None or self.binary is None:
                 continue
@@ -394,13 +394,13 @@ class AsyncClient(ClientBase):
 
                 if resp.status_code == 200:
                     ready = resp.json().get("ready", False)
-                    state.mark_ready(ready)
+                    self._monitor_state.mark_ready(ready)
                     continue
             except Exception as ex:
-                state.mark_failed(ex)
+                self._monitor_state.mark_failed(ex)
                 continue
 
-            state.report(self.binary)
+            self._monitor_state.report(self.binary)
 
 
 class Client(ClientBase):
@@ -410,11 +410,22 @@ class Client(ClientBase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._bin_config._on_token_update = self._update_token
-        self._monitor_thread = threading.Thread(target=self._monitor, args=(), daemon=True)
+        self._monitor_thread = None
+
+    def __getstate__(self):
+        state = super().__getstate__()
+        del state["_monitor_thread"]
+        return state
+
+    def __setstate__(self, state):
+        super().__setstate__(state)
+        self.__dict__.update(state)
+        self._monitor_thread = None
 
     def start(self):
         super().start()
         atexit.register(self.stop)
+        self._monitor_thread = threading.Thread(target=self._monitor, args=(), daemon=True)
         self._monitor_thread.start()
 
     def stop(self, wait=5.0):
@@ -453,15 +464,8 @@ class Client(ClientBase):
             log.debug(f"Error updating token: {e}")
 
     def _monitor(self):
-        state = MonitorState()
-
-        def _on_process_died(ret_code):
-            state.reset()
-
-        self.binary_config._on_process_died = _on_process_died
-
         while not self._monitor_stop.is_set():
-            time.sleep(state.sleep_for)
+            time.sleep(self._monitor_state.sleep_for)
 
             if self._session is None or self.binary is None:
                 continue
@@ -470,10 +474,10 @@ class Client(ClientBase):
 
                 if resp.status_code == 200:
                     ready = resp.json().get("ready", False)
-                    state.mark_ready(ready)
+                    self._monitor_state.mark_ready(ready)
                     continue
             except Exception as ex:
-                state.mark_failed(ex)
+                self._monitor_state.mark_failed(ex)
                 continue
 
-            state.report(self.binary)
+            self._monitor_state.report(self.binary)
