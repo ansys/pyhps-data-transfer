@@ -135,7 +135,7 @@ if __name__ == "__main__":
         default=os.path.join(test_directory, "test_results.xml"),
         help="Where to dump test results",
     )
-    tests.add_argument("-t", "--test_timeout", default=300, help="Time after which to kill the test, in seconds")
+    tests.add_argument("-t", "--test_timeout", default=30, help="Time after which to kill the test, in seconds")
     tests.add_argument(
         "-x",
         "--max_fail",
