@@ -9,8 +9,10 @@ from keycloak import KeycloakAdmin
 import pytest
 from slugify import slugify
 
+from ansys.hps.data_transfer.client import AsyncClient, Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.binary import BinaryConfig
+from ansys.hps.data_transfer.client.models.msg import StoragePath
 
 log = logging.getLogger(__name__)
 
@@ -199,20 +201,22 @@ def client(binary_config, binary_dir):
     c.start()
     yield c
 
-    from ansys.hps.data_transfer.client import DataTransferApi
-    from ansys.hps.data_transfer.client.models.msg import StoragePath
+    c.stop()
 
+
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_test_storages(binary_config, binary_dir):
+    yield
+
+    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
+    c.start()
     api = DataTransferApi(c)
     op = api.rmdir([StoragePath(path="python_client_tests")])
     api.wait_for(op.id)
 
-    c.stop()
-
 
 @pytest.fixture
 def user_client(user_binary_config, binary_dir):
-    from ansys.hps.data_transfer.client import Client
-
     c = Client(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
     c.start()
     yield c
@@ -221,8 +225,6 @@ def user_client(user_binary_config, binary_dir):
 
 @pytest.fixture
 async def async_client(binary_config, binary_dir, event_loop):
-    from ansys.hps.data_transfer.client import AsyncClient
-
     c = AsyncClient(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
     await c.start()
     yield c
@@ -232,8 +234,6 @@ async def async_client(binary_config, binary_dir, event_loop):
 
 @pytest.fixture
 async def async_user_client(user_binary_config, binary_dir, event_loop):
-    from ansys.hps.data_transfer.client import AsyncClient
-
     c = AsyncClient(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
     await c.start()
     yield c
