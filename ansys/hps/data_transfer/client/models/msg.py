@@ -6,8 +6,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from . import ops
-from . import permissions as perms  # noqa: F401
+from . import metadata, ops
 
 
 class BuildInfo(BaseModel):
@@ -23,6 +22,24 @@ class CheckPermissionsResponse(BaseModel):
     allowed: Optional[bool] = None
 
 
+class CopyMetadataRequest(BaseModel):
+    recursive: Optional[bool] = None
+    src_dst: List[metadata.SrcDst]
+
+
+class GetMetadataRequest(BaseModel):
+    paths: Optional[List[str]] = None
+
+
+class MetadataConfigResponse(BaseModel):
+    config: Optional[Dict[str, Any]] = None
+
+
+class MoveMetadataRequest(BaseModel):
+    recursive: Optional[bool] = None
+    src_dst: List[metadata.SrcDst]
+
+
 class OpIdResponse(BaseModel):
     id: Optional[str] = "2diK2kCkpgeHAQSNthIZ1JYyPte"
     location: Optional[str] = "/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte"
@@ -34,6 +51,15 @@ class OpsRequest(BaseModel):
 
 class PermissionsConfigResponse(BaseModel):
     config: Optional[Dict[str, Any]] = None
+
+
+class RemoveMetadataRequest(BaseModel):
+    paths: List[str]
+    recursive: Optional[bool] = None
+
+
+class SetMetadataRequest(BaseModel):
+    metadata: metadata.DataAssignments
 
 
 class Status(BaseModel):
