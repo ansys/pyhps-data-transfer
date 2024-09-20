@@ -32,6 +32,8 @@ def _giveup(e):
         return False
     elif isinstance(e, HPSError) and e.give_up:
         return True
+    elif isinstance(e, TypeError):
+        return True
 
     return False
 
