@@ -1,6 +1,7 @@
 """
 Example script for file operations.
 """
+
 import glob
 import logging
 import os
