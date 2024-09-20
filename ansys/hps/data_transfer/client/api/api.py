@@ -1,7 +1,7 @@
 import logging
 import textwrap
 import time
-from typing import List
+from typing import Dict, List
 
 import backoff
 
@@ -11,11 +11,13 @@ import humanfriendly as hf
 
 from ..client import Client
 from ..exceptions import TimeoutError
+from ..models.metadata import DataAssignment
 from ..models.msg import (
     CheckPermissionsResponse,
     GetPermissionsResponse,
     OpIdResponse,
     OpsResponse,
+    SetMetadataRequest,
     SrcDst,
     Status,
     StorageConfigResponse,
@@ -135,6 +137,15 @@ class DataTransferApi:
         paths = [p if isinstance(p, str) else p.path for p in paths]
         payload = {"paths": paths}
         resp = self.client.session.post(url, json=payload)
+        json = resp.json()
+        return OpIdResponse(**json)
+
+    @retry()
+    def set_metadata(self, asgs: Dict[str | StoragePath, DataAssignment]):
+        url = "/metadata:set"
+        d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}
+        req = SetMetadataRequest(metadata=d)
+        resp = self.client.session.post(url, json=req.model_dump(mode=self.dump_mode))
         json = resp.json()
         return OpIdResponse(**json)
 
