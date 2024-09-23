@@ -53,7 +53,7 @@ jobs:
       - name: Start containers
         run: |
           docker-compose pull
-          docker-compose up
+          docker-compose up -d
 
       - name: Run tests
         run: |
