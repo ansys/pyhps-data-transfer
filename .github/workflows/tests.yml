@@ -52,7 +52,8 @@ jobs:
       
       - name: Start containers
         run: |
-          docker-compose up --wait
+          docker-compose pull
+          docker-compose up
 
       - name: Run tests
         run: |

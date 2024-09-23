@@ -190,6 +190,7 @@ services:
       - --auth-url=https://${EXTERNAL_NAME}:${EXTERNAL_PORT}/hps/auth/realms/rep
     volumes:
       - ./config/dts/config.json:/app/config.json
+      - ./config/certificates:/certificates:ro
     extra_hosts:
       - "s3.localhost:host-gateway"
       - "localhost:host-gateway"
