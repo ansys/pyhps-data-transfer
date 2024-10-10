@@ -230,7 +230,9 @@ class Binary:
                 self._prepare()
                 args = " ".join(self._args)
                 if self._config.debug:
-                    s = args.replace(self._config.token, "***")
+                    s = args
+                    if self._config.token is not None:
+                        s = args.replace(self._config.token, "***")
                     log.debug(f"Starting worker: {s}")
                 self._process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             else:
