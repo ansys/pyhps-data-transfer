@@ -27,6 +27,10 @@ class CopyMetadataRequest(BaseModel):
     src_dst: List[metadata.SrcDst]
 
 
+class FileDownloadTokenResponse(BaseModel):
+    token: Optional[str] = None
+
+
 class GetMetadataRequest(BaseModel):
     paths: Optional[List[str]] = None
 
