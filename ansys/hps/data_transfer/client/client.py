@@ -78,9 +78,13 @@ class MonitorState:
             self._ok_reported = False
             log.warning(msg)
 
-    def mark_failed(self, exc=None):
+    def mark_failed(self, exc=None, binary=None):
         exc_str = "" if exc is None else f": {exc}"
-        log.warning(f"Worker failure detected{exc_str}")
+        if binary:
+            bin_str = f", binary is {'' if binary.is_started else 'not '}running"
+        else:
+            bin_str = ""
+        log.warning(f"Worker failure detected{exc_str}{bin_str}")
 
         self._ok_reported = False
         self._failed = True
@@ -397,7 +401,7 @@ class AsyncClient(ClientBase):
                     self._monitor_state.mark_ready(ready)
                     continue
             except Exception as ex:
-                self._monitor_state.mark_failed(ex)
+                self._monitor_state.mark_failed(ex, self.binary)
                 continue
 
             self._monitor_state.report(self.binary)
@@ -477,7 +481,7 @@ class Client(ClientBase):
                     self._monitor_state.mark_ready(ready)
                     continue
             except Exception as ex:
-                self._monitor_state.mark_failed(ex)
+                self._monitor_state.mark_failed(ex, self.binary)
                 continue
 
             self._monitor_state.report(self.binary)
