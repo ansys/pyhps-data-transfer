@@ -14,6 +14,7 @@ class BuildInfo(BaseModel):
     mode: Optional[str] = None
     revision: Optional[str] = None
     short_revision: Optional[str] = None
+    timestamp: Optional[str] = None
     version: Optional[str] = None
     version_hash: Optional[str] = None
 
