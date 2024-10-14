@@ -12,6 +12,9 @@ def get_expo_backoff(base: float, attempts: int = 1, cap: float = 100_000_000, j
     # Full jitter formula
     # https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
     if jitter:
-        return uniform(base, min(cap, base * 2 ** (attempts - 1)))
+        try:
+            return uniform(base, min(cap, base * 2 ** (attempts - 1)))
+        except OverflowError:
+            return cap
     else:
         return min(cap, base * 2 ** (attempts - 1))
