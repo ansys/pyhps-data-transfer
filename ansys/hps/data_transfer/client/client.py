@@ -401,7 +401,9 @@ class AsyncClient(ClientBase):
                     self._monitor_state.mark_ready(ready)
                     continue
             except Exception as ex:
-                self._monitor_state.mark_failed(ex, self.binary)
+                if self.binary_config.debug:
+                    log.debug(traceback.format_exc())
+                self._monitor_state.mark_failed(exc=ex, binary=self.binary)
                 continue
 
             self._monitor_state.report(self.binary)
@@ -481,7 +483,9 @@ class Client(ClientBase):
                     self._monitor_state.mark_ready(ready)
                     continue
             except Exception as ex:
-                self._monitor_state.mark_failed(ex, self.binary)
+                if self.binary_config.debug:
+                    log.debug(traceback.format_exc())
+                self._monitor_state.mark_failed(exc=ex, binary=self.binary)
                 continue
 
             self._monitor_state.report(self.binary)
