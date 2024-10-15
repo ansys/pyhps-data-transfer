@@ -402,6 +402,7 @@ class AsyncClient(ClientBase):
                     continue
             except Exception as ex:
                 if self.binary_config.debug:
+                    log.debug("URL: %s", self.base_api_url)
                     log.debug(traceback.format_exc())
                 self._monitor_state.mark_failed(exc=ex, binary=self.binary)
                 continue
@@ -484,6 +485,7 @@ class Client(ClientBase):
                     continue
             except Exception as ex:
                 if self.binary_config.debug:
+                    log.debug("URL: %s", self.base_api_url)
                     log.debug(traceback.format_exc())
                 self._monitor_state.mark_failed(exc=ex, binary=self.binary)
                 continue
