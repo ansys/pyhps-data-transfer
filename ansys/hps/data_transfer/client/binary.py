@@ -163,6 +163,7 @@ class Binary:
         if self._process is None:
             return
 
+        log.debug("Stopping worker ...")
         self._stop.set()
         self._prepared.clear()
 
