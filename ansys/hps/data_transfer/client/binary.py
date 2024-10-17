@@ -27,10 +27,13 @@ level_map = {
 class PrepareSubprocess:
     def __enter__(self):
         self._orig_use_vfork = subprocess._USE_VFORK
+        self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
         subprocess._USE_VFORK = False
+        subprocess._USE_POSIX_SPAWN = False
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         subprocess._USE_VFORK = self._orig_use_vfork
+        subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
 
 
 class BinaryConfig:
