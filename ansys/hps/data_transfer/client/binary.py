@@ -24,6 +24,15 @@ level_map = {
 }
 
 
+class PrepareSubprocess:
+    def __enter__(self):
+        self._orig_use_vfork = subprocess._USE_VFORK
+        subprocess._USE_VFORK = False
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        subprocess._USE_VFORK = self._orig_use_vfork
+
+
 class BinaryConfig:
     def __init__(
         self,
@@ -235,7 +244,9 @@ class Binary:
                     if self._config.token is not None:
                         s = args.replace(self._config.token, "***")
                     log.debug(f"Starting worker: {s}")
-                self._process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+                with PrepareSubprocess():
+                    self._process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
