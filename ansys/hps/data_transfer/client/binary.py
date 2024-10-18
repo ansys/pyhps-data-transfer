@@ -235,7 +235,8 @@ class Binary:
         other = other.strip()
         if other:
             msg += f" {other}"
-        log.log(level_no, f"{msg}")
+        msg = msg.encode("utf-8", errors="ignore")
+        log.log(level_no, f"{msg.decode()}")
 
     def _monitor(self):
         while not self._stop.is_set():
