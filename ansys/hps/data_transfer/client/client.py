@@ -433,7 +433,9 @@ class Client(ClientBase):
     def start(self):
         super().start()
         atexit.register(self.stop)
-        self._monitor_thread = threading.Thread(target=self._monitor, args=(), daemon=True)
+        self._monitor_thread = threading.Thread(
+            target=self._monitor, args=(), daemon=True, name="worker_status_monitor"
+        )
         self._monitor_thread.start()
 
     def stop(self, wait=5.0):

@@ -159,12 +159,12 @@ class Binary:
         self._process = None
 
         # if False:
-        t = threading.Thread(target=self._monitor, args=())
+        t = threading.Thread(target=self._monitor, args=(), name="worker_monitor")
         t.daemon = True
         t.start()
 
         if self._config.log:
-            t = threading.Thread(target=self._log_output, args=())
+            t = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
             t.daemon = True
             t.start()
 
