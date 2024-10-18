@@ -210,6 +210,7 @@ class Binary:
                 if self._config.debug:
                     log.debug(f"Error reading worker output: {e}")
                 time.sleep(1)
+        log.debug("Worker log output stopped")
 
     def _log_line(self, line):
         d = json.loads(line)
@@ -265,6 +266,7 @@ class Binary:
                 #     log.debug(f"Worker running ...")
 
             time.sleep(self._config.monitor_interval)
+        log.debug("Worker monitor stopped")
 
     def _prepare(self):
         if self._config._selected_port is None:

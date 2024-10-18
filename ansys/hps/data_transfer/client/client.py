@@ -408,6 +408,7 @@ class AsyncClient(ClientBase):
                 continue
 
             self._monitor_state.report(self.binary)
+        log.debug("Worker status monitor stopped")
 
 
 class Client(ClientBase):
@@ -491,3 +492,4 @@ class Client(ClientBase):
                 continue
 
             self._monitor_state.report(self.binary)
+        log.debug("Worker status monitor stopped")
