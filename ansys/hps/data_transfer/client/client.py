@@ -255,7 +255,13 @@ class ClientBase:
 
         bin_path = self._prepare_bin_path(d["build_info"])
         lock_name = f"{os.path.splitext(os.path.basename(bin_path))[0]}.lock"
-        lock_path = os.path.join(os.path.dirname(bin_path), lock_name)
+        lock_dir = os.path.dirname(bin_path)
+        if not os.path.exists(lock_dir):
+            try:
+                os.makedirs(lock_dir)
+            except Exception as ex:
+                log.debug(f"Failed to create lock dir: {ex}")
+        lock_path = os.path.join(lock_dir, lock_name)
         lock = filelock.SoftFileLock(lock_path, timeout=60)
 
         try:
