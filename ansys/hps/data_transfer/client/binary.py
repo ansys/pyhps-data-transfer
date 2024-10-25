@@ -97,6 +97,10 @@ class BinaryConfig:
 
     @token.setter
     def token(self, value):
+        if self.debug:
+            log.debug(
+                f"Setting token to ...{value[-10:]}, old token: {f'...{self._token[-10:]}' if self._token else 'none'}"
+            )
         self._token = value
         if self._on_token_update is not None:
             self._on_token_update()
