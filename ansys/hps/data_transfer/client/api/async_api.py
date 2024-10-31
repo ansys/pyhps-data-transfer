@@ -177,6 +177,8 @@ class AsyncDataTransferApi:
                             f"start={op.started_at}",
                             f"succeeded_on={op.succeeded_on}",
                         ]
+                        if op.progress > 0:
+                            fields.append(f"progress={op.progress:.3f}")
                         log.debug(f"- Operation '{op.description}' {' '.join(fields)}")
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
@@ -188,7 +190,7 @@ class AsyncDataTransferApi:
 
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=cap, jitter=True)
-            log.debug(f"Waiting for {hf.format_timespan(duration)} before retrying ...")
+            log.debug(f"Next check in {hf.format_timespan(duration)} ...")
 
             await asyncio.sleep(duration)
 
