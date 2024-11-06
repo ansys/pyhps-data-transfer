@@ -155,6 +155,7 @@ class DataTransferApi:
         timeout: float | None = None,
         interval: float = 0.1,
         cap: float = 2.0,
+        raise_on_error: bool = False,
     ):
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
@@ -184,6 +185,8 @@ class DataTransferApi:
                     break
             except Exception as e:
                 log.debug(f"Error getting operations: {e}")
+                if raise_on_error:
+                    raise
 
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for operations to complete")
