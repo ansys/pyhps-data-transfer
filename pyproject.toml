@@ -1,35 +1,104 @@
 [build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+# Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
+name = "ansys-hps-data-transfer-client"
+version = "0.1.dev0"
+description = "Python client library for hps data transfer service"
+readme = "README.rst"
+requires-python = ">=3.10,<4.0"
+license = {file = "LICENSE"}
+authors = [
+    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
+]
+maintainers = [
+    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = []
+
+[project.optional-dependencies]
+tests = [
+    "pytest==8.2.1",
+    "pytest-cov==4.1.0",
+]
+doc = [
+    "ansys-sphinx-theme==1.0.5",
+    "numpydoc==1.8.0",
+    "Sphinx==8.0.2",
+    "sphinx-copybutton==0.5.2",
+]
+
+[tool.flit.module]
+name = "ansys.hps.data_transfer_client"
+
+[project.urls]
+Source = "https://github.com/ansys-internal/hps-data-transfer-client/"
+Tracker = "https://github.com/ansys-internal/hps-data-transfer-client//issues"
+Homepage = "https://github.com/ansys-internal/hps-data-transfer-client/"
+Documentation = "https://hps.docs.pyansys.com"
+
+[tool.pydocstyle]
+convention = "numpy"
+
 
 [tool.black]
-line-length=120
+line-length = 100
 
 [tool.isort]
 profile = "black"
 force_sort_within_sections = true
+line_length = 100
 default_section = "THIRDPARTY"
-src_paths = ["doc", "ansys", "tests"]
-line_length=120
+src_paths = ["doc", "src", "tests"]
 
-[tool.codespell]
-skip = '*.pyc,*.txt,*.gif,*.png,*.jpg,*.js,*.html,*.doctree,*.ttf,*.woff,*.woff2,*.eot,*.mp4,*.inv,*.pickle,*.ipynb,flycheck*,./.git/*,./.hypothesis/*,*.yml,./doc/build/*,./doc/images/*,./dist/*,*~,.hypothesis*,./doc/source/examples/*,*cover,*.dat,*.mac,build,./docker/mapdl/v*,./factory/*,./ansys/mapdl/core/mapdl_functions.py,PKG-INFO,*.mypy_cache/*,./docker/mapdl/*,./_unused/*'
-quiet-level = 3
+[tool.pydocstyle]
+convention = "numpy"
 
 [tool.coverage.run]
-source = ["ansys.hps.dt_client"]
+source = ["ansys.hps"]
 
 [tool.coverage.report]
 show_missing = true
 
-[tool.pytest.ini_options]
-log_cli = true
-log_cli_level = "DEBUG"
-log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
-log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-asyncio_mode = "auto"
-markers = [
-]
-filterwarnings = [
-    "ignore::urllib3.exceptions.InsecureRequestWarning",
-]
+[tool.towncrier]
+package = "ansys.hps.data_transfer_client"
+directory = "doc/changelog.d"
+filename = "doc/source/changelog.rst"
+start_string = ".. towncrier release notes start\n"
+template = "doc/changelog.d/changelog_template.jinja"
+title_format = "`{version} <https://github.com/ansys/ansys.hps.data_transfer_client/releases/tag/v{version}>`_ - {project_date}"
+issue_format = "`#{issue} <https://github.com/ansys/ansys.hps.data_transfer_client/pull/{issue}>`_"
+
+[[tool.towncrier.type]]
+directory = "added"
+name = "Added"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "changed"
+name = "Changed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "fixed"
+name = "Fixed"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "dependencies"
+name = "Dependencies"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "miscellaneous"
+name = "Miscellaneous"
+showcontent = true
