@@ -124,6 +124,27 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+dev_env
+
+# REP specific
+*.tmp
+*.csproj.orig
+csharp/NuGet.Config
+csharp/Directory.*.props
+.idea
+one_build_project.txt
+*.orig
+.DS_Store
+test_results-*.xml
+.coverage.*
+.DS_Store
+.DS_Store
+examples/permissions/downloaded
+dt_download/worker/*
+dt_download/*
+openapi.json
+openapi*.json
+out
 
 # Spyder project settings
 .spyderproject

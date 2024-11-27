@@ -2,12 +2,21 @@ version: 2
 updates:
   - package-ecosystem: "pip"
     directory: "/"
+    insecure-external-code-execution: allow
     schedule:
-      interval: "weekly"
+      interval: "daily"
     labels:
       - "maintenance"
       - "dependencies"
-
+    groups:
+      opentelemetry:
+        patterns:
+          - "opentelemetry*"
+      dependencies:
+        patterns:
+          - "*" # Update all packages together
+        exclude-patterns:
+          - "opentelemetry*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
