@@ -15,8 +15,9 @@ jobs:
       matrix:
         os: [ubuntu-latest-8-cores]
         cfg:
-          - {python-version: "3.10", toxenv: "py310"}
-          - {python-version: "3.12", toxenv: "py312"}
+          - {python-version: "3.10"}
+          - {python-version: "3.12"}
+          - {python-version: "3.13"}
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
