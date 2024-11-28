@@ -4,6 +4,15 @@ build-backend = "setuptools.build_meta"
 
 
 [tool.poetry]
+name = "ansys-hps-data-transfer-client"
+version = "0.1.1"
+description = "HPS data transfer client"
+readme = "WHEEL.md"
+authors = ["ANSYS, Inc. <pyansys.core@ansys.com>"]                # this is required
+maintainers = ["ANSYS, Inc. <pyansys.core@ansys.com>"]
+packages = [
+    { include = "ansys", from = "." },
+]
 
 [tool.black]
 line-length=120
