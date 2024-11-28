@@ -24,7 +24,7 @@ poetry shell
 
 ### Build wheels
 ```    
-python build.py wheels
+python build.py wheel
 ```
 
 ### Test
