@@ -23,56 +23,39 @@ log.setLevel(logging.DEBUG)
 
 
 def build_dev(args):
-    log.info("Updating pip")
-    subprocess.run(f"{sys.executable} -m pip install --upgrade pip", shell=True, check=True)
+    log.info("Building dev environment")
 
+    try:
+        subprocess.run("poetry --version", shell=True, check=True)
+    except Exception as e:
+        log.error(f"Poetry not found: {e}")
+        subprocess.run(f"{sys.executable} -m pip install --upgrade pip poetry", shell=True)
+
+    cmds = [
+        f"poetry env use {sys.executable}",
+        f"poetry install -v --with=dev,test --all-extras --sync",
+        f"poetry run pre-commit install",
+    ]
     log.info("Installing requirements")
-    reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_build.txt")
-    subprocess.run(f"{sys.executable} -m pip install -r {reqs}", shell=True, check=True)
-    reqs = os.path.join(os.path.dirname(__file__), "requirements", "requirements_tests.txt")
-    subprocess.run(f"{sys.executable} -m pip install -r {reqs}", shell=True, check=True)
+    for cmd in cmds:
+        log.debug(f"Running: {cmd}")
+        subprocess.run(cmd, shell=True, check=True)
 
-    log.info("Installing in dev mode")
-    cmd = f"{sys.executable} -m pip install -e ."
-    log.info(f"Calling: {cmd}")
-    subprocess.run(cmd, shell=True, check=True)
+    log.info("Call 'poetry shell' to enter the virtual environment")
 
 
 def build_wheels(args):
     log.info("Building wheels")
 
-    subprocess.run(f"{sys.executable} setup.py build", shell=True, check=True)
-    wheel_cmd = f"{sys.executable} setup.py bdist_wheel"
-    subprocess.run(wheel_cmd, shell=True, check=True)
+    subprocess.run(f"poetry build", shell=True, check=True)
     wheels = glob.glob(os.path.join("dist", "*.whl"))
     log.info(f"Found {len(wheels)} wheels")
     for w in wheels:
         log.info(f"- {w}")
 
-
-def gather_licenses(args):
-    bin_directory = os.path.join(os.path.dirname(__file__), "bin")
-    target_dir = os.path.join(bin_directory, "dependencies_info")
-    if not os.path.isdir(target_dir):
-        os.makedirs(target_dir)
-
-    subprocess.run(
-        f"{sys.executable} -m pip install pip-licenses pipdeptree --index=https://pypi.org/simple",
-        shell=True,
-        check=True,
-    )
-    out = subprocess.check_output(f"{sys.executable} -m piplicenses --from=classifier", shell=True)
-    out = out.decode()
-    with open(os.path.join(target_dir, "pypi.txt"), "w") as f:
-        for line in out.splitlines():
-            f.write(f"{line}\n")
-
-    out = subprocess.check_output(f"{sys.executable} -m pipdeptree", shell=True)
-    out = out.decode()
-    with open(os.path.join(target_dir, "pypi_dep_tree.txt"), "w") as f:
-        for line in out.splitlines():
-            f.write(f"{line}\n")
-    log.info(f"Dependencies written to {target_dir}")
+    for w in wheels:
+        log.info(f"Compiling {w}")
+        subprocess.run(f"{sys.executable} -m pyc_wheel {w}", shell=True, check=True)
 
 
 def run_tests(args):
@@ -118,9 +101,6 @@ if __name__ == "__main__":
 
     dev = commands.add_parser("dev")
     dev.set_defaults(func=build_dev)
-
-    licenses = commands.add_parser("licenses")
-    licenses.set_defaults(func=gather_licenses)
 
     tests = commands.add_parser("tests")
     tests.set_defaults(func=run_tests)
