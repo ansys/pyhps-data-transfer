@@ -70,7 +70,7 @@ jobs:
         python build.py dev
         python build.py wheels
         poetry run python -m twine check dist/*
-        version=$(ls dist/ | grep ansys_hps_data_transfer_client | grep -E -o "[0-9]+.[0-9]+.[0-9]+")
+        version=$(ls dist/ | grep whl | grep -E -o "[0-9]+.[0-9]+.[0-9]+")
         echo "version=$version" >> $GITHUB_OUTPUT
         echo "Version: $version"
     
