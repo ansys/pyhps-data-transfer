@@ -67,8 +67,6 @@ jobs:
     - name: Install dependencies and build the library
       id: wheels      
       run: |
-        python -m pip install --upgrade pip setuptools
-        python -m pip install -r requirements/requirements_build.txt
         python build.py dev
         python build.py wheels
         python -m twine check dist/*
