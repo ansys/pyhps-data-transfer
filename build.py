@@ -55,7 +55,7 @@ def build_wheels(args):
 
     for w in wheels:
         log.info(f"Compiling {w}")
-        subprocess.run(f"{sys.executable} -m pyc_wheel {w}", shell=True, check=True)
+        subprocess.run(f"poetry run python -m pyc_wheel {w}", shell=True, check=True)
 
 
 def run_tests(args):
