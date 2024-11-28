@@ -57,7 +57,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python build.py tests
+          poetry run python build.py tests
 
       - name: Stop containers
         if: always()
