@@ -13,20 +13,18 @@ python -m pip install pre-commit
 #### Linux:
 
 ```
-python3 -m venv dev_env
-source dev_env/bin/activate
 python build.py dev
+poetry shell
 ```
 #### Windows:
 ```    
-python3 -m venv dev_env
-dev_env/Scripts/activate
-python build.py dev
+python3 build.py dev
+poetry shell
 ```
 
-### Build
+### Build wheels
 ```    
-python build.py dist
+python build.py wheels
 ```
 
 ### Test
