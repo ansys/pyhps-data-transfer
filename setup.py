@@ -9,7 +9,7 @@ with open(os.path.join(root, "ansys", "hps", "data_transfer", "client", "__versi
 
 install_requires = [
     "pydantic>=2.7.1",
-    "httpx>=0.27.0",
+    "httpx>=0.27.0,<0.28.0",
     "backoff>=2.2.1",
     "humanfriendly>=10.0",
     "requests>=2.21.0",
