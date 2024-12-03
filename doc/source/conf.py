@@ -1,11 +1,10 @@
 """Sphinx documentation configuration file."""
 
-import os
 from datetime import datetime
-
-from ansys_sphinx_theme import get_version_match
+import os
 
 from ansys.hps.data_transfer_client import __version__
+from ansys_sphinx_theme import get_version_match
 
 # Project information
 project = "ansys-hps-data-transfer-client"
@@ -101,6 +100,4 @@ linkcheck_ignore = [
 # If we are on a release, we have to ignore the "release" URLs, since it is not
 # available until the release is published.
 if switcher_version != "dev":
-    linkcheck_ignore.append(
-        f"https://github.com/ansys/ansys.hps.data_transfer_client/releases/tag/v{__version__}"
-    )
+    linkcheck_ignore.append(f"https://github.com/ansys/ansys.hps.data_transfer_client/releases/tag/v{__version__}")
