@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.hps.data_transfer_client import __version__
+from ansys.hps.data_transfer.client import __version__
 
 
 def test_pkg_version():
