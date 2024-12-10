@@ -206,7 +206,6 @@ jobs:
 
   pre-release:
     name: Pre-release project
-    if: startsWith(github.ref, 'refs/heads/main')
     needs: [package, library-version]
     runs-on: ubuntu-latest
     steps:
@@ -229,8 +228,7 @@ jobs:
             /tmp/artifacts/*.whl
 
   upload_dev_docs:
-    name: "Deploy dev documentation"
-    if: github.ref == 'refs/heads/main'
+    name: "Deploy dev documentation"    
     runs-on: ubuntu-latest
     needs: [package]
     steps:
