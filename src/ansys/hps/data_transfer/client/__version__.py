@@ -21,9 +21,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-__version__ = "0.1.1"
-__internal_version__ = "0.1.1"
-__company__ = "ANSYS Inc"
-__company_short__ = "Ansys"
-__project__ = "HPS"
-__url__ = "www.ansys.com"
+try:
+    import importlib.metadata as importlib_metadata
+except ModuleNotFoundError:  # pragma: no cover
+    import importlib_metadata
+
+# Read from the pyproject.toml
+# major, minor, patch
+__version__ = importlib_metadata.version("ansys-hps-client")
