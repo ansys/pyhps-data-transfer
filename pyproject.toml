@@ -103,10 +103,17 @@ src_paths = ["doc", "src", "tests"]
 convention = "numpy"
 
 [tool.coverage.run]
-source = ["ansys.hps.dt_client"]
+relative_files = true
+source = ["ansys.hps"]
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.coverage.html]
+directory = ".cov/html"
+
+[tool.coverage.xml]
+output = ".cov/coverage.xml"
 
 [tool.towncrier]
 package = "ansys.hps.data_transfer.client"
