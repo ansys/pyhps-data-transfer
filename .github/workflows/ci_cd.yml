@@ -71,7 +71,7 @@ jobs:
       toxenv: ${{ matrix.cfg.toxenv }}
       runner: ${{ matrix.os }}
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
-      hps-feature: ${{ inputs.hps-feature || 'main' }}  
+      hps-feature: ${{ inputs.hps-feature || 'main' }}
 
   docs:
     name: Documentation
@@ -84,7 +84,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          
+
       - uses: extractions/netrc@v2
         with:
           machine: github.com
@@ -171,7 +171,7 @@ jobs:
     steps:
       - name: "Install Git and clone project"
         uses: actions/checkout@v4
-        
+
       - uses: extractions/netrc@v2
         with:
           machine: github.com
@@ -263,7 +263,7 @@ jobs:
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
-        
+
   doc-deploy-stable:
     name: "Deploy stable documentation"
     # Deploy release documentation when creating a new tag

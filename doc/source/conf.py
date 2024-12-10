@@ -3,8 +3,9 @@
 from datetime import datetime
 import os
 
-from ansys.hps.data_transfer.client import __version__
 from ansys_sphinx_theme import get_version_match
+
+from ansys.hps.data_transfer.client import __version__
 
 # Project information
 project = "ansys-hps-data-transfer-client"

@@ -36,9 +36,9 @@ dependencies = [
     "psutil>=5.9.1",
     "asyncio-atexit>=1.0.0",
     "pre-commit==4.0.1",
-    "requests==2.32.3",    
+    "requests==2.32.3",
     "black==24.10.0",
-    "importlib_metadata==8.5.0",    
+    "importlib_metadata==8.5.0",
 ]
 
 [project.optional-dependencies]

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from .__version__ import __version__
 from .api import AsyncDataTransferApi, DataTransferApi
 from .client import AsyncClient, Client
 from .exceptions import APIError, ClientError, HPSError
-from .__version__ import __version__

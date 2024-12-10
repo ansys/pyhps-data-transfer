@@ -102,6 +102,3 @@ jobs:
           check_name: Test report ${{ matrix.os }}:${{ matrix.cfg.python-version }}
           detailed_summary: true
           include_passed: true
-      - name: Publish services info to summary
-        if: success() || failure()
-        run: cat build_info.md >> $GITHUB_STEP_SUMMARY
