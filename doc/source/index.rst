@@ -11,14 +11,6 @@ manage the execution of simulations while making use of your full range of compu
 
 hps-data-transfer-client brings HPS data transfer to your Python app. It is a Python client library for HPS Data Transfer Service
 
-
-.. grid:: 1 1 2 2
-        :gutter: 2
-
-        .. grid-item-card:: Examples :fa:`scroll`
-            :link: examples/index
-            :link-type: doc
-
 .. include:: ../../README.rst
    :start-after: .. contribute_start
 
