@@ -4,7 +4,7 @@
    here.
 
 hps-data-transfer-client documentation |version|
-=============================
+================================================
 
 Ansys HPC Platform Services (HPS) is a set of technology components designed to help you
 manage the execution of simulations while making use of your full range of computing assets.
@@ -20,5 +20,5 @@ hps-data-transfer-client brings HPS data transfer to your Python app. It is a Py
    :maxdepth: 3
 
    getting_started/index
-   examples
+   examples/index
    changelog
