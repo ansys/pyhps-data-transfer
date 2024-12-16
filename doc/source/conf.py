@@ -17,7 +17,7 @@ switcher_version = get_version_match(__version__)
 
 # Select desired logo, theme, and declare the html title
 html_theme = "ansys_sphinx_theme"
-html_short_title = html_title = "pyhps-data-transfer-client"
+html_short_title = html_title = "hps-data-transfer-client"
 
 # specify the location of your github repo
 html_theme_options = {
