@@ -30,11 +30,11 @@ log = logging.getLogger(__name__)
 
 
 @pytest.mark.order(1)
-def test_services(client, build_info_path):
+def test_services(client, build_info_path, dt_url):
     # make sure services are up and running, print info   
 
     # check dts api
-    r = client.session.get(f"{client.rep_url}/dt/api/v1")
+    r = client.session.get(dt_url)
     dt_info = r.json()
     log.info(f"Dt api info\n{json.dumps(dt_info, indent=2)}")
     assert "build_info" in dt_info
