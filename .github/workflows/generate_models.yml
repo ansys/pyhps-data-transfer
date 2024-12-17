@@ -72,7 +72,7 @@ jobs:
           feature: ${{ inputs.hps-feature || 'main' }}
 
       - name: Test with tox
-        run: tox -e ${{ inputs.toxenv }}-coverage
+        run: tox -e py310-coverage
         env:
           HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
           HPS_TEST_USERNAME: repadmin
