@@ -260,3 +260,7 @@ async def async_user_client(user_binary_config, binary_dir, event_loop):
     await c.start()
     yield c
     await c.stop()
+
+@pytest.fixture
+def build_info_path():
+    return os.path.join(os.getcwd(), "build_info.json")
