@@ -36,7 +36,6 @@ dependencies = [
     "psutil>=5.9.1",
     "asyncio-atexit>=1.0.0",
     "pre-commit==4.0.1",
-    "requests==2.32.3",
     "black==24.10.0",
     "importlib_metadata==8.5.0",
 ]
@@ -84,9 +83,9 @@ name = "ansys.hps.data_transfer.client"
 
 [project.urls]
 Source = "https://github.com/ansys-internal/hps-data-transfer-client/"
-Tracker = "https://github.com/ansys-internal/hps-data-transfer-client//issues"
+Tracker = "https://github.com/ansys-internal/hps-data-transfer-client/issues"
 Homepage = "https://github.com/ansys-internal/hps-data-transfer-client/"
-Documentation = "https://hps.docs.pyansys.com"
+Documentation = "https://hps_data_transfer.docs.pyansys.com"
 
 
 [tool.black]
