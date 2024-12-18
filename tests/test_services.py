@@ -39,7 +39,6 @@ def test_services(client, build_info_path, dt_url):
     log.info(f"Dt api info\n{json.dumps(dt_info, indent=2)}")
     assert "build_info" in dt_info
 
-
     info = {"dt": dt_info}
     with open(build_info_path, "w") as f:
         f.write(json.dumps(info, indent=2))
