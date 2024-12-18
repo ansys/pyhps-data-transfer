@@ -82,25 +82,6 @@ def storage_path(test_name):
     return f"python_client_tests/{test_name}"
 
 
-@pytest.fixture(autouse=True)
-def for_every_test(request, test_name):
-    module_name = request.node.module.__name__.replace(".", "_")
-
-    test_run_directory = os.path.join(os.getcwd(), "test_run")
-    test_directory = os.path.join(test_run_directory, module_name, test_name)
-
-    if os.path.isdir(test_directory):
-        shutil.rmtree(test_directory)
-    os.makedirs(test_directory)
-
-    old_cwd = os.getcwd()
-    os.chdir(test_directory)
-
-    yield
-
-    os.chdir(old_cwd)
-
-
 @pytest.fixture(scope="session", autouse=True)
 def remove_binaries(binary_dir):
     if os.path.isdir(binary_dir):
