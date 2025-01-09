@@ -7,9 +7,14 @@ on:
           type: boolean
           default: false
           description: Force to push a release now
+  create:
+    tags:
+      - "v*.*.*"
   push:
     branches:
       - "main"
+    tags:
+      - "v*.*.*"
   pull_request:
     branches:
       - "main"
