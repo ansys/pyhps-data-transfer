@@ -27,6 +27,7 @@ class Operation(BaseModel):
     progress_current: Optional[int] = None
     progress_total: Optional[int] = None
     queued_at: Optional[str] = None
+    rate: Optional[str] = None
     result: Optional[Any] = None
     started_at: Optional[str] = None
     state: Optional[OperationState] = None

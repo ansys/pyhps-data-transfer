@@ -11,9 +11,13 @@ from . import metadata, ops
 
 class BuildInfo(BaseModel):
     branch: Optional[str] = None
+    metadata_plugins: Optional[List[str]] = None
     mode: Optional[str] = None
+    operation_plugins: Optional[List[str]] = None
+    permissions_plugins: Optional[List[str]] = None
     revision: Optional[str] = None
     short_revision: Optional[str] = None
+    storage_plugins: Optional[List[str]] = None
     timestamp: Optional[str] = None
     version: Optional[str] = None
     version_hash: Optional[str] = None

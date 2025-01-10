@@ -8,8 +8,10 @@ from pydantic import BaseModel
 
 
 class UserInfo(BaseModel):
+    account_id: Optional[str] = None
     groups: Optional[List[str]] = None
     id: Optional[str] = None
     is_admin: Optional[bool] = None
     roles: Optional[List[str]] = None
+    service_admin: Optional[bool] = None
     username: Optional[str] = None
