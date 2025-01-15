@@ -9,6 +9,7 @@ from ansys.hps.data_transfer.client.models.ops import OperationState
 
 log = logging.getLogger(__name__)
 
+num_files = 2
 file_size = 5  # GB
 
 
@@ -32,8 +33,10 @@ def test_large_batch(storage_path, client):
     temp_file_name = os.path.basename(temp_file.name)
 
     src = StoragePath(path=temp_file.name, remote="local")
-    dst = StoragePath(path=f"{storage_path}/{temp_file_name}")
-    dsts = [SrcDst(src=src, dst=dst)]
+    dsts = []
+    for i in range(num_files):
+        dst = StoragePath(path=f"{storage_path}/{temp_file_name}_{i}")
+        dsts.append(SrcDst(src=src, dst=dst))
 
     log.info("Starting copy ...")
     op = api.copy(dsts)
@@ -52,10 +55,9 @@ async def test_async_large_batch(storage_path, async_client):
 
     src = StoragePath(path=temp_file.name, remote="local")
     dsts = []
-
-    src = StoragePath(path=temp_file.name, remote="local")
-    dst = StoragePath(path=f"{storage_path}/{temp_file_name}")
-    dsts = [SrcDst(src=src, dst=dst)]
+    for i in range(num_files):
+        dst = StoragePath(path=f"{storage_path}/{temp_file_name}_{i}")
+        dsts.append(SrcDst(src=src, dst=dst))
 
     log.info("Starting copy ...")
     op = await api.copy(dsts)
