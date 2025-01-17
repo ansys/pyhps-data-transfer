@@ -1,4 +1,5 @@
 import logging
+import os
 import traceback
 
 import backoff
@@ -7,6 +8,9 @@ import httpx
 from ..exceptions import HPSError, NotReadyError, TimeoutError
 
 log = logging.getLogger(__name__)
+
+max_tries_env_name = "ANSYS_DT_CLIENT_RETRY_MAX_TIME"
+max_time_env_name = "ANSYS_DT_CLIENT_RETRY_MAX_TRIES"
 
 
 def _on_backoff(details, exc_info=True):
@@ -38,9 +42,23 @@ def _giveup(e):
     return False
 
 
+def _lookup_max_time():
+    v = os.getenv(max_time_env_name)
+    if v is not None:
+        return v
+    return 300
+
+
+def _lookup_max_tries():
+    v = os.getenv(max_tries_env_name)
+    if v is not None:
+        return v
+    return 40
+
+
 def retry(
-    max_tries=20,
-    max_time=60,
+    max_tries=_lookup_max_tries,
+    max_time=_lookup_max_time,
     raise_on_giveup=True,
     jitter=backoff.full_jitter,
 ):
