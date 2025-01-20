@@ -12,19 +12,10 @@ max_tries_env_name = "ANSYS_DT_CLIENT_RETRY_MAX_TIME"
 max_time_env_name = "ANSYS_DT_CLIENT_RETRY_MAX_TRIES"
 
 
-def _on_backoff(details, exc_info=True, traceback=False):
+def _on_backoff(details):
     try:
         msg = "Backing off {wait:0.1f} seconds after {tries} tries: {exception}".format(**details)
         log.info(msg)
-        if exc_info:
-            try:
-                if traceback:
-                    ex_str = "\n".join(traceback.format_exception(details["exception"]))
-                else:
-                    ex_str = str(details["exception"]).strip()
-                log.debug(f"Backoff caused by: {ex_str}")
-            except:
-                pass
     except Exception as ex:
         log.warning(f"Failed to log in backoff handler: {ex}")
 
