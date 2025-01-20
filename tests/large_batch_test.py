@@ -35,8 +35,6 @@ def test_large_batch(storage_path, client):
     assert op[0].state == OperationState.Succeeded, op[0].messages
 
 
-#TODO:remove skip
-@pytest.mark.skip(reason="TODO: test fails")
 async def test_async_large_batch(storage_path, async_client):
     api = AsyncDataTransferApi(async_client)
     api.status(wait=True)
