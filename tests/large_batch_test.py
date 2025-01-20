@@ -1,7 +1,6 @@
 import logging
 import os
 import tempfile
-import pytest
 
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
@@ -13,7 +12,6 @@ num_copies = 200
 content = "Mock file; " * 100
 
 #TODO:remove skip
-@pytest.mark.skip(reason="TODO: test fails")
 def test_large_batch(storage_path, client):
     api = DataTransferApi(client)
     api.status(wait=True)
