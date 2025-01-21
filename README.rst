@@ -77,9 +77,9 @@ In the upper right corner of the documentation's title bar, there is an option f
 viewing the documentation for the latest stable release to viewing the documentation for the
 development version or previously released versions.
 
-On the `Pyhps data_transfer/client Issues <https://github.com/ansys-internal/hps-data-transfer-client//issues>`_ page,
+On the `Pyhps data_transfer/client Issues <https://github.com/ansys-internal/hps-data-transfer-client/issues>`_ page,
 you can create issues to report bugs and request new features. On the `Pyhps data_transfer/client Discussions
-<https://github.com/ansys-internal/hps-data-transfer-client//discussions>`_ page or the `Discussions <https://discuss.ansys.com/>`_
+<https://github.com/ansys-internal/hps-data-transfer-client/projects>`_ page or the `Discussions <https://discuss.ansys.com/>`_
 page on the Ansys Developer portal, you can post questions, share ideas, and get community feedback.
 
 To reach the project support team, email `pyansys.core@ansys.com <mailto:pyansys.core@ansys.com>`_.
