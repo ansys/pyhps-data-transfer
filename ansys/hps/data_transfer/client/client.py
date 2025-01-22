@@ -109,12 +109,16 @@ class ClientBase:
         clean=False,
         clean_dev=True,
         check_in_use=True,
+        timeout=60.0,
+        retries=10,
     ):
         self._bin_config = bin_config or BinaryConfig()
         self._download_dir = download_dir
         self._clean = clean
         self._clean_dev = clean_dev
         self._check_in_use = check_in_use
+        self._timeout = timeout
+        self.retries = retries
 
         self._session = None
         self.binary = None
@@ -150,6 +154,22 @@ class ClientBase:
     @property
     def is_started(self):
         return self.binary is not None and self.binary.is_started
+
+    @property
+    def timeout(self):
+        return self._timeout
+
+    @timeout.setter
+    def timeout(self, value):
+        self._timeout = value
+
+    @property
+    def retries(self):
+        return self._retries
+
+    @retries.setter
+    def retries(self, value):
+        self._retries = value
 
     def start(self):
         if self.binary is not None:
@@ -316,15 +336,21 @@ class ClientBase:
         verify = not self._bin_config.insecure
         log.debug("Creating session for %s with verify=%s", url, verify)
 
+        args = {
+            "timeout": httpx.Timeout(self._timeout),
+        }
+
         if sync:
             session = httpx.Client(
-                transport=httpx.HTTPTransport(retries=5, verify=verify),
+                transport=httpx.HTTPTransport(retries=self._retries, verify=verify),
                 event_hooks={"response": [raise_for_status]},
+                **args,
             )
         else:
             session = httpx.AsyncClient(
-                transport=httpx.AsyncHTTPTransport(retries=5, verify=verify),
+                transport=httpx.AsyncHTTPTransport(retries=self._retries, verify=verify),
                 event_hooks={"response": [async_raise_for_status]},
+                **args,
             )
         session.base_url = url
         session.verify = verify

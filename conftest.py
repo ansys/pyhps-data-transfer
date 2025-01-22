@@ -97,9 +97,13 @@ def remove_binaries(binary_dir):
     on_success=lambda details: _success_handler(details, "getting admin access token"),
     logger=__name__,
 )
-def admin_access_token(auth_url):
-    tokens = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
-    return tokens.get("access_token", None)
+def admin_token(auth_url):
+    return authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
+
+
+@pytest.fixture(scope="session")
+def admin_access_token(admin_token):
+    return admin_token.get("access_token", None)
 
 
 @pytest.fixture(scope="session")
