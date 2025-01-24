@@ -6,7 +6,7 @@
 # Author(s): M.Pawlik
 # ----------------------------------------------------------
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __company__ = "ANSYS Inc"
 __company_short__ = "Ansys"
 __project__ = "HPS"
