@@ -78,8 +78,17 @@ def binary_dir():
 
 
 @pytest.fixture()
-def storage_path(test_name):
-    return f"python_client_tests/{test_name}"
+def storage_path(test_name, binary_config, binary_dir):
+    test_storage_path = f"python_client_tests/{test_name}"
+    yield test_storage_path
+    api.rmdir()
+
+    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
+    c.start()
+    api = DataTransferApi(c)
+    op = api.rmdir([StoragePath(path=test_storage_path)])
+    api.wait_for(op.id)
+    c.stop()
 
 
 @pytest.fixture(scope="session", autouse=True)
