@@ -1,0 +1,86 @@
+name: "[reusable] Create release"
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        description: 'Tag for the release'
+        required: true
+      force_release:
+        type: boolean
+        default: false
+        description: Force creation of a release
+      files:
+        type: string
+        required: true
+        description: Files to include
+      path:
+        type: string
+        default: /tmp/bin/
+        description: Path to download artifacts to
+      artifact:
+        type: string
+        required: true
+        description: Regex used to find the artifact
+
+jobs:
+  run:
+    name: Create or update
+    runs-on: ubuntu-24.04 
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download 
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ inputs.path}}
+
+    # This doesn't work for now, it fails to download artifacts from the same workflow
+    #   - name: Download artifacts
+    #     uses: dawidd6/action-download-artifact@v2
+    #     with:
+    #         github_token: ${{ secrets.GITHUB_TOKEN }}
+    #         run_id: ${{ github.event.workflow_run.id }}
+    #         name: ${{ inputs.artifact }}
+    #         path: ${{ inputs.path }}
+    #         #skip_unpack: true
+    #         name_is_regexp: true
+    #         workflow_conclusion: ""
+
+      - name: Contents
+        run: |
+            ls -lah ${{ inputs.path }}
+
+    #   - name: Dev
+    #     uses: "marvinpinto/action-automatic-releases@latest"
+    #     if: startsWith(github.ref, 'refs/heads/main')
+    #     with:
+    #       repo_token: ${{ secrets.GITHUB_TOKEN }}
+    #       automatic_release_tag: ${{ inputs.tag }}-dev
+    #       prerelease: true
+    #       title: "${{ inputs.tag }} dev build"
+    #       files: ${{ inputs.files }}
+      
+      - name: Latest dev
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/heads/main')
+        with:
+          files: ${{ inputs.files }}
+          tag_name: latest-dev
+          name: "Latest dev build (${{inputs.tag}})"
+          make_latest: false
+          prerelease: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || inputs.force_release
+        with:
+          files: ${{ inputs.files }}
+          tag_name: ${{ inputs.tag }}
+          name: "Release ${{ inputs.tag }}"
+          make_latest: true
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
