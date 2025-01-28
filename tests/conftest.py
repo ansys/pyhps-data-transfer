@@ -87,8 +87,7 @@ def storage_path(test_name, binary_config, binary_dir):
     c.start()
     api = DataTransferApi(c)
     op = api.rmdir([StoragePath(path=test_storage_path)])
-    api.wait_for(op.id)
-    c.stop()
+    api.wait_for(op.id)    
 
 
 @pytest.fixture(scope="session", autouse=True)
