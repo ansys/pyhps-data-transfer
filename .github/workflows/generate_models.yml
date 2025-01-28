@@ -53,30 +53,13 @@ jobs:
             cp core/docs/worker/swagger.json openapi2.json
             ./generate_models.sh
             ls -lah
-            sudo rm -rf out
+            sudo rm -rf out      
 
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools tox tox-gh-actions
-          mkdir docker-compose-artifact
-
-      - name: Start HPS services
+      - name: Tests from pyhps repo
         id: hps-services
-        uses: ./.github/actions/hps_services
+        uses: ansys/pyhps/.github/workflows/tests.yml@mguntupa/test_datad
         with:
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
-          ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
-          ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
-          version: ${{ inputs.hps-version || 'latest-dev' }}
-          feature: ${{ inputs.hps-feature || 'main' }}
-
-      - name: Test with tox
-        run: tox -e py310-coverage
-        env:
-          HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
-          HPS_TEST_USERNAME: repadmin
-          HPS_TEST_PASSWORD: repadmin
+          runner: "ubuntu-latest-8-cores"       
     
 
       - name: Publish Test Report
