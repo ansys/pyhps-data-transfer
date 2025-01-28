@@ -63,10 +63,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  #TODO:Revert back to main
   tests:
     name: "Tests from pyhps repo"    
-    uses: ansys/pyhps/.github/workflows/tests.yml@mguntupa/test_datad
+    uses: ansys/pyhps/.github/workflows/tests.yml@main
     with:
       runner: "ubuntu-latest-8-cores"
     secrets: inherit # pass all secrets
