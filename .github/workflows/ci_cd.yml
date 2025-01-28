@@ -91,7 +91,7 @@ jobs:
 
   release:
     name: Create release
-    uses: ansys-internal/rep-job-management/.github/workflows/release.yml@main
+    uses: ./.github/workflows/release.yml
     needs: ['wheels','tests']
     secrets: inherit
     with:
