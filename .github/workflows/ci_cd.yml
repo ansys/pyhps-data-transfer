@@ -67,6 +67,8 @@ jobs:
   tests:
     name: "Tests from pyhps repo"    
     uses: ansys/pyhps/.github/workflows/tests.yml@mguntupa/test_datad
+    with:
+      runner: "ubuntu-latest-8-cores"
     secrets: inherit # pass all secrets
 
   docs:
