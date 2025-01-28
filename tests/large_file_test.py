@@ -11,7 +11,7 @@ from ansys.hps.data_transfer.client.models.ops import OperationState
 log = logging.getLogger(__name__)
 
 num_files = 2
-file_size = 5  # GB
+file_size = 1  # GB
 
 
 def write_file(file_name, size):

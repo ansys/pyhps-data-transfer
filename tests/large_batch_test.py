@@ -8,7 +8,7 @@ from ansys.hps.data_transfer.client.models.ops import OperationState
 
 log = logging.getLogger(__name__)
 
-num_copies = 100
+num_copies = 200
 content = "Mock file; " * 100
 
 def test_large_batch(storage_path, client):
