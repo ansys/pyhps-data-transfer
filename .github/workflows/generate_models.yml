@@ -55,8 +55,7 @@ jobs:
             ls -lah
             sudo rm -rf out      
 
-      - name: Tests from pyhps repo
-        id: hps-services
+      - name: Tests from pyhps repo        
         uses: ansys/pyhps/.github/workflows/tests.yml@mguntupa/test_datad
         with:
           runner: "ubuntu-latest-8-cores"       
