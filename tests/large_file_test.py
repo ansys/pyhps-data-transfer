@@ -2,6 +2,7 @@ import logging
 import os
 import tempfile
 import time
+import pytest
 
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
@@ -43,7 +44,6 @@ def test_large_batch(storage_path, client):
     assert op.id is not None
     op = api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
-
 
 async def test_async_large_batch(storage_path, async_client):
     api = AsyncDataTransferApi(async_client)

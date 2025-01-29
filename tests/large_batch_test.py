@@ -11,7 +11,6 @@ log = logging.getLogger(__name__)
 num_copies = 200
 content = "Mock file; " * 100
 
-
 def test_large_batch(storage_path, client):
     api = DataTransferApi(client)
     api.status(wait=True)

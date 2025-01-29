@@ -1,7 +1,7 @@
 version: 2
 updates:
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "pip"
+    directory: "/"
     insecure-external-code-execution: allow
     schedule:
       interval: "daily"
@@ -17,3 +17,9 @@ updates:
           - "*" # Update all packages together
         exclude-patterns:
           - "opentelemetry*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "maintenance"

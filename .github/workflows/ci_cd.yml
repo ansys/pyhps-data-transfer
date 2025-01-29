@@ -2,7 +2,7 @@ name: CI-CD
 
 on:
   workflow_dispatch:
-    inputs:  
+    inputs:
         force_release:
           type: boolean
           default: false
@@ -23,80 +23,250 @@ on:
 
 env:
   PYTHON_VERSION: '3.10'
+  DOCUMENTATION_CNAME: 'hps_data_transfer.docs.pyansys.com'
+  LIBRARY_NAME: 'ansys-hps_data_transfer-client'
+  PACKAGE_NAME: 'ansys-hps-data-transfer-client'
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  
-  style:
-    name: Code style
+  update-changelog:
+    name: "Update CHANGELOG (on release)"
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: ansys/actions/doc-deploy-changelog@v7
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+
+  # TODO: uncomment this once Doc strings and Licence headers are added
+  #code-style:
+  #  name: "Code style"
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: ansys/actions/code-style@v7
+  #      with:
+  #        python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+  doc-style:
+    name: "Documentation Style Check"
     runs-on: ubuntu-latest
     steps:
+      - name: PyAnsys documentation style checks
+        uses: ansys/actions/doc-style@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  tests:
+    name: "Tests from pyhps repo"    
+    uses: ansys/pyhps/.github/workflows/tests.yml@main
+    with:
+      runner: "ubuntu-latest-8-cores"
+    secrets: inherit # pass all secrets
+
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    needs: [doc-style]
+    steps:
       - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - uses: extractions/netrc@v2
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools tox
-      - name: Test with tox
-        run: tox -e style
 
-  tests:
-    uses: ./.github/workflows/tests.yml
-    name: Tests
-    secrets: inherit
+      - name: Install OS dependencies
+        run: |
+          # Necessary for creating PDF
+          sudo apt update
+          sudo apt install latexmk texlive-latex-extra
 
-  wheels: 
-    name: Wheels
+      - name: Generate the documentation with tox
+        run: tox -e doc
+
+      - name: Upload HTML Documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation-html
+          path: doc/_build/html
+          retention-days: 7     
+
+  smoke-tests:
+    name: Build and Smoke tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+        should-release:
+          - ${{ github.event_name == 'push' && contains(github.ref, 'refs/tags') }}
+        exclude:
+          - should-release: false
+            os: macos-latest
+          - should-release: false
+            os: windows-latest
+          - should-release: false
+            python-version: '3.11'
+          - should-release: false
+            python-version: '3.12'
+          - should-release: false
+            python-version: '3.13'
+
+    steps:
+      - uses: extractions/netrc@v2
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+
+      - name: Build wheelhouse and perform smoke test
+        uses: ansys/actions/build-wheelhouse@v8
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
+
+  package:
+    name: Package library
+    needs: [tests, docs, smoke-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build library source and wheel artifacts
+        uses: ansys/actions/build-library@v8
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+  library-version:
+    name: Get library version
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.wheels.outputs.version }}
+      library_version: ${{ steps.version.outputs.library_version }}
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up python
-      uses: actions/setup-python@v5
-      with:
-        python-version:  ${{ env.PYTHON_VERSION }}
+      - name: "Install Git and clone project"
+        uses: actions/checkout@v4
 
-    - uses: extractions/netrc@v2
-      with:
-        machine: github.com
-        username: pyansys-ci-bot
-        password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+      - uses: extractions/netrc@v2
+        with:
+          machine: github.com
+          username: pyansys-ci-bot
+          password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
 
-    - name: Install dependencies and build the library
-      id: wheels      
-      run: |
-        python -m pip install --upgrade pip setuptools
-        python -m pip install -r requirements/requirements_build.txt
-        python build.py dev
-        python build.py wheels
-        python -m twine check dist/*
-        version=$(ls dist/ | grep ansys_hps_data_transfer_client | grep -E -o "[0-9]+.[0-9]+.[0-9]+")
-        echo "version=$version" >> $GITHUB_OUTPUT
-        echo "Version: $version"
-    
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ansys-hps-data-transfer-client
-        path: |
-          dist/*.whl
-        retention-days: 5
+      - name: "Set up Python ${{ env.MAIN_PYTHON_VERSION }}"
+        uses: ansys/actions/_setup-python@main
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          use-cache: true
+
+      - name: "Install the library"
+        shell: bash
+        run: |
+          python -m pip install -e .
+
+      - name: "Verify library is properly installed and get its version number"
+        id: version
+        shell: bash
+        run: |
+          library_name=${{ env.PACKAGE_NAME }}
+          library_version=$(python -c "import importlib.metadata as importlib_metadata; print(importlib_metadata.version('$library_name'))")
+
+          if [ -z "$library_version" ]; then
+              echo "Problem getting the library version"
+              exit 1;
+          else
+              echo "The library version is: $library_version";
+          fi;
+          echo "library_version=$library_version" >> $GITHUB_OUTPUT
+
+  pre-release:
+    name: Pre-release project
+    #TODOif: startsWith(github.ref, 'refs/heads/main')
+    needs: [package, library-version]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ansys-hps-data-transfer-client-artifacts
+          path: /tmp/artifacts
+
+      - name: List artifacts
+        run: ls -ltR /tmp/artifacts
+
+      - name: Release to latest-dev
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/heads/main')
+        with:
+          tag_name: "v${{ needs.library-version.outputs.library_version }}"
+          name: "v${{ needs.library-version.outputs.library_version }}"
+          prerelease: true
+          files: |
+            /tmp/artifacts/*.whl
+
+  upload_dev_docs:
+    name: "Deploy dev documentation"   
+    #TODOif: startsWith(github.ref, 'refs/heads/main') 
+    runs-on: ubuntu-latest
+    needs: [package]
+    steps:
+      - name: Deploy the latest documentation
+        uses: ansys/actions/doc-deploy-dev@v8
+        with:
+          doc-artifact-name: 'documentation-html'
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
 
   release:
-    name: Create release
-    uses: ansys-internal/rep-job-management/.github/workflows/release.yml@main
-    needs: ['wheels','tests']
-    secrets: inherit
-    with:
-        tag: v${{ needs.wheels.outputs.version }}
-        force_release: ${{ github.event.inputs.force_release == 'true' }}
-        artifact: ''
-        files: |
-            /tmp/bin/*/*.whl
+    name: Release project
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    needs: [package]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Release to the public PyPI repository
+        uses: ansys/actions/release-pypi-public@v8
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          twine-username: "__token__"
+          twine-token: ${{ secrets.PYPI_TOKEN }}
+
+      - name: Release to GitHub
+        uses: ansys/actions/release-github@v8
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  doc-deploy-stable:
+    name: "Deploy stable documentation"
+    # Deploy release documentation when creating a new tag
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+    runs-on: ubuntu-latest
+    needs: [release]
+    steps:
+      - uses: ansys/actions/doc-deploy-stable@v8
+        with:
+          doc-artifact-name: 'documentation-html'
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          bot-email: ${{ secrets.PYANSYS_CI_BOT_EMAIL }}
