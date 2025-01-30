@@ -7,7 +7,7 @@ This example script to startup Pyhps data_transfer/client components to use data
 
 Here is the ``run.py`` file for this project:
 
-.. literalinclude:: ../../examples/startup/run.py
+.. literalinclude:: ../../../examples/startup/run.py
     :language: python
     :lines: 23-
     :caption: run.py
