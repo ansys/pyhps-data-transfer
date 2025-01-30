@@ -46,8 +46,8 @@ jobs:
 
       - name: Create venv
         run: |
-            python3 -m venv dev_env
-            dev_env/bin/python build.py dev
+            pip install poetry
+            poetry install --all-extras --all-groups
 
       - name: Generate models
         run: |

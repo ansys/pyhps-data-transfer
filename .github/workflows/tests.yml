@@ -49,7 +49,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python build.py dev
+          pip install poetry
+          poetry install --all-extras --all-groups
       
       - name: Start containers
         run: |
@@ -58,7 +59,7 @@ jobs:
 
       - name: Run tests
         run: |
-          poetry run python build.py tests
+          poetry run pytest .
 
       - name: Stop containers
         if: always()
