@@ -12,32 +12,34 @@ user_mapping property:
 1. needs to contain users' keycloak UUIDs as keys
 2. values are the system usernames ** if a username comes from Active Directory, a numerical value should be used
 
-Minimal example
-{
-  ...
-  "permissions":
+Minimal example:
+
+.. code-block:: JSON
+
     {
-      "type": "acl-sync",
-      "nested": {
-        "type": "openfga", 
-        "endpoint_url": "http://openfga:8080"
-      },
-      "root": "/shared/rep_file_storage",
-      "user_mapping": {
-        "a029a127-4371-43fc-a2bc-3c7f8621c183" : "my_user"
-      },
-      "keycloak":
-        {
-          "url": "http://keycloak:8080/hps/auth",
-          "realm": "master",
-          "username": "keycloak-admin",
-          "password": "keycloak-admin-pwd",
-          "user_realm": "rep",
-          "attribute_name": "system_username"
-        },
-    },
-  ...
-}
+        "permissions":
+            {
+            "type": "acl-sync",
+            "nested": {
+                "type": "openfga", 
+                "endpoint_url": "http://openfga:8080"
+            },
+            "root": "/shared/rep_file_storage",
+            "user_mapping": {
+                "a029a127-4371-43fc-a2bc-3c7f8621c183" : "my_user"
+            },
+            "keycloak":
+                {
+                "url": "http://keycloak:8080/hps/auth",
+                "realm": "master",
+                "username": "keycloak-admin",
+                "password": "keycloak-admin-pwd",
+                "user_realm": "rep",
+                "attribute_name": "system_username"
+                },
+            },
+    }
+
 
 Connect to the Keycloak Admin API
 ----------------------------------

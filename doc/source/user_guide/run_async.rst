@@ -37,7 +37,7 @@ Once connected, you can query storages available:
     storages = await api.storages()
 
 Create a directory
-----------------
+------------------
 
 To create a directory:
 
@@ -48,7 +48,7 @@ To create a directory:
     await api.wait_for([mkdir_op.id])
 
 Copying files
-----------------
+-------------
 
 .. code-block:: python
 
@@ -62,7 +62,7 @@ Copying files
     log.info(f"Operation {op[0].state}")
 
 Listing files
-----------------
+-------------
 
 To list files in a set path (base__dir in the following code block):
 
@@ -87,7 +87,7 @@ To get metadata of files:
     log.info(f"Metadata for {base_dir}/2.txt: {md}")
 
 Removing files
-----------------
+--------------
 
 To get remove files:
 
@@ -98,7 +98,7 @@ To get remove files:
     log.info(f"Operation {op[0].state}")
 
 Stop client
-----------------
+-----------
 
 To stop client:
 

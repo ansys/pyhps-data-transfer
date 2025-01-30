@@ -1,5 +1,5 @@
 Pyhps data_transfer/client documentation |version|
-=============================
+==================================================
 
 Ansys HPC Platform Services (HPS) is a set of technology components designed to help you
 manage the execution of simulations while making use of your full range of computing assets.

@@ -66,7 +66,7 @@ Once connected, you can query storages available:
     storage_names = [f"{storage['name']}({storage['type']})" for storage in storages]
 
 Create a directory
-----------------
+------------------
 
 To create a directory:
 
