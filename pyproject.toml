@@ -94,15 +94,3 @@ source = ["ansys.hps.dt_client"]
 
 [tool.coverage.report]
 show_missing = true
-
-[tool.pytest.ini_options]
-log_cli = true
-log_cli_level = "DEBUG"
-log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
-log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-asyncio_mode = "auto"
-markers = [
-]
-filterwarnings = [
-    "ignore::urllib3.exceptions.InsecureRequestWarning",
-]
