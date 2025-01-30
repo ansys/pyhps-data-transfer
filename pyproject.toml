@@ -1,31 +1,56 @@
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry]
+[project]
 name = "ansys-hps-data-transfer-client"
-version = "0.1.1"
 description = "HPS data transfer client"
 readme = "README_whl.md"
-authors = ["ANSYS, Inc. <pyansys.core@ansys.com>"]                # this is required
-maintainers = ["ANSYS, Inc. <pyansys.core@ansys.com>"]
+authors = [
+     {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}
+]
+dynamic = [ "version" ]
+
+dependencies = [
+    "pydantic >=2.7.1",
+    "httpx >=0.27.2",
+    "backoff >=2.2.1",
+    "humanfriendly >=10.0",
+    "requests >=2.21.0",
+    "portend >=3.2.0",
+    "filelock >=3.14.0",
+    "psutil >=5.9.1",
+    "asyncio-atexit >=1.0.0",
+    "twine ^5.1.1",
+]
+
+[tool.poetry]
+version = "0.0.0"
 packages = [
     { include = "ansys", from = "." },
 ]
 
-[tool.poetry.dependencies]
-python = "^3.10"
+[tool.poetry.requires-plugins]
+"poetry-plugin-export" = ">=1.9.0"
+"poetry-plugin-shell" = ">=1.0.1"
+"poetry-pre-commit-plugin" = ">=0.2.1"
+poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
 
-pydantic = ">=2.7.1"
-httpx = ">=0.27.2"
-backoff = ">=2.2.1"
-humanfriendly = ">=10.0"
-requests = ">=2.21.0"
-portend = ">=3.2.0"
-filelock = ">=3.14.0"
-psutil = ">=5.9.1"
-asyncio-atexit = ">=1.0.0"
-twine = "^5.1.1"
+[tool.poetry-dynamic-versioning]
+enable = true
+#style = "semver"
+#pattern = "(?P<base>\\d+\\.\\d+\\.\\d+)"
+format = "{base}"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+format = "{base}"
+
+[tool.poetry-dynamic-versioning.from-file]
+# Read version from the __version__.py file
+# Todo: Adjust later to use gitversion
+source = "ansys/hps/data_transfer/client/__version__.py"
+pattern = "__version__ = \"(?P<base>\\d+\\.\\d+\\.\\d+)\""
 
 [tool.poetry.group.dev]
 optional = true
