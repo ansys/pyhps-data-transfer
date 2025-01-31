@@ -7,8 +7,8 @@ manage the execution of simulations while making use of your full range of compu
 PyHPS brings HPS to your Python app. Wrapping around HPS REST APIs, Pyhps data_transfer/client allows you to:
 
 * Create and list files.
-* Copy files
-* Set and view permissions
+* Copy files.
+* Set and view permissions.
 
 
 .. grid:: 1 1 2 2
