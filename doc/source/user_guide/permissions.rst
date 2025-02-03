@@ -2,15 +2,22 @@ Permissions
 -----------
 
 The permissions plugin allows system admin to make sure that the 'root' directory has permissions set such that not every user can read/write to it.
-System user names can be specified either in keycloak or using the user_mapping property
-in order to get them from keycloak:
-1. credentials need to be configured within the keycloak block for a user who has the ability to list other users and their attributes
-2. every user who has a corresponding system username needs to have a custom attribute added in keycloak
-3. the key must match the keycloak.attribute_name property
-4. the value is the system username or it's numerical representation (ie. 1001)
+System user names can be specified either in keycloak or using the user_mapping property.
+In order to get them from keycloak:
+
+* Credentials need to be configured within the keycloak block for a user who has the ability to list other users and their attributes.
+
+* Every user who has a corresponding system username needs to have a custom attribute added in keycloak.
+
+* The key must match the keycloak.attribute_name property.
+
+* The value is the system username or it's numerical representation (ie. 1001).
+
 user_mapping property:
-1. needs to contain users' keycloak UUIDs as keys
-2. values are the system usernames ** if a username comes from Active Directory, a numerical value should be used
+
+* Needs to contain users' keycloak UUIDs as keys.
+
+* Values are the system usernames ** if a username comes from Active Directory, a numerical value should be used.
 
 Minimal example:
 
@@ -63,11 +70,16 @@ Connecting as a Keycloak administrator (using default credentials) gives you use
         user_id = admin.get_user_id("repuser")
         return user_id
 
-RoleAssignment and RoleQuery
-----------------------------
+set_permissions and check_permissions
+-------------------------------------
 
-#TODO: Explain arguments to RoleAssignment and RoleQuery
-Example usage of calls set_permissions() and check_permissions():
+set_permissions takes a list of RoleAssignment objects with fileds resource, role and subject.
+
+* resource: set resource type  with the dir path and ResourceType.
+* role: assign role to the resource. Allowed values are reader, writer and admin.
+* subject: pass Subject and SubjectType with user id and user/group/any respectively
+
+Example usage of calls set_permissions():
 
 .. code-block:: python
 
@@ -99,6 +111,11 @@ Example usage of calls set_permissions() and check_permissions():
         )
     except Exception as ex:
         log.info(ex)
+
+check_permissions takes a list of RoleQuery objects with fileds resource, role and subject similar to RoleAssignment.
+Example usage of calls check_permissions():
+
+.. code-block:: python
 
     try:        
         resp = admin.check_permissions(
