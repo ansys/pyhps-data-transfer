@@ -27,6 +27,10 @@ Example script for file operations.
 import glob
 import logging
 import os
+from pathlib import Path
+from typing_extensions import Annotated
+from typing import Optional
+import typer
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
@@ -35,27 +39,11 @@ from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 log = logging.getLogger(__name__)
 
 
-hps_url = "https://localhost:8443/hps"
-dt_url = f"{hps_url}/dt/api/v1"
-auth_url = f"{hps_url}/auth/realms/rep"
 
 
-if __name__ == "__main__":
-    logger = logging.getLogger()
-    logging.basicConfig(format="%(asctime)s %(levelname)8s > %(message)s", level=logging.DEBUG)
-
-    token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
-    token = token.get("access_token", None)
-    assert token is not None
-
-    log.info("Connecting to the data transfer service client..")
-    client = Client()
-
-    client.binary_config.update(verbosity=3, debug=True, insecure=True, token=token, data_transfer_url=dt_url, log=True)
-    client.start()
-
-    api = DataTransferApi(client)
-    api.status(wait=True)
+def run(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
+    if not remote_path:
+        remote_path = Path(local_path).parent.name       
 
     log.info("Query storages ...")
     storages = api.storages()
@@ -93,4 +81,49 @@ if __name__ == "__main__":
     op = api.wait_for([op.id])
     log.info(f"Operation {op[0].state}")
 
+def main(
+    local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards")],
+    remote_path: Annotated[str, typer.Option(help="Optional path to the remote directory to transfer files to")] = None,
+    debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
+    username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
+    password: Annotated[
+        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
+    ] = "repadmin",
+):
+    
+    logging.basicConfig(
+    format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG if debug else logging.INFO
+    )
+
+    dt_url = f"{url}/dt/api/v1"
+    auth_url = f"{url}/auth/realms/rep"
+
+    token = authenticate(username=username, password=password, verify=False, url=auth_url)
+    token = token.get("access_token", None)
+    assert token is not None
+
+    log.info("Connecting to the data transfer service client..")
+    client = Client(clean=True)
+
+    client.binary_config.update(
+        verbosity=3,
+        debug=False,
+        insecure=True,
+        token=token,
+        data_transfer_url=dt_url,
+    )
+    client.start()
+
+    api = DataTransferApi(client)
+    api.status(wait=True)
+    storage_names = [f"{s['name']}({s['type']})" for s in api.storages()]
+    log.info(f"Available storages: {storage_names}")
+
+    run(api=api, local_path=local_path, remote_path=remote_path)
+
     client.stop()
+
+
+if __name__ == "__main__":
+    typer.run(main)

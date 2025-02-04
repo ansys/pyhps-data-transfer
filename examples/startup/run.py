@@ -23,28 +23,35 @@
 import json
 import logging
 import time
+import typer
+from typing_extensions import Annotated
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
 
-log = logging.getLogger(__name__)
 
-hps_url = "https://localhost:8443/hps"
-dt_url = f"{hps_url}/dt/api/v1"
-auth_url = f"{hps_url}/auth/realms/rep"
-
-if __name__ == "__main__":
-    logger = logging.getLogger()
+def main(
+    debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
+    username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
+    password: Annotated[
+        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
+    ] = "repadmin",
+):
+    
+    dt_url = f"{url}/dt/api/v1"
+    auth_url = f"{url}/auth/realms/rep"
+    log = logging.getLogger()
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG)
 
-    user_token = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
+    user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)
     assert user_token is not None
 
     client = Client()
     client.binary_config.update(
         verbosity=3,
-        debug=False,
+        debug=debug,
         insecure=True,
         token=user_token,
     )
@@ -64,3 +71,7 @@ if __name__ == "__main__":
         time.sleep(2)
 
     client.stop()
+
+
+if __name__ == "__main__":
+    typer.run(main)
