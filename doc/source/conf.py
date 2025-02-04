@@ -78,6 +78,12 @@ numpydoc_validation_checks = {
     # type, unless multiple values are being returned"
 }
 
+# autodoc/autosummary flags
+autoclass_content = "both"
+# autodoc_default_flags = ["members"]
+autosummary_generate = True
+
+
 
 # static path
 html_static_path = ["_static"]

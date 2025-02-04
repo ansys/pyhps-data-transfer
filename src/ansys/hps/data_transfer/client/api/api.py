@@ -52,12 +52,18 @@ from .retry import retry
 
 
 class DataTransferApi:
+    """
+    Class for Data transfer API.
+    """
     def __init__(self, client: Client):
         self.dump_mode = "json"
         self.client = client
 
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
+        """
+        status of worker binary
+        """
         def _sleep():
             log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
             s = backoff.full_jitter(sleep) if jitter else sleep
@@ -125,6 +131,9 @@ class DataTransferApi:
 
     @retry()
     def check_permissions(self, permissions: List[RoleAssignment]):
+        """
+        To check permissions on list of RoleAssignment objects.
+        """
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = self.client.session.post(url, json=payload)
@@ -133,6 +142,9 @@ class DataTransferApi:
 
     @retry()
     def get_permissions(self, permissions: List[RoleQuery]):
+        """
+        To get permissions on list of RoleQuery objects.
+        """
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = self.client.session.post(url, json=payload)
@@ -141,6 +153,9 @@ class DataTransferApi:
 
     @retry()
     def remove_permissions(self, permissions: List[RoleAssignment]):
+        """
+        To remove permissions on list of RoleAssignment objects.
+        """
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
@@ -148,6 +163,9 @@ class DataTransferApi:
 
     @retry()
     def set_permissions(self, permissions: List[RoleAssignment]):
+        """
+        To set permissions on list of RoleAssignment objects.
+        """
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)

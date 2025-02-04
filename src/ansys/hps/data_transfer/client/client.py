@@ -1,3 +1,5 @@
+"""Module providing the Python client to the HPS data trasnfer APIs."""
+
 import asyncio
 import atexit
 import logging
@@ -52,6 +54,17 @@ def bin_in_use(bin_path):
 
 
 class MonitorState:
+    """
+    Class to monitor and track state of worker binary
+
+    Parameters
+    ----------
+    _sleep_not_started: int
+        sleep duration for monitor when binary is not ready
+    _sleep_while_running: int
+        sleep duration for monitor when binary is running
+
+    """
     def __init__(self):
         self.reset()
         self._sleep_not_started = 2
@@ -99,6 +112,39 @@ class MonitorState:
 
 
 class ClientBase:
+    """
+    Provides the Python client to the HPS data transfer APIs.
+    
+    This class uses the provided credentials to create and store
+    an authorized :class:`requests.Session` object.
+
+    Parameters
+    ----------
+    bin_config: BinaryConfig()
+        BinaryConfig object, Default is None
+    download_dir: str
+        download dir path. Default is None
+    clean: bool
+        If True, cleans download_dir path. Default is False.
+    clean_dev: bool
+        If True, downloads binary from dev branch. Default is True.
+    check_in_use: bool
+        If True, checks if binary is in use and skips downloading new binary. Default is True.
+    timeout: float
+        Default is 60.0
+    retries: int
+        Default is 10
+
+    Examples
+    --------
+
+    Create a client object and connect to HPS data transfer with a access_token.
+
+    >>> from ansys.hps.data_transfer.client import Client
+    >>> log.info("Connecting to the data transfer service client..")
+    >>> client = Client(clean=True)
+
+    """
     class Meta:
         is_async = False
 
@@ -172,6 +218,9 @@ class ClientBase:
         self._retries = value
 
     def start(self):
+        """
+        Start client session using binary config credentials
+        """
         if self.binary is not None:
             return
 
@@ -194,6 +243,9 @@ class ClientBase:
         # self._session = self._create_session(self.base_api_url)
 
     def stop(self, wait=5.0):
+        """
+        Stop client session.
+        """
         if self.binary is None:
             return
         self._monitor_stop.set()
@@ -370,6 +422,11 @@ class ClientBase:
 
 
 class AsyncClient(ClientBase):
+    """
+    Provides the Python async client to the HPS data transfer APIs.        
+    This class derives from the :class:`client.ClientBase`
+    base class.
+    """
     class Meta(ClientBase.Meta):
         is_async = True
 
@@ -444,6 +501,13 @@ class AsyncClient(ClientBase):
 
 
 class Client(ClientBase):
+    """
+    Provides the Python client to the HPS data transfer APIs.
+    This class derives from the :class:`client.ClientBase`
+    base class.
+    This class uses the provided credentials to create and store
+    an authorized :class:`requests.Session` object.
+    """
     class Meta(ClientBase.Meta):
         is_async = False
 
