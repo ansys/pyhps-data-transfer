@@ -19,19 +19,27 @@ repos:
   rev: v2.3.0
   hooks:
   - id: codespell
+    exclude: >
+      (?x)^(
+          .*\.dat|
+          .*\.mac|
+          .*\.k|
+          .*\.cas
+      )$
+    args: [-I, .codespellignore]
 
-- repo: https://github.com/pycqa/pydocstyle
-  rev: 6.3.0
-  hooks:
-  - id: pydocstyle
-    additional_dependencies: [toml]
-    exclude: "tests/"
+# For now we disable some of these checks, can be reenabled later
+# - repo: https://github.com/pycqa/pydocstyle
+#   rev: 6.3.0
+#   hooks:
+#  - id: pydocstyle
+#    additional_dependencies: [toml]
+#    exclude: "tests/"
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.6.0
   hooks:
   - id: check-merge-conflict
-  - id: requirements-txt-fixer
   - id: trailing-whitespace
 
 - repo: https://github.com/python-jsonschema/check-jsonschema

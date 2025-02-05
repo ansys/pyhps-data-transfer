@@ -71,7 +71,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   tests:
-    name: "Tests from pyhps repo"    
+    name: "Tests from pyhps repo"
     uses: ansys/pyhps/.github/workflows/tests.yml@main
     with:
       runner: "ubuntu-latest-8-cores"
@@ -113,7 +113,7 @@ jobs:
         with:
           name: documentation-html
           path: doc/_build/html
-          retention-days: 7     
+          retention-days: 7
 
   smoke-tests:
     name: Build and Smoke tests
@@ -228,8 +228,8 @@ jobs:
             /tmp/artifacts/*.whl
 
   upload_dev_docs:
-    name: "Deploy dev documentation"   
-    #TODOif: startsWith(github.ref, 'refs/heads/main') 
+    name: "Deploy dev documentation"
+    #TODOif: startsWith(github.ref, 'refs/heads/main')
     runs-on: ubuntu-latest
     needs: [package]
     steps:
