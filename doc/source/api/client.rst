@@ -1,16 +1,15 @@
 Client
 ===========================
 
-Authentication module
-----------------------
+BinaryConfig
+------------
 
-.. module:: ansys.hps.data_transfer.client.authenticate
+.. module:: ansys.hps.data_transfer.client.binary
 
 .. autosummary::
    :toctree: _autosummary
 
-   authenticate
-
+   BinaryConfig
 
 Binary
 ------
@@ -22,6 +21,16 @@ Binary
 
    Binary
 
+ClientBase object
+-----------------
+
+.. module:: ansys.hps.data_transfer.client.client
+
+.. autosummary::
+   :toctree: _autosummary
+
+   ClientBase
+
 Client object
 -------------
 
@@ -29,5 +38,5 @@ Client object
 
 .. autosummary::
    :toctree: _autosummary
-   
+
    Client

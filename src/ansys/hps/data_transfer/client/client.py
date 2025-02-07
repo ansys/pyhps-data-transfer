@@ -1,4 +1,26 @@
-"""Module providing the Python client to the HPS data trasnfer APIs."""
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""Module providing the Python client to the HPS data transfer APIs."""
 
 import asyncio
 import atexit
@@ -65,6 +87,7 @@ class MonitorState:
         sleep duration for monitor when binary is running
 
     """
+
     def __init__(self):
         self.reset()
         self._sleep_not_started = 2
@@ -114,13 +137,13 @@ class MonitorState:
 class ClientBase:
     """
     Provides the Python client to the HPS data transfer APIs.
-    
+
     This class uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
 
     Parameters
     ----------
-    bin_config: BinaryConfig()
+    bin_config: BinaryConfig
         BinaryConfig object, Default is None
     download_dir: str
         download dir path. Default is None
@@ -145,6 +168,7 @@ class ClientBase:
     >>> client = Client(clean=True)
 
     """
+
     class Meta:
         is_async = False
 
@@ -423,10 +447,16 @@ class ClientBase:
 
 class AsyncClient(ClientBase):
     """
-    Provides the Python async client to the HPS data transfer APIs.        
+    Provides the Python async client to the HPS data transfer APIs.
     This class derives from the :class:`client.ClientBase`
     base class.
+
+    Parameters
+    ----------
+    client: ClientBase
+        ClientBase object.
     """
+
     class Meta(ClientBase.Meta):
         is_async = True
 
@@ -435,10 +465,16 @@ class AsyncClient(ClientBase):
         self._bin_config._on_token_update = self._update_token
 
     async def start(self):
+        """
+        :async: start async binary worker
+        """
         super().start()
         asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
+        """
+        :async: stop async binary worker
+        """
         if self._session is not None:
             try:
                 await self._session.post(self.base_api_url + "/shutdown")
@@ -449,6 +485,9 @@ class AsyncClient(ClientBase):
         # asyncio_atexit.register(self.stop)
 
     async def wait(self, timeout: float = 60.0, sleep=0.5):
+        """
+        :async: wait on async binary worker
+        """
         start = time.time()
         while time.time() - start < timeout:
             try:
@@ -507,7 +546,13 @@ class Client(ClientBase):
     base class.
     This class uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
+
+    Parameters
+    ----------
+    client: ClientBase
+        ClientBase object.
     """
+
     class Meta(ClientBase.Meta):
         is_async = False
 
@@ -543,6 +588,9 @@ class Client(ClientBase):
         super().stop(wait=wait)
 
     def wait(self, timeout: float = 60.0, sleep=0.5):
+        """
+        Method to wait on worker binary to start
+        """
         start = time.time()
         while time.time() - start < timeout:
             try:

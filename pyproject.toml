@@ -54,7 +54,7 @@ tests = [
     "tox==4.21.2",
 ]
 doc = [
-    "ansys-sphinx-theme==1.2.2",
+    "ansys-sphinx-theme==1.2.6",
     "autodoc_pydantic==2.1.0",
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.5",
@@ -110,7 +110,7 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 addopts = "-ra -vv"
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
-    "ignore::DeprecationWarning:pkg_resources.*",    
+    "ignore::DeprecationWarning:pkg_resources.*",
 ]
 
 [tool.coverage.run]

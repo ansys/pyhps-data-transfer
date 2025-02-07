@@ -1,4 +1,4 @@
-# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -54,7 +54,13 @@ from .retry import retry
 class DataTransferApi:
     """
     Class for Data transfer API.
+
+    Parameters
+    ----------
+    client: Client
+        Client object.
     """
+
     def __init__(self, client: Client):
         self.dump_mode = "json"
         self.client = client
@@ -64,6 +70,7 @@ class DataTransferApi:
         """
         status of worker binary
         """
+
         def _sleep():
             log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
             s = backoff.full_jitter(sleep) if jitter else sleep
@@ -88,6 +95,9 @@ class DataTransferApi:
         return self._operations(ids)
 
     def storages(self):
+        """
+        Method to make a get rest call for /storage and return StorageConfigResponse()
+        """
         url = "/storage"
         resp = self.client.session.get(url)
         json = resp.json()
