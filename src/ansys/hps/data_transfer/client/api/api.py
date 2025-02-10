@@ -68,7 +68,7 @@ class DataTransferApi:
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
         """
-        status of worker binary
+        Status of worker binary
         """
 
         def _sleep():
