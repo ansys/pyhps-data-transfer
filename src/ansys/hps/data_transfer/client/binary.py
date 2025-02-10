@@ -192,10 +192,16 @@ class Binary:
 
     @property
     def config(self):
+        """
+        Method to return config
+        """
         return self._config
 
     @property
     def is_started(self):
+        """
+        Method to check if binary has started. Returns true if binary is up and running.
+        """
         try:
             return self._process is not None and self._process.returncode is None
         except Exception:

@@ -92,6 +92,9 @@ class DataTransferApi:
 
     @retry()
     def operations(self, ids: List[str]):
+        """
+        Method to make a get rest call for /operations
+        """
         return self._operations(ids)
 
     def storages(self):
@@ -104,24 +107,45 @@ class DataTransferApi:
         return StorageConfigResponse(**json).storage
 
     def copy(self, operations: List[SrcDst]):
+        """
+        Method to make a rest call for copying files
+        """
         return self._exec_operation_req("copy", operations)
 
     def exists(self, operations: List[StoragePath]):
+        """
+        Method to make a rest call to check if a path exists
+        """
         return self._exec_operation_req("exists", operations)
 
     def list(self, operations: List[StoragePath]):
+        """
+        Method to make a rest call for listing files in a path
+        """
         return self._exec_operation_req("list", operations)
 
     def mkdir(self, operations: List[StoragePath]):
+        """
+        Method to make a rest call for creating a dir
+        """
         return self._exec_operation_req("mkdir", operations)
 
     def move(self, operations: List[SrcDst]):
+        """
+        Method to make a rest call for moving a dir
+        """
         return self._exec_operation_req("move", operations)
 
     def remove(self, operations: List[StoragePath]):
+        """
+        Method to make a rest call for deleting a file
+        """
         return self._exec_operation_req("remove", operations)
 
     def rmdir(self, operations: List[StoragePath]):
+        """
+        Method to make a rest call for deleting a dir
+        """
         return self._exec_operation_req("rmdir", operations)
 
     @retry()
@@ -143,6 +167,11 @@ class DataTransferApi:
     def check_permissions(self, permissions: List[RoleAssignment]):
         """
         To check permissions on list of RoleAssignment objects.
+
+        Parameters
+        ----------
+        permissions: List[RoleAssignment]
+            List of Roleassignment permissions
         """
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -154,6 +183,11 @@ class DataTransferApi:
     def get_permissions(self, permissions: List[RoleQuery]):
         """
         To get permissions on list of RoleQuery objects.
+
+        Parameters
+        ----------
+        permissions: List[RoleQuery]
+            List of RoleQuery permissions
         """
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -165,6 +199,11 @@ class DataTransferApi:
     def remove_permissions(self, permissions: List[RoleAssignment]):
         """
         To remove permissions on list of RoleAssignment objects.
+
+        Parameters
+        ----------
+        permissions: List[RoleAssignment]
+            List of RoleAssignment permissions
         """
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -175,6 +214,11 @@ class DataTransferApi:
     def set_permissions(self, permissions: List[RoleAssignment]):
         """
         To set permissions on list of RoleAssignment objects.
+
+        Parameters
+        ----------
+        permissions: List[RoleAssignment]
+            List of RoleAssignment permissions
         """
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -183,6 +227,14 @@ class DataTransferApi:
 
     @retry()
     def get_metadata(self, paths: List[str | StoragePath]):
+        """
+        Method to make a rest call for getting metadata for a path
+
+        Parameters
+        ----------
+        paths: List[str | StoragePath]
+            List of paths of type string or StoragePath
+        """
         url = "/metadata:get"
         paths = [p if isinstance(p, str) else p.path for p in paths]
         payload = {"paths": paths}
@@ -192,6 +244,14 @@ class DataTransferApi:
 
     @retry()
     def set_metadata(self, asgs: Dict[str | StoragePath, DataAssignment]):
+        """
+        Method to make a rest call for setting metadata for a path
+
+        Parameters
+        ----------
+        asgs: Dict[str | StoragePath, DataAssignment]
+            List of paths with key of type string or StoragePath and value of DataAssignment
+        """
         url = "/metadata:set"
         d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}
         req = SetMetadataRequest(metadata=d)
