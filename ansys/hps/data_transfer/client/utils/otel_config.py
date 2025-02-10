@@ -10,8 +10,8 @@ def set_otel_config(exporter_url, resource_attributes=None, headers=None, export
     ANSYS_DT_OTEL__ENABLED - enables Otel
     """
     os.environ["ANSYS_DT_OTEL__ENABLED"] = "True"
-    if exporter_type != None:
-        os.environ["ANSYS_DT_OTEL__EXPORTER_URL"] = exporter_url
+    if exporter_url != None:
+        os.environ["ANSYS_DT_OTEL__EXPORTER_URL"] = str(exporter_url)
     if exporter_type != None:
         os.environ["ANSYS_DT_OTEL__EXPORTER_TYPE"] = exporter_type
     if resource_attributes != None:
