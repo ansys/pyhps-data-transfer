@@ -209,20 +209,32 @@ class ClientBase:
 
     @property
     def binary_config(self):
+        """
+        Returns binary config
+        """
         return self._bin_config
 
     @property
     def base_api_url(self):
+        """
+        Returns api url from config
+        """
         return self._bin_config.url
 
     @property
     def session(self):
+        """
+        Returns a session object. Creates a new one if one is not already created.
+        """
         if self._session is None:
             self._session = self._create_session(self.base_api_url, sync=not self.Meta.is_async)
         return self._session
 
     @property
     def is_started(self):
+        """
+        Ruturns True if binary is up and running
+        """
         return self.binary is not None and self.binary.is_started
 
     @property
@@ -466,14 +478,14 @@ class AsyncClient(ClientBase):
 
     async def start(self):
         """
-        :async: start async binary worker
+        Start async binary worker
         """
         super().start()
         asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
         """
-        :async: stop async binary worker
+        Stop async binary worker
         """
         if self._session is not None:
             try:
@@ -486,7 +498,7 @@ class AsyncClient(ClientBase):
 
     async def wait(self, timeout: float = 60.0, sleep=0.5):
         """
-        :async: wait on async binary worker
+        Wait on async binary worker
         """
         start = time.time()
         while time.time() - start < timeout:
@@ -572,6 +584,9 @@ class Client(ClientBase):
         self._monitor_thread = None
 
     def start(self):
+        """
+        Start client session using binary config credentials
+        """
         super().start()
         atexit.register(self.stop)
         self._monitor_thread = threading.Thread(
@@ -580,6 +595,9 @@ class Client(ClientBase):
         self._monitor_thread.start()
 
     def stop(self, wait=5.0):
+        """
+        Stop client session
+        """
         if self._session is not None:
             try:
                 self._session.post(self.base_api_url + "/shutdown")

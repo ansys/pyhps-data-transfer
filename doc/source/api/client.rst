@@ -14,8 +14,6 @@ BinaryConfig
 Binary
 ------
 
-.. module:: ansys.hps.data_transfer.client.binary
-
 .. autosummary::
    :toctree: _autosummary
 
