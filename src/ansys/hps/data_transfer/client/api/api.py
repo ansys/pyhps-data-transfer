@@ -52,8 +52,7 @@ from .retry import retry
 
 
 class DataTransferApi:
-    """
-    Class for Data transfer API.
+    """Class for Data transfer API.
 
     Parameters
     ----------
@@ -67,9 +66,7 @@ class DataTransferApi:
 
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
-        """
-        Status of worker binary
-        """
+        """Status of worker binary."""
 
         def _sleep():
             log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
@@ -92,59 +89,89 @@ class DataTransferApi:
 
     @retry()
     def operations(self, ids: List[str]):
-        """
-        Method to make a get rest call for /operations
+        """Return response of a rest get call for a list of operations
+
+        Parameters
+        ----------
+        ids: List[str]
+            List of ids.
         """
         return self._operations(ids)
 
     def storages(self):
-        """
-        Method to make a get rest call for /storage and return StorageConfigResponse()
-        """
+        """Return StorageConfigResponse()"""
         url = "/storage"
         resp = self.client.session.get(url)
         json = resp.json()
         return StorageConfigResponse(**json).storage
 
     def copy(self, operations: List[SrcDst]):
-        """
-        Method to make a rest call for copying files
+        """Return response of rest call for copying list of files
+
+        Parameters
+        ----------
+        operations: List[SrcDst]
+            List of SrcDst.
         """
         return self._exec_operation_req("copy", operations)
 
     def exists(self, operations: List[StoragePath]):
-        """
-        Method to make a rest call to check if a path exists
+        """Return response of rest call to check if a path exists
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+            List of StoragePath.
         """
         return self._exec_operation_req("exists", operations)
 
     def list(self, operations: List[StoragePath]):
-        """
-        Method to make a rest call for listing files in a path
+        """Return response of rest call listing files in a path
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+            List of StoragePath.
         """
         return self._exec_operation_req("list", operations)
 
     def mkdir(self, operations: List[StoragePath]):
-        """
-        Method to make a rest call for creating a dir
+        """Return response of rest call for creating a dir
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+            List of StoragePath.
         """
         return self._exec_operation_req("mkdir", operations)
 
     def move(self, operations: List[SrcDst]):
-        """
-        Method to make a rest call for moving a dir
+        """Return response of rest call for moving a dir
+
+        Parameters
+        ----------
+        operations: List[SrcDst]
+            List of SrcDst.
         """
         return self._exec_operation_req("move", operations)
 
     def remove(self, operations: List[StoragePath]):
-        """
-        Method to make a rest call for deleting a file
+        """Return response of rest call for deleting a file
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+            List of StoragePath.
         """
         return self._exec_operation_req("remove", operations)
 
     def rmdir(self, operations: List[StoragePath]):
-        """
-        Method to make a rest call for deleting a dir
+        """Return response of rest call for deleting a dir
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+            List of StoragePath.
         """
         return self._exec_operation_req("rmdir", operations)
 
@@ -165,8 +192,7 @@ class DataTransferApi:
 
     @retry()
     def check_permissions(self, permissions: List[RoleAssignment]):
-        """
-        To check permissions on list of RoleAssignment objects.
+        """Check permissions on list of RoleAssignment objects.
 
         Parameters
         ----------
@@ -181,8 +207,7 @@ class DataTransferApi:
 
     @retry()
     def get_permissions(self, permissions: List[RoleQuery]):
-        """
-        To get permissions on list of RoleQuery objects.
+        """Return response of rest call of permissions on list of RoleQuery objects.
 
         Parameters
         ----------
@@ -197,8 +222,7 @@ class DataTransferApi:
 
     @retry()
     def remove_permissions(self, permissions: List[RoleAssignment]):
-        """
-        To remove permissions on list of RoleAssignment objects.
+        """Remove permissions on list of RoleAssignment objects.
 
         Parameters
         ----------
@@ -212,8 +236,7 @@ class DataTransferApi:
 
     @retry()
     def set_permissions(self, permissions: List[RoleAssignment]):
-        """
-        To set permissions on list of RoleAssignment objects.
+        """Set permissions on list of RoleAssignment objects.
 
         Parameters
         ----------
@@ -227,8 +250,7 @@ class DataTransferApi:
 
     @retry()
     def get_metadata(self, paths: List[str | StoragePath]):
-        """
-        Method to make a rest call for getting metadata for a path
+        """Return response of rest call for getting metadata for a path
 
         Parameters
         ----------
@@ -244,8 +266,7 @@ class DataTransferApi:
 
     @retry()
     def set_metadata(self, asgs: Dict[str | StoragePath, DataAssignment]):
-        """
-        Method to make a rest call for setting metadata for a path
+        """Return response of rest call for setting metadata for a path
 
         Parameters
         ----------

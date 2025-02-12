@@ -26,8 +26,7 @@ from random import uniform
 def get_expo_backoff(
     base: float, attempts: int = 1, cap: float = 100_000_000, attempts_cap: int = 100_000_000, jitter: bool = True
 ):
-    """
-    Returns a backoff value https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
+    """Returns a backoff value https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
     :param base: The time to sleep in the first attempt.
     :param attempts: The number of attempts that have already been made.
     :param cap: The maximum value that can be returned.

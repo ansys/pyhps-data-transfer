@@ -59,8 +59,7 @@ class PrepareSubprocess:
 
 
 class BinaryConfig:
-    """
-    Class to configure worker binary connection to HPS data transfer client
+    """Configure worker binary connection to HPS data transfer client
 
     Parameters
     ----------
@@ -162,8 +161,7 @@ class BinaryConfig:
 
 
 class Binary:
-    """
-    Class to start, stop and monitor worker binary.
+    """Start, stop and monitor worker binary.
 
     Parameters
     ----------
@@ -192,25 +190,20 @@ class Binary:
 
     @property
     def config(self):
-        """
-        Method to return config
-        """
+        """Return config"""
         return self._config
 
     @property
     def is_started(self):
-        """
-        Method to check if binary has started. Returns true if binary is up and running.
-        """
+        """Return true if binary is up and running"""
         try:
             return self._process is not None and self._process.returncode is None
         except Exception:
             return False
 
     def start(self):
-        """
-        Method to start the worker binary.
-        Looks for binary in a set path, marks the binary as an executable and then start the executable
+        """Start the worker binary.
+        check for binary in a set path, marks the binary as an executable and then start the executable.
         """
         if self._process is not None and self._process.returncode is None:
             raise BinaryError("Worker already started.")
@@ -246,9 +239,7 @@ class Binary:
             log.warning("Worker did not prepare in time.")
 
     def stop(self, wait=5.0):
-        """
-        Stop worker binary
-        """
+        """Stop worker binary"""
         if self._process is None:
             return
 
