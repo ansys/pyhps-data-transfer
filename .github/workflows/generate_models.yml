@@ -46,7 +46,7 @@ jobs:
 
       - name: Create venv
         run: |
-            python3 -m venv dev_env            
+            python3 -m venv dev_env
 
       - name: Generate models
         run: |
@@ -77,7 +77,7 @@ jobs:
           HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
           HPS_TEST_USERNAME: repadmin
           HPS_TEST_PASSWORD: repadmin
-    
+
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4
