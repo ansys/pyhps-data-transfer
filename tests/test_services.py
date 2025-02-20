@@ -1,4 +1,4 @@
-# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -31,7 +31,7 @@ log = logging.getLogger(__name__)
 
 @pytest.mark.order(1)
 def test_services(client, build_info_path, dt_url):
-    # make sure services are up and running, print info   
+    # make sure services are up and running, print info
 
     # check dts api
     r = client.session.get(dt_url)

@@ -1,4 +1,4 @@
-# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -245,6 +245,7 @@ async def async_user_client(user_binary_config, binary_dir, event_loop):
     await c.start()
     yield c
     await c.stop()
+
 
 @pytest.fixture
 def build_info_path():

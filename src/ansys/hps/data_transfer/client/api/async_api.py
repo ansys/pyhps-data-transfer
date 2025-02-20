@@ -1,4 +1,4 @@
-# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -55,6 +55,7 @@ class AsyncDataTransferApi:
     """
     Class for Data transfer API to Async client.
     """
+
     def __init__(self, client: AsyncClient):
         self.dump_mode = "json"
         self.client = client
