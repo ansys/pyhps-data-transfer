@@ -3,9 +3,9 @@
 Startup Pyhps data_transfer/client
 ====================================
 
-This example script to startup Pyhps data_transfer/client components to use data transfer service components
+This example demonstrates how to create a data transfer api object using a client and check for available storages.
 
-Here is the ``run.py`` file for this project:
+Here is the ``run.py`` example file:
 
 .. literalinclude:: ../../../examples/startup/run.py
     :language: python
