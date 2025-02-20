@@ -11,7 +11,7 @@ pre_commit_hook = ""
 post_commit_hook = ""
 commit = false
 tag = false
-push = false    
+push = false
 
 
 [bumpver.file_patterns]

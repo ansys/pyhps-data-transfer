@@ -1,4 +1,4 @@
-# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -28,6 +28,7 @@ import asyncio
 import glob
 import logging
 import os
+
 import typer
 from typing_extensions import Annotated
 
@@ -40,7 +41,7 @@ logger = logging.getLogger()
 logging.basicConfig(format="%(asctime)s %(levelname)8s > %(message)s", level=logging.DEBUG)
 
 
-async def main(    
+async def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
@@ -48,7 +49,7 @@ async def main(
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
     ] = "repadmin",
 ):
-        
+
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"
     token = authenticate(username=username, password=password, verify=False, url=auth_url)
