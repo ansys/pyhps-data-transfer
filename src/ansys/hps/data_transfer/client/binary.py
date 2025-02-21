@@ -59,7 +59,7 @@ class PrepareSubprocess:
 
 
 class BinaryConfig:
-    """Configure worker binary connection to HPS data transfer client
+    """Configure worker binary connection to HPS data transfer client.
 
     Parameters
     ----------
@@ -190,12 +190,12 @@ class Binary:
 
     @property
     def config(self):
-        """Return config"""
+        """Return config."""
         return self._config
 
     @property
     def is_started(self):
-        """Return true if binary is up and running"""
+        """Return true if binary is up and running."""
         try:
             return self._process is not None and self._process.returncode is None
         except Exception:
@@ -239,7 +239,7 @@ class Binary:
             log.warning("Worker did not prepare in time.")
 
     def stop(self, wait=5.0):
-        """Stop worker binary"""
+        """Stop worker binary."""
         if self._process is None:
             return
 

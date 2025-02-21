@@ -1,7 +1,7 @@
 Data Transfer Service
 =====================
 
-The ``ansys.hps.data_transfer.client.api`` Python subpackage  wraps around the JMS REST API.
+The ``ansys.hps.data_transfer.client.api`` Python subpackage  wraps around the Data Transfer Worker.
 
 APIs
 ----
@@ -11,4 +11,4 @@ APIs
 .. autosummary::
    :toctree: _autosummary
 
-   DataTransferApi   
+   DataTransferApi

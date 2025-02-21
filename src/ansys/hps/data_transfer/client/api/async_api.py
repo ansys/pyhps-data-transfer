@@ -52,9 +52,7 @@ log = logging.getLogger(__name__)
 
 
 class AsyncDataTransferApi:
-    """
-    Class for Data transfer API to Async client.
-    """
+    """Wrapper for the Data Transfer Worker REST API, offering an async interface."""
 
     def __init__(self, client: AsyncClient):
         self.dump_mode = "json"
@@ -129,9 +127,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def check_permissions(self, permissions: List[RoleAssignment]):
-        """
-        To async check permissions on list of RoleAssignment objects.
-        """
+        """Async interface to check permissions of a list of RoleAssignment objects."""
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
@@ -140,9 +136,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def get_permissions(self, permissions: List[RoleQuery]):
-        """
-        To async get permissions on list of RoleQuery objects.
-        """
+        """Async interface to get permissions of a list of RoleQuery objects."""
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
@@ -151,9 +145,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def remove_permissions(self, permissions: List[RoleAssignment]):
-        """
-        To async remove permissions on list of RoleAssignment objects.
-        """
+        """Async interface to remove permissions of a list of RoleAssignment objects."""
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         await self.client.session.post(url, json=payload)
@@ -161,9 +153,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def set_permissions(self, permissions: List[RoleAssignment]):
-        """
-        To async set permissions on list of RoleAssignment objects.
-        """
+        """Async interface to set permissions of a list of RoleAssignment objects."""
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         await self.client.session.post(url, json=payload)

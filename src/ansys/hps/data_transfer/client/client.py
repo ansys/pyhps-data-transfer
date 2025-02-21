@@ -76,16 +76,7 @@ def bin_in_use(bin_path):
 
 
 class MonitorState:
-    """Monitor and track state of worker binary
-
-    Parameters
-    ----------
-    _sleep_not_started: int
-        sleep duration for monitor when binary is not ready
-    _sleep_while_running: int
-        sleep duration for monitor when binary is running
-
-    """
+    """Monitor and track state of worker binary."""
 
     def __init__(self):
         self.reset()
@@ -207,7 +198,7 @@ class ClientBase:
 
     @property
     def binary_config(self):
-        """Return binary config"""
+        """Return binary config."""
         return self._bin_config
 
     @property
@@ -444,15 +435,7 @@ class ClientBase:
 
 
 class AsyncClient(ClientBase):
-    """Provide the Python async client to the HPS data transfer APIs.
-    This class derives from the :class:`client.ClientBase`
-    base class.
-
-    Parameters
-    ----------
-    client: ClientBase
-        ClientBase object.
-    """
+    """An async interface to the Python client to the HPS data transfer APIs."""
 
     class Meta(ClientBase.Meta):
         is_async = True
@@ -532,15 +515,8 @@ class AsyncClient(ClientBase):
 
 class Client(ClientBase):
     """Provide the Python client to the HPS data transfer APIs.
-    This class derives from the :class:`client.ClientBase`
-    base class.
     This class uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
-
-    Parameters
-    ----------
-    client: ClientBase
-        ClientBase object.
     """
 
     class Meta(ClientBase.Meta):
