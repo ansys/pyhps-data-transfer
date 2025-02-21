@@ -45,7 +45,6 @@ jobs:
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-  # TODO: uncomment this once Doc strings and Licence headers are added
   code-style:
     name: "Code style"
     runs-on: ubuntu-latest
