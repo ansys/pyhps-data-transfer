@@ -110,8 +110,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        operations: List[SrcDst]
-            List of SrcDst.
+        operations: List[SrcDst]            
         """
         return self._exec_operation_req("copy", operations)
 
@@ -120,8 +119,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        operations: List[StoragePath]
-            List of StoragePath.
+        operations: List[StoragePath]            
         """
         return self._exec_operation_req("exists", operations)
 
@@ -130,8 +128,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        operations: List[StoragePath]
-            List of StoragePath.
+        operations: List[StoragePath]            
         """
         return self._exec_operation_req("list", operations)
 
@@ -140,8 +137,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        operations: List[StoragePath]
-            List of StoragePath.
+        operations: List[StoragePath]            
         """
         return self._exec_operation_req("mkdir", operations)
 
@@ -150,8 +146,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        operations: List[SrcDst]
-            List of SrcDst.
+        operations: List[SrcDst]           
         """
         return self._exec_operation_req("move", operations)
 
@@ -160,8 +155,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        operations: List[StoragePath]
-            List of StoragePath.
+        operations: List[StoragePath]            
         """
         return self._exec_operation_req("remove", operations)
 
@@ -170,8 +164,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        operations: List[StoragePath]
-            List of StoragePath.
+        operations: List[StoragePath]            
         """
         return self._exec_operation_req("rmdir", operations)
 
@@ -196,8 +189,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        permissions: List[RoleAssignment]
-            List of Roleassignment permissions
+        permissions: List[RoleAssignment]            
         """
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -211,8 +203,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        permissions: List[RoleQuery]
-            List of RoleQuery permissions
+        permissions: List[RoleQuery]        
         """
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -226,8 +217,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        permissions: List[RoleAssignment]
-            List of RoleAssignment permissions
+        permissions: List[RoleAssignment]            
         """
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -240,8 +230,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        permissions: List[RoleAssignment]
-            List of RoleAssignment permissions
+        permissions: List[RoleAssignment]            
         """
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
@@ -254,8 +243,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        paths: List[str | StoragePath]
-            List of paths of type string or StoragePath
+        paths: List[str | StoragePath]            
         """
         url = "/metadata:get"
         paths = [p if isinstance(p, str) else p.path for p in paths]
