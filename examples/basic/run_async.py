@@ -30,7 +30,7 @@ import logging
 import os
 
 from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi
-from ansys.hps.data_transfer.client.authenticate import authenticate
+from tests.utils import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)

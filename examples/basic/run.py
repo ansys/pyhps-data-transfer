@@ -29,7 +29,7 @@ import logging
 import os
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi
-from ansys.hps.data_transfer.client.authenticate import authenticate
+from tests.utils import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)
