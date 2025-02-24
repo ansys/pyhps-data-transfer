@@ -84,7 +84,6 @@ autoclass_content = "both"
 autosummary_generate = True
 
 
-
 # static path
 html_static_path = ["_static"]
 
