@@ -67,6 +67,7 @@ class BinaryConfig:
         log: bool = True,
         log_to_file: bool = False,
         monitor_interval: float = 0.5,
+        path: str = None,
         # Worker config settings
         token: str = None,
         host: str = "127.0.0.1",
