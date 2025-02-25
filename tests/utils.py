@@ -26,7 +26,7 @@ import urllib.parse
 
 import requests
 
-from .exceptions import raise_for_status
+from ansys.hps.data_transfer.client.exceptions import raise_for_status
 
 log = logging.getLogger(__name__)
 
