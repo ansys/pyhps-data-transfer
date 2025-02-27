@@ -24,7 +24,7 @@ import logging
 import time
 
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
-from tests.utils import authenticate
+from ansys.hps.data_transfer.client.authenticate import authenticate
 
 log = logging.getLogger(__name__)
 

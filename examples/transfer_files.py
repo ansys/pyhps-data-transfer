@@ -43,8 +43,8 @@ import typer
 from typing_extensions import Annotated
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
-from tests.utils import authenticate
 
 log = logging.getLogger(__name__)
 

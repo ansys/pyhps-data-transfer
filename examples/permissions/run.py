@@ -29,6 +29,7 @@ import traceback
 from keycloak import KeycloakAdmin
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.permissions import (
     Resource,
@@ -39,7 +40,6 @@ from ansys.hps.data_transfer.client.models.permissions import (
     Subject,
     SubjectType,
 )
-from tests.utils import authenticate
 
 stream_formatter = logging.Formatter("[%(asctime)s/%(levelname)5.5s]  %(message)s", datefmt="%H:%M:%S")
 stream_handler = logging.StreamHandler()

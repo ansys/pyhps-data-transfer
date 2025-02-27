@@ -32,9 +32,9 @@ import pytest
 from slugify import slugify
 
 from ansys.hps.data_transfer.client import AsyncClient, Client, DataTransferApi
+from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.binary import BinaryConfig
 from ansys.hps.data_transfer.client.models.msg import StoragePath
-from tests.utils import authenticate
 
 log = logging.getLogger(__name__)
 
