@@ -153,8 +153,17 @@ class ClientBase:
     Create a client object and connect to HPS data transfer with a access_token.
 
     >>> from ansys.hps.data_transfer.client import Client
-    >>> log.info("Connecting to the data transfer service client..")
+    >>> token = authenticate(username=username, password=password, verify=False, url=auth_url)
+    >>> token = token.get("access_token", None)        
     >>> client = Client(clean=True)
+    >>> client.binary_config.update(
+            verbosity=3,
+            debug=False,
+            insecure=True,
+            token=token,
+            data_transfer_url=dt_url,
+        )
+    >>> client.start()
 
     """
 
@@ -215,23 +224,27 @@ class ClientBase:
 
     @property
     def is_started(self):
-        """Ruturn True if binary is up and running."""
+        """Return True if binary is up and running."""
         return self.binary is not None and self.binary.is_started
 
     @property
     def timeout(self):
+        """Return the timeout for the session."""
         return self._timeout
 
     @timeout.setter
     def timeout(self, value):
+        """Set the timeout for the session."""
         self._timeout = value
 
     @property
     def retries(self):
+        """Return the number of retries."""
         return self._retries
 
     @retries.setter
     def retries(self, value):
+        """Set the number of retries."""
         self._retries = value
 
     def start(self):

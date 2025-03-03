@@ -1,7 +1,7 @@
-Data Transfer Service
-=====================
+Data Transfer API
+=================
 
-The ``ansys.hps.data_transfer.client.api`` Python subpackage  wraps around the Data Transfer Worker.
+The ``ansys.hps.data_transfer.client.api`` Python subpackage  wraps around the Data Transfer API.
 
 APIs
 ----
@@ -12,3 +12,13 @@ APIs
    :toctree: _autosummary
 
    DataTransferApi
+
+Async APIs
+----------
+
+.. module:: ansys.hps.data_transfer.client.api
+
+.. autosummary::
+   :toctree: _autosummary
+
+   AsyncDataTransferApi

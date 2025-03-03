@@ -38,3 +38,13 @@ Client object
    :toctree: _autosummary
 
    Client
+
+AsyncClient object
+------------------
+
+.. module:: ansys.hps.data_transfer.client
+
+.. autosummary::
+   :toctree: _autosummary
+
+   AsyncClient
