@@ -39,11 +39,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip setuptools tox
-      - name: Test with tox
-        run: tox -e style
+          pip install poetry
+          poetry install --all-extras --all-groups
+
+      - name: Run pre-commit
+        run: |
+          poetry run pre-commit run --all-files || ( git status --short ; git diff ; exit 1 )
 
   tests:
     uses: ./.github/workflows/tests.yml
@@ -72,12 +76,11 @@ jobs:
     - name: Install dependencies and build the library
       id: wheels      
       run: |
-        python -m pip install --upgrade pip setuptools
-        python -m pip install -r requirements/requirements_build.txt
-        python build.py dev
-        python build.py wheels
-        python -m twine check dist/*
-        version=$(ls dist/ | grep ansys_hps_data_transfer_client | grep -E -o "[0-9]+.[0-9]+.[0-9]+")
+        pip install poetry
+        poetry install --all-extras --all-groups
+        poetry build
+        poetry run python -m twine check dist/*
+        version=$(ls dist/ | grep whl | grep -E -o "[0-9]+.[0-9]+.[0-9]+")
         echo "version=$version" >> $GITHUB_OUTPUT
         echo "Version: $version"
     

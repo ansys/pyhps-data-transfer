@@ -17,3 +17,13 @@ updates:
           - "*" # Update all packages together
         exclude-patterns:
           - "opentelemetry*"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+

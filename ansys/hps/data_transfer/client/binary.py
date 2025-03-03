@@ -6,6 +6,7 @@ import subprocess
 import threading
 import time
 
+import humanfriendly
 import portend
 
 from .exceptions import BinaryError
@@ -179,6 +180,10 @@ class Binary:
         if self._process is None:
             return
 
+        if self._process.poll() is not None:
+            log.debug("Worker already stopped")
+            return
+
         log.debug("Stopping worker ...")
         self._stop.set()
         self._prepared.clear()
@@ -192,6 +197,7 @@ class Binary:
                 self._process.kill()
                 break
             time.sleep(wait * 0.1)
+        log.debug(f"Worker stopped after {humanfriendly.format_timespan(time.time() - start)}")
 
     def args_str(self):
         return " ".join(self._args)

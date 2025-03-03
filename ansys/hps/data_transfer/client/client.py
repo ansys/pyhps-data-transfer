@@ -76,7 +76,7 @@ class MonitorState:
                 self._ok_reported = True
         else:
             self._ok_reported = False
-            log.warning(msg)
+            log.info(msg)
 
     def mark_failed(self, exc=None, binary=None):
         exc_str = "" if exc is None else f": {exc}"

@@ -3,35 +3,25 @@ Python client library for HPS Data Transfer Service
 
 ### Prerequisites
 
-Install pre-commit in your `global` python using
+Install poetry globally
 
 ```
-python -m pip install pre-commit
+python -m pip install poetry
 ```
 ### Setup Environment
 
-#### Linux:
-
-```
-python3 -m venv dev_env
-source dev_env/bin/activate
-python build.py dev
-```
-#### Windows:
 ```    
-python3 -m venv dev_env
-dev_env/Scripts/activate
-python build.py dev
+poetry install --all-groups --all-extras
 ```
 
-### Build
+### Build wheels
 ```    
-python build.py dist
+poetry build
 ```
 
 ### Test
 ```    
-python build.py tests
+poetry run pytest .
 ```
 
 ### Generate Models
