@@ -8,7 +8,7 @@ Overall guidance on contributing to a PyAnsys library appears in
 `Contributing <https://dev.docs.pyansys.com/how-to/contributing.html>`_
 in the *PyAnsys developer's guide*. Ensure that you are thoroughly familiar
 with this guide before attempting to contribute to Pyhps data_transfer/client.
- 
+
 The following contribution information is specific to Pyhps data_transfer/client.
 
 
@@ -32,7 +32,7 @@ Installing Pyhps data_transfer/client in developer mode allows you to modify and
 #. Create a clean Python virtual environment and activate it:
 
    .. code:: bash
-    
+
       # Create a virtual environment
       python -m venv .venv
 

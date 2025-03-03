@@ -1,11 +1,11 @@
-Run Aysnc
+Run Async
 =========
 
-Run data trasnfer client operations in async
+Run data transfer client operations in async
 
 Connect to a data transfer service
 ----------------------------------
-    
+
 
 Using the access token, connect to the data transfer service client:
 
@@ -53,7 +53,7 @@ Copying files
 .. code-block:: python
 
     from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
-        
+
     src = [StoragePath(path=local_path, remote="local")]
     dst = [StoragePath(path=remote_path)]
 

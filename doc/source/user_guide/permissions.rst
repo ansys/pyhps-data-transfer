@@ -28,7 +28,7 @@ Minimal example:
             {
             "type": "acl-sync",
             "nested": {
-                "type": "openfga", 
+                "type": "openfga",
                 "endpoint_url": "http://openfga:8080"
             },
             "root": "/shared/rep_file_storage",
@@ -73,7 +73,7 @@ Connecting as a Keycloak administrator (using default credentials) gives you use
 set_permissions and check_permissions
 -------------------------------------
 
-set_permissions takes a list of RoleAssignment objects with fileds resource, role and subject.
+set_permissions takes a list of RoleAssignment objects with fields resource, role and subject.
 
 * resource: set resource type  with the dir path and ResourceType.
 * role: assign role to the resource. Allowed values are reader, writer and admin.
@@ -92,7 +92,7 @@ Example usage of calls set_permissions():
         Subject,
         SubjectType,
     )
-    
+
     admin_client = Client()
     admin = DataTransferApi(admin_client)
     admin.status(wait=True)
@@ -112,12 +112,12 @@ Example usage of calls set_permissions():
     except Exception as ex:
         log.info(ex)
 
-check_permissions takes a list of RoleQuery objects with fileds resource, role and subject similar to RoleAssignment.
+check_permissions takes a list of RoleQuery objects with fields resource, role and subject similar to RoleAssignment.
 Example usage of calls check_permissions():
 
 .. code-block:: python
 
-    try:        
+    try:
         resp = admin.check_permissions(
             [
                 RoleQuery(
@@ -131,4 +131,4 @@ Example usage of calls check_permissions():
         log.info(ex)
 
 
-   
+

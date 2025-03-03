@@ -3,8 +3,8 @@
 User guide
 ==========
 
-This section walks you through the basics of how to interact with the Data trasfer client service.
-For more elaborate examples, see :ref:`examples`. 
+This section walks you through the basics of how to interact with the Data transfer client service.
+For more elaborate examples, see :ref:`examples`.
 
 To reproduce the code samples provided in this section, you must have these
 prerequisites:
@@ -33,14 +33,14 @@ You start by connecting to the data transfer service running on the localhost wi
 
 .. code-block:: python
 
-    from ansys.hps.data_transfer.client.authenticate import authenticate  
+    from ansys.hps.data_transfer.client.authenticate import authenticate
 
-    hps_url = "https://localhost:8443/hps"    
+    hps_url = "https://localhost:8443/hps"
     auth_url = f"{hps_url}/auth/realms/rep"
 
     token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     token = token.get("access_token", None)
-    
+
 
 Using the token, connect to the data transfer service client:
 
@@ -99,7 +99,7 @@ To copy files:
 .. code-block:: python
 
     from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
-        
+
     src = [StoragePath(path=local_path, remote="local")]
     dst = [StoragePath(path=remote_path)]
 
