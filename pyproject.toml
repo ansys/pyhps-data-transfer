@@ -73,8 +73,8 @@ doc = [
 
 build = [
     "build==1.2.2.post1",
-    "twine==5.1.1",
-    "wheel==0.44.0",
+    "twine==6.1.0",
+    "wheel",
     "datamodel-code-generator==0.26.3",
 ]
 
@@ -110,7 +110,7 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 addopts = "-ra -vv"
 filterwarnings = [
     "ignore::urllib3.exceptions.InsecureRequestWarning",
-    "ignore::DeprecationWarning:pkg_resources.*",    
+    "ignore::DeprecationWarning:pkg_resources.*",
 ]
 
 [tool.coverage.run]

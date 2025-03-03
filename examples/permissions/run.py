@@ -1,4 +1,4 @@
-# Copyright (C) 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -39,7 +39,6 @@ from ansys.hps.data_transfer.client.models.permissions import (
     Resource,
     ResourceType,
     RoleAssignment,
-    RoleQuery,
     RoleType,
     Subject,
     SubjectType,
@@ -145,7 +144,7 @@ def permissions(api: DataTransferApi, url: str):
         log.info("### Verifying permissions for 'repuser' ...")
         resp = admin.check_permissions(
             [
-                RoleQuery(
+                RoleAssignment(
                     resource=Resource(path=target_dir, type=ResourceType.Doc),
                     role=RoleType.Writer,
                     subject=Subject(id=user_id, type=SubjectType.User),

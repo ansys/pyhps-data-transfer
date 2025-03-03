@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -20,25 +20,23 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from random import uniform
+import os
 
 
-def get_expo_backoff(
-    base: float, attempts: int = 1, cap: float = 100_000_000, attempts_cap: int = 100_000_000, jitter: bool = True
-):
-    """Returns a backoff value https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
-    :param base: The time to sleep in the first attempt.
-    :param attempts: The number of attempts that have already been made.
-    :param cap: The maximum value that can be returned.
-    :param jitter: Whether or not to apply jitter to the returned value.
+def set_otel_config(exporter_url, resource_attributes=None, headers=None, exporter_type=None):
+    """Set data transfer worker Otel configuration using environment variables before starting data transfer worker
+    ANSYS_DT_OTEL__EXPORTER_URL - Otel exporter url
+    ANSYS_DT_OTEL__RESOURCE_ATTRIBUTES - key-value pairs of resource attributes to be passed to the Otel SDK
+    ANSYS_DT_OTEL__HEADERS - key-value pairs of headers to be associated with gRPC requests
+    ANSYS_DT_OTEL__EXPORTER_TYPE - Otel exporter type
+    ANSYS_DT_OTEL__ENABLED - enables Otel
     """
-    # Full jitter formula
-    # https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
-    attempts = min(attempts, attempts_cap)
-    if jitter:
-        try:
-            return uniform(base, min(cap, base * 2 ** (attempts - 1)))
-        except OverflowError:
-            return cap
-    else:
-        return min(cap, base * 2 ** (attempts - 1))
+    os.environ["ANSYS_DT_OTEL__ENABLED"] = "True"
+    if exporter_url != None:
+        os.environ["ANSYS_DT_OTEL__EXPORTER_URL"] = str(exporter_url)
+    if exporter_type != None:
+        os.environ["ANSYS_DT_OTEL__EXPORTER_TYPE"] = exporter_type
+    if resource_attributes != None:
+        os.environ["ANSYS_DT_OTEL__RESOURCE_ATTRIBUTES"] = str(resource_attributes)
+    if headers != None:
+        os.environ["ANSYS_DT_OTEL__HEADERS"] = str(headers)

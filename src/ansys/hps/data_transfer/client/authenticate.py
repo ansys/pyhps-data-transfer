@@ -1,4 +1,4 @@
-# Copyright (C) 2022 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2022 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 """Module that provides authentication for the user with a password or refresh token against the
 HPS authentication service."""
 import logging
@@ -46,8 +47,7 @@ def authenticate(
     verify: Union[bool, str] = True,
     **kwargs,
 ):
-    """
-    Authenticates the user with a password or refresh token against the HPS authentication service.
+    """Authenticates the user with a password or refresh token against the HPS authentication service.
 
     If this method is successful, the response includes access and refresh tokens.
 
