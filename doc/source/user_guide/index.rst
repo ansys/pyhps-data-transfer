@@ -12,7 +12,7 @@ prerequisites:
 - A running Ansys HPS installation. For more information, see the
   `Ansys HPC Platform Services Guide <https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/prod_page.html?pn=Ansys%20HPC%20Platform%20Services&pid=HpcPlatformServices&lang=en>`_
   in the Ansys Help.
-- A Python shell with Pyhps data_transfer/client installed. For more information, see :ref:`getting_started`.
+- A Python shell with PyHPS Data Transfer installed. For more information, see :ref:`getting_started`.
 
 ..
    This toctreemust be a top level index to get it to show up in

@@ -3,8 +3,8 @@
 Getting started
 ===============
 
-This section describes how to install Pyhps data_transfer/client in user mode. If you are interested in contributing
-to Pyhps data_transfer/client.
+This section describes how to install PyHPS Data Transfer in user mode. If you are interested in contributing
+to PyHPS Data Transfer.
 
 Prerequisites
 -------------

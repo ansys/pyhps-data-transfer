@@ -7,15 +7,15 @@ Contribute
 Overall guidance on contributing to a PyAnsys library appears in
 `Contributing <https://dev.docs.pyansys.com/how-to/contributing.html>`_
 in the *PyAnsys developer's guide*. Ensure that you are thoroughly familiar
-with this guide before attempting to contribute to Pyhps data_transfer/client.
+with this guide before attempting to contribute to PyHPS Data Transfer.
 
-The following contribution information is specific to Pyhps data_transfer/client.
+The following contribution information is specific to PyHPS Data Transfer.
 
 
 Install in developer mode
 -------------------------
 
-Installing Pyhps data_transfer/client in developer mode allows you to modify and enhance the source:
+Installing PyHPS Data Transfer in developer mode allows you to modify and enhance the source:
 
 #. Clone the repository:
 
@@ -59,10 +59,10 @@ Installing Pyhps data_transfer/client in developer mode allows you to modify and
 
       tox
 
-Test PyPyhps data_transfer/client
+Test PyPyHPS Data Transfer
 ---------------------------------
 
-Pyhps data_transfer/client takes advantage of `tox`_. This tool allows you to automate common development
+PyHPS Data Transfer takes advantage of `tox`_. This tool allows you to automate common development
 tasks (similar to ``Makefile``), but it is oriented towards Python development.
 
 Using ``tox``
@@ -91,7 +91,7 @@ Code style
 ----------
 
 As indicated in `Coding style <https://dev.docs.pyansys.com/coding-style/index.html>`_
-in the *PyAnsys developer's guide*, Pyhps data_transfer/client follows PEP8 guidelines. Pyhps data_transfer/client
+in the *PyAnsys developer's guide*, PyHPS Data Transfer follows PEP8 guidelines. PyHPS Data Transfer
 implements `pre-commit`_ for style checking.
 
 To ensure your code meets minimum code styling standards, run these commands::

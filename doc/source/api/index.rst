@@ -3,7 +3,7 @@
 API reference
 =============
 
-This section describes Pyhps data_transfer/client functions, classes, methods, and their parameters and return values
+This section describes PyHPS Data Transfer functions, classes, methods, and their parameters and return values
 so that you can understand how to interact with them programmatically.
 
 .. toctree::

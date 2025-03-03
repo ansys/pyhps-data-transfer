@@ -1,4 +1,4 @@
-Pyhps data_transfer/client
+PyHPS Data Transfer
 ==========================
 |pyansys| |python| |pypi| |GH-CI| |codecov| |MIT| |black|
 
@@ -41,7 +41,7 @@ Python client library for HPS Data Transfer Service
 Installation
 ^^^^^^^^^^^^
 
-You can use `pip <https://pypi.org/project/pip/>`_ to install Pyhps data_transfer/client.
+You can use `pip <https://pypi.org/project/pip/>`_ to install PyHPS Data Transfer.
 Note: This will be available only after released. For now, please install from git
 
 .. code:: bash
@@ -61,24 +61,24 @@ For more information, see `Getting Started`_.
 Basic usage
 ^^^^^^^^^^^
 
-This code shows how to import Pyhps data_transfer/client and use some basic capabilities:
+This code shows how to import PyHPS Data Transfer and use some basic capabilities:
 
 .. code:: python
 
     print("Put sample code here")
 
-For comprehensive usage information, see `Examples`_ in the `Pyhps data_transfer/client documentation`_.
+For comprehensive usage information, see `Examples`_ in the `PyHPS Data Transfer documentation`_.
 
 Documentation and issues
 ^^^^^^^^^^^^^^^^^^^^^^^^
-Documentation for the latest stable release of Pyhps data_transfer/client is hosted at `Pyhps data_transfer/client documentation`_.
+Documentation for the latest stable release of PyHPS Data Transfer is hosted at `PyHPS Data Transfer documentation`_.
 
 In the upper right corner of the documentation's title bar, there is an option for switching from
 viewing the documentation for the latest stable release to viewing the documentation for the
 development version or previously released versions.
 
-On the `Pyhps data_transfer/client Issues <https://github.com/ansys-internal/hps-data-transfer-client/issues>`_ page,
-you can create issues to report bugs and request new features. On the `Pyhps data_transfer/client Discussions
+On the `PyHPS Data Transfer Issues <https://github.com/ansys-internal/hps-data-transfer-client/issues>`_ page,
+you can create issues to report bugs and request new features. On the `PyHPS Data Transfer Discussions
 <https://github.com/ansys-internal/hps-data-transfer-client/projects>`_ page or the `Discussions <https://discuss.ansys.com/>`_
 page on the Ansys Developer portal, you can post questions, share ideas, and get community feedback.
 
@@ -88,4 +88,4 @@ To reach the project support team, email `pyansys.core@ansys.com <mailto:pyansys
 .. LINKS AND REFERENCES
 .. _Getting Started: https://hps.docs.pyansys.com/version/stable/getting_started/index.html
 .. _Examples: https://hps.docs.pyansys.com/version/stable/examples.html
-.. _Pyhps data_transfer/client documentation: https://hps.docs.pyansys.com/version/stable/index.html
+.. _PyHPS Data Transfer documentation: https://hps.docs.pyansys.com/version/stable/index.html

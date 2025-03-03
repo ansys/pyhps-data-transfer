@@ -3,7 +3,7 @@
 Examples
 ========
 
-The examples in this section show how to use Pyhps data_transfer/client to
+The examples in this section show how to use PyHPS Data Transfer to
 interact with data transfer service in Python.
 Each example consists of a Python script plus a data file.
 You can execute many Python scripts with these command-line arguments:
@@ -33,7 +33,7 @@ You can execute many Python scripts with these command-line arguments:
    * - :ref:`example_transfer_files`
      - Basic script to transfer files to remote backends and back using data transfer service.
    * - :ref:`example_startup`
-     - Script to startup Pyhps data_transfer/client components to use data transfer service components
+     - Script to startup PyHPS Data Transfer components to use data transfer service components
    * - :ref:`example_permissions`
      - Script to set and query permissions on files
    * - :ref:`example_run_async`
