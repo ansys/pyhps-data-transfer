@@ -5,15 +5,15 @@ Examples
 
 The examples in this section show how to use Pyhps data_transfer/client to
 interact with data transfer service in Python.
-Each example consists of a Python script plus a data file. 
+Each example consists of a Python script plus a data file.
 You can execute many Python scripts with these command-line arguments:
 
 * ``--local-path``: Path to the files or directory to transfer. Supports wildcards [default: None] [required]
 * ``--remote-path``: Optional path to the remote directory to transfer files to [default: None]
-* ``--url``: HPS URL to connect to [default: https://localhost:8443/hps] 
+* ``--url``: HPS URL to connect to [default: https://localhost:8443/hps]
 * ``--username``: HPS username (default: repadmin)
 * ``--password``: HPS password (default: repadmin)
-* ``--debug``: Enable debug logging [default: no-debug] 
+* ``--debug``: Enable debug logging [default: no-debug]
 
 
 .. toctree::
@@ -23,7 +23,7 @@ You can execute many Python scripts with these command-line arguments:
   ex_transfer_files
   ex_startup
   ex_permissions
-  ex_run_async  
+  ex_run_async
 
 .. list-table::
    :header-rows: 1
@@ -37,4 +37,4 @@ You can execute many Python scripts with these command-line arguments:
    * - :ref:`example_permissions`
      - Script to set and query permissions on files
    * - :ref:`example_run_async`
-     - Script to run async operations using data transfer service. 
+     - Script to run async operations using data transfer service.

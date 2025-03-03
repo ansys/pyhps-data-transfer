@@ -29,8 +29,6 @@ import traceback
 from keycloak import KeycloakAdmin
 import typer
 from typing_extensions import Annotated
-from typing import Optional
-
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
@@ -70,7 +68,7 @@ def permissions(api: DataTransferApi, url: str):
     keycloak_url = f"{url}/auth"
     auth_url = f"{keycloak_url}/realms/rep"
     dt_url = f"{url}/dt/api/v1"
-   
+
     log.info("### Checking binary's status ...")
     status = api.status(wait=True)
     log.info(f"### Client binary status: {status}")
@@ -196,7 +194,7 @@ def permissions(api: DataTransferApi, url: str):
     admin_client.stop()
 
 
-def main(   
+def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",

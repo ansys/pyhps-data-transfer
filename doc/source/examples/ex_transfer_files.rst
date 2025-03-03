@@ -3,9 +3,9 @@
 Transfer files using Pyhps data_transfer/client
 ===============================================
 
-This example script to transfer files to remote backends and back using data transfer service.
+This example shows some of the main Data transfer client calls, like how to transfer files to remote backends, list files on a given path and how to download file from remote backends onto local storage.
 
-Here is the ``transfer_files.py`` file for this project:
+Here is the ``transfer_files.py`` example file:
 
 .. literalinclude:: ../../../examples/transfer_files.py
     :language: python

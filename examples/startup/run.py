@@ -23,6 +23,7 @@
 import json
 import logging
 import time
+
 import typer
 from typing_extensions import Annotated
 
@@ -38,8 +39,7 @@ def main(
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
     ] = "repadmin",
 ):
-    
-    dt_url = f"{url}/dt/api/v1"
+
     auth_url = f"{url}/auth/realms/rep"
     log = logging.getLogger()
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG)

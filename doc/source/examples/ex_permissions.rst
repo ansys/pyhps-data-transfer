@@ -3,9 +3,9 @@
 Set and query permissions
 ==========================
 
-This example script is to set and query permissions on files
+This example script shows how to set and query permissions on files stored in remote backend.
 
-Here is the ``run.py`` file for this project:
+Here is the ``run.py`` example file:
 
 .. literalinclude:: ../../../examples/permissions/run.py
     :language: python

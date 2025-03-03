@@ -3,9 +3,9 @@
 Run Async
 =========
 
-This example script is to run async operations
+This example script shows how to use the async interface offering by the Data Transfer Worker REST API.
 
-Here is the ``run_async.py`` file for this project:
+Here is the ``run_async.py`` example file:
 
 .. literalinclude:: ../../../examples/basic/run_async.py
     :language: python
