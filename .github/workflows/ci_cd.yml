@@ -159,7 +159,7 @@ jobs:
         uses: ansys/actions/build-library@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: '3.13'
 
   library-version:
     name: Get library version

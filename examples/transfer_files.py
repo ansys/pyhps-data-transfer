@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Basic script to transfer files to remote backends and back using new data transfer service.
+"""Basic script to transfer files to remote backends and back using new data transfer service.
 
 Example usage:
 

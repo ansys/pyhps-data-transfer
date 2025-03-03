@@ -59,6 +59,32 @@ class PrepareSubprocess:
 
 
 class BinaryConfig:
+    """Configure worker binary connection to HPS data transfer client.
+
+    Parameters
+    ----------
+    data_transfer_url: str
+        data transfer url. Default is https://localhost:8443/hps/dt/api/v1
+    log: bool
+        Process related setting to enable logging. Default is True
+    log_to_file: bool
+        To enable logging to a file. Default is False
+    monitor_interval: float
+        duration for waiting before the next monitor check on the binary. Default is 0.5
+    token: str
+        A worker config setting of access token credential.
+    host: str
+        Host IP to talk to data tarsnfer service. Default is 127.0.0.1
+    port: int
+        Host port to talk to data tarsnfer service
+    verbosity: int
+        Default is 1
+    insecure: bool
+        Default is False
+    debug: bool
+        Default is False
+    """
+
     def __init__(
         self,
         # Required
@@ -67,7 +93,8 @@ class BinaryConfig:
         log: bool = True,
         log_to_file: bool = False,
         monitor_interval: float = 0.5,
-        path: str = None,
+        # TODO: Remove path? not used anywhere
+        path=None,
         # Worker config settings
         token: str = None,
         host: str = "127.0.0.1",
@@ -98,6 +125,7 @@ class BinaryConfig:
         self._on_process_died = None
         self._on_port_changed = None
 
+    # TODO: Should this begin with underscore?
     def update(self, **kwargs):
         for key, value in kwargs.items():
             if hasattr(self, key):
@@ -133,6 +161,14 @@ class BinaryConfig:
 
 
 class Binary:
+    """Start, stop and monitor worker binary.
+
+    Parameters
+    ----------
+    config: BinaryConfig
+        BinaryConfig object.
+    """
+
     def __init__(
         self,
         config: BinaryConfig = BinaryConfig(),
@@ -154,16 +190,21 @@ class Binary:
 
     @property
     def config(self):
+        """Return config."""
         return self._config
 
     @property
     def is_started(self):
+        """Return true if binary is up and running."""
         try:
             return self._process is not None and self._process.returncode is None
         except Exception:
             return False
 
     def start(self):
+        """Start the worker binary.
+        check for binary in a set path, marks the binary as an executable and then start the executable.
+        """
         if self._process is not None and self._process.returncode is None:
             raise BinaryError("Worker already started.")
 
@@ -198,6 +239,7 @@ class Binary:
             log.warning("Worker did not prepare in time.")
 
     def stop(self, wait=5.0):
+        """Stop worker binary."""
         if self._process is None:
             return
 
