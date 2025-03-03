@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Module providing the Python client to the HPS data transfer APIs."""
+
 import asyncio
 import atexit
 import logging
@@ -74,6 +76,8 @@ def bin_in_use(bin_path):
 
 
 class MonitorState:
+    """Monitor and track state of worker binary."""
+
     def __init__(self):
         self.reset()
         self._sleep_not_started = 2
@@ -121,6 +125,48 @@ class MonitorState:
 
 
 class ClientBase:
+    """Provide the Python client to the HPS data transfer APIs.
+
+    This class uses the provided credentials to create and store
+    an authorized :class:`requests.Session` object.
+
+    Parameters
+    ----------
+    bin_config: BinaryConfig
+        BinaryConfig object, Default is None
+    download_dir: str
+        download dir path. Default is None
+    clean: bool
+        If True, cleans download_dir path. Default is False.
+    clean_dev: bool
+        If True, downloads binary from dev branch. Default is True.
+    check_in_use: bool
+        If True, checks if binary is in use and skips downloading new binary. Default is True.
+    timeout: float
+        Default is 60.0
+    retries: int
+        Default is 10
+
+    Examples
+    --------
+
+    Create a client object and connect to HPS data transfer with a access_token.
+
+    >>> from ansys.hps.data_transfer.client import Client
+    >>> token = authenticate(username=username, password=password, verify=False, url=auth_url)
+    >>> token = token.get("access_token", None)
+    >>> client = Client(clean=True)
+    >>> client.binary_config.update(
+            verbosity=3,
+            debug=False,
+            insecure=True,
+            token=token,
+            data_transfer_url=dt_url,
+        )
+    >>> client.start()
+
+    """
+
     class Meta:
         is_async = False
 
@@ -161,39 +207,48 @@ class ClientBase:
 
     @property
     def binary_config(self):
+        """Return binary config."""
         return self._bin_config
 
     @property
     def base_api_url(self):
+        """Return api url from config."""
         return self._bin_config.url
 
     @property
     def session(self):
+        """Return a session object. Creates a new one if one is not already created."""
         if self._session is None:
             self._session = self._create_session(self.base_api_url, sync=not self.Meta.is_async)
         return self._session
 
     @property
     def is_started(self):
+        """Return True if binary is up and running."""
         return self.binary is not None and self.binary.is_started
 
     @property
     def timeout(self):
+        """Return the timeout for the session."""
         return self._timeout
 
     @timeout.setter
     def timeout(self, value):
+        """Set the timeout for the session."""
         self._timeout = value
 
     @property
     def retries(self):
+        """Return the number of retries."""
         return self._retries
 
     @retries.setter
     def retries(self, value):
+        """Set the number of retries."""
         self._retries = value
 
     def start(self):
+        """Start client session using binary config credentials."""
         if self.binary is not None:
             return
 
@@ -216,6 +271,7 @@ class ClientBase:
         # self._session = self._create_session(self.base_api_url)
 
     def stop(self, wait=5.0):
+        """Stop client session."""
         if self.binary is None:
             return
         self._monitor_stop.set()
@@ -392,6 +448,8 @@ class ClientBase:
 
 
 class AsyncClient(ClientBase):
+    """An async interface to the Python client to the HPS data transfer APIs."""
+
     class Meta(ClientBase.Meta):
         is_async = True
 
@@ -400,10 +458,12 @@ class AsyncClient(ClientBase):
         self._bin_config._on_token_update = self._update_token
 
     async def start(self):
+        """Start async binary worker."""
         super().start()
         asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
+        """Stop async binary worker."""
         if self._session is not None:
             try:
                 await self._session.post(self.base_api_url + "/shutdown")
@@ -414,6 +474,7 @@ class AsyncClient(ClientBase):
         # asyncio_atexit.register(self.stop)
 
     async def wait(self, timeout: float = 60.0, sleep=0.5):
+        """Wait on async binary worker."""
         start = time.time()
         while time.time() - start < timeout:
             try:
@@ -466,6 +527,11 @@ class AsyncClient(ClientBase):
 
 
 class Client(ClientBase):
+    """Provide the Python client to the HPS data transfer APIs.
+    This class uses the provided credentials to create and store
+    an authorized :class:`requests.Session` object.
+    """
+
     class Meta(ClientBase.Meta):
         is_async = False
 
@@ -485,6 +551,7 @@ class Client(ClientBase):
         self._monitor_thread = None
 
     def start(self):
+        """Start client session using binary config credentials."""
         super().start()
         atexit.register(self.stop)
         self._monitor_thread = threading.Thread(
@@ -493,6 +560,7 @@ class Client(ClientBase):
         self._monitor_thread.start()
 
     def stop(self, wait=5.0):
+        """Stop client session."""
         if self._session is not None:
             try:
                 self._session.post(self.base_api_url + "/shutdown")
@@ -501,6 +569,7 @@ class Client(ClientBase):
         super().stop(wait=wait)
 
     def wait(self, timeout: float = 60.0, sleep=0.5):
+        """Wait on worker binary to start."""
         start = time.time()
         while time.time() - start < timeout:
             try:

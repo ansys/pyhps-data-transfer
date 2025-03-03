@@ -54,7 +54,7 @@ tests = [
     "tox==4.21.2",
 ]
 doc = [
-    "ansys-sphinx-theme==1.2.2",
+    "ansys-sphinx-theme==1.2.6",
     "autodoc_pydantic==2.1.0",
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.5",
@@ -73,8 +73,8 @@ doc = [
 
 build = [
     "build==1.2.2.post1",
-    "twine==5.1.1",
-    "wheel==0.44.0",
+    "twine==6.1.0",
+    "wheel",
     "datamodel-code-generator==0.26.3",
 ]
 

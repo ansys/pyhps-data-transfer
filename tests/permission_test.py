@@ -27,7 +27,7 @@ import pytest
 from ansys.hps.data_transfer.client import DataTransferApi
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.ops import OperationState
-from ansys.hps.data_transfer.client.models.permissions import Resource, RoleAssignment, RoleQuery, Subject
+from ansys.hps.data_transfer.client.models.permissions import Resource, RoleAssignment, Subject
 
 
 def test_permissions(storage_path, client, user_client, user_id):
@@ -62,7 +62,7 @@ def test_permissions(storage_path, client, user_client, user_id):
 
         resp = admin.check_permissions(
             [
-                RoleQuery(
+                RoleAssignment(
                     resource=Resource(path=storage_path, type="document"),
                     role="reader",
                     subject=Subject(id=user_id, type="user"),

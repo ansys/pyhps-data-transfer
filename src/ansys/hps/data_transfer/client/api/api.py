@@ -52,12 +52,22 @@ from .retry import retry
 
 
 class DataTransferApi:
+    """Class for Data transfer API.
+
+    Parameters
+    ----------
+    client: Client
+        Client object.
+    """
+
     def __init__(self, client: Client):
         self.dump_mode = "json"
         self.client = client
 
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
+        """Status of worker binary."""
+
         def _sleep():
             log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
             s = backoff.full_jitter(sleep) if jitter else sleep
@@ -79,33 +89,83 @@ class DataTransferApi:
 
     @retry()
     def operations(self, ids: List[str]):
+        """Get a list of operations.
+
+        Parameters
+        ----------
+        ids: List[str]
+            List of ids.
+        """
         return self._operations(ids)
 
     def storages(self):
+        """Get types of storages available on the storage backend."""
         url = "/storage"
         resp = self.client.session.get(url)
         json = resp.json()
         return StorageConfigResponse(**json).storage
 
     def copy(self, operations: List[SrcDst]):
+        """Get API response for copying a list of files.
+
+        Parameters
+        ----------
+        operations: List[SrcDst]
+        """
         return self._exec_operation_req("copy", operations)
 
     def exists(self, operations: List[StoragePath]):
+        """Check if a path exists.
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+        """
         return self._exec_operation_req("exists", operations)
 
     def list(self, operations: List[StoragePath]):
+        """List files in a path.
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+        """
         return self._exec_operation_req("list", operations)
 
     def mkdir(self, operations: List[StoragePath]):
+        """Create a dir.
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+        """
         return self._exec_operation_req("mkdir", operations)
 
     def move(self, operations: List[SrcDst]):
+        """Move a file on the backend storage.
+
+        Parameters
+        ----------
+        operations: List[SrcDst]
+        """
         return self._exec_operation_req("move", operations)
 
     def remove(self, operations: List[StoragePath]):
+        """Delete a file.
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+        """
         return self._exec_operation_req("remove", operations)
 
     def rmdir(self, operations: List[StoragePath]):
+        """Delete a dir.
+
+        Parameters
+        ----------
+        operations: List[StoragePath]
+        """
         return self._exec_operation_req("rmdir", operations)
 
     @retry()
@@ -125,6 +185,12 @@ class DataTransferApi:
 
     @retry()
     def check_permissions(self, permissions: List[RoleAssignment]):
+        """Checks permissions of a path (including parent directory) using a list of RoleAssignment objects.
+
+        Parameters
+        ----------
+        permissions: List[RoleAssignment]
+        """
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = self.client.session.post(url, json=payload)
@@ -133,6 +199,12 @@ class DataTransferApi:
 
     @retry()
     def get_permissions(self, permissions: List[RoleQuery]):
+        """Return permissions of a file from a list of RoleQuery objects.
+
+        Parameters
+        ----------
+        permissions: List[RoleQuery]
+        """
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = self.client.session.post(url, json=payload)
@@ -141,6 +213,12 @@ class DataTransferApi:
 
     @retry()
     def remove_permissions(self, permissions: List[RoleAssignment]):
+        """Remove permissions using a list of RoleAssignment objects.
+
+        Parameters
+        ----------
+        permissions: List[RoleAssignment]
+        """
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
@@ -148,6 +226,12 @@ class DataTransferApi:
 
     @retry()
     def set_permissions(self, permissions: List[RoleAssignment]):
+        """Set permissions using a list of RoleAssignment objects.
+
+        Parameters
+        ----------
+        permissions: List[RoleAssignment]
+        """
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
@@ -155,6 +239,12 @@ class DataTransferApi:
 
     @retry()
     def get_metadata(self, paths: List[str | StoragePath]):
+        """Get metadata of a path on backend storage.
+
+        Parameters
+        ----------
+        paths: List[str | StoragePath]
+        """
         url = "/metadata:get"
         paths = [p if isinstance(p, str) else p.path for p in paths]
         payload = {"paths": paths}
@@ -164,6 +254,13 @@ class DataTransferApi:
 
     @retry()
     def set_metadata(self, asgs: Dict[str | StoragePath, DataAssignment]):
+        """Setting metadata for a path on backend storage.
+
+        Parameters
+        ----------
+        asgs: Dict[str | StoragePath, DataAssignment]
+            List of paths with key of type string or StoragePath and value of DataAssignment
+        """
         url = "/metadata:set"
         d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}
         req = SetMetadataRequest(metadata=d)

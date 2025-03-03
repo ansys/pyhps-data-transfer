@@ -47,8 +47,7 @@ def authenticate(
     verify: Union[bool, str] = True,
     **kwargs,
 ):
-    """
-    Authenticates the user with a password or refresh token against the HPS authentication service.
+    """Authenticates the user with a password or refresh token against the HPS authentication service.
 
     If this method is successful, the response includes access and refresh tokens.
 

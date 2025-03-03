@@ -21,3 +21,4 @@ hps-data-transfer-client brings HPS data transfer to your Python app. It is a Py
    getting_started/index
    examples/index
    changelog
+   api/index
