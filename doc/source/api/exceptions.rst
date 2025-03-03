@@ -8,7 +8,7 @@ HTTP requests returning an unsuccessful status code raise one of these exception
 * :exc:`ansys.hps.data_transfer.client.APIError` for server errors (5xx status code), such as for internal server
   errors or not implemented.
 
-All exceptions that a Pyhps data_transfer/client explicitly raises are inherited from the :exc:`ansys.hps.data_transfer.client.HPSError`
+All exceptions that a PyHPS Data Transfer explicitly raises are inherited from the :exc:`ansys.hps.data_transfer.client.HPSError`
 base class.
 
 .. module:: ansys.hps.data_transfer.client.exceptions

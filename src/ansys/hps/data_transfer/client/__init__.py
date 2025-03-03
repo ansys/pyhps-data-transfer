@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Pyhps data_transfer/client is a Python client for Ansys HPC Platform Services (HPS) data transfer."""
+"""PyHPS Data Transfer is a Python client for Ansys HPC Platform Services (HPS) data transfer."""
 
 from .__version__ import __version__
 from .api import AsyncDataTransferApi, DataTransferApi

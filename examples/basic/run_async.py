@@ -27,23 +27,30 @@ import glob
 import logging
 import os
 
+import typer
+from typing_extensions import Annotated
+
 from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)
-
-
-hps_url = "https://localhost:8443/hps"
-dt_url = f"{hps_url}/dt/api/v1"
-auth_url = f"{hps_url}/auth/realms/rep"
-
 logger = logging.getLogger()
 logging.basicConfig(format="%(asctime)s %(levelname)8s > %(message)s", level=logging.DEBUG)
 
 
-async def main():
-    token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
+async def main(
+    debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
+    username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
+    password: Annotated[
+        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
+    ] = "repadmin",
+):
+
+    dt_url = f"{url}/dt/api/v1"
+    auth_url = f"{url}/auth/realms/rep"
+    token = authenticate(username=username, password=password, verify=False, url=auth_url)
     token = token.get("access_token", None)
     assert token is not None
 
@@ -52,7 +59,7 @@ async def main():
 
     client.binary_config.update(
         verbosity=3,
-        debug=False,
+        debug=debug,
         insecure=True,
         token=token,
         data_transfer_url=dt_url,

@@ -27,6 +27,8 @@ import pathlib
 import traceback
 
 from keycloak import KeycloakAdmin
+import typer
+from typing_extensions import Annotated
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
@@ -49,13 +51,7 @@ log.addHandler(stream_handler)
 log.setLevel(logging.DEBUG)
 
 
-hps_url = "https://localhost:8443/hps"
-keycloak_url = f"{hps_url}/auth"
-auth_url = f"{keycloak_url}/realms/rep"
-dt_url = f"{hps_url}/dt/api/v1"
-
-
-def get_user_id_from_keycloak():
+def get_user_id_from_keycloak(keycloak_url):
     admin = KeycloakAdmin(
         server_url=keycloak_url + "/",
         username="keycloak",
@@ -68,30 +64,13 @@ def get_user_id_from_keycloak():
     return user_id
 
 
-if __name__ == "__main__":
-    run_bin = True
-
-    log.info("### Logging in as repuser ...")
-    user_token = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
-    user_token = user_token.get("access_token", None)
-    assert user_token is not None
-
-    log.info("### Preparing data transfer client for 'repuser' ...")
-    user_client = Client()
-    user_client.binary_config.update(
-        verbosity=3,
-        debug=False,
-        insecure=True,
-        token=user_token,
-        data_transfer_url=dt_url,
-    )
-    user_client.start()
-
-    user = DataTransferApi(user_client)
-    user.status(wait=True)
+def permissions(api: DataTransferApi, url: str):
+    keycloak_url = f"{url}/auth"
+    auth_url = f"{keycloak_url}/realms/rep"
+    dt_url = f"{url}/dt/api/v1"
 
     log.info("### Checking binary's status ...")
-    status = user.status(wait=True)
+    status = api.status(wait=True)
     log.info(f"### Client binary status: {status}")
 
     source_dir = pathlib.Path(__file__).parent / "files"
@@ -122,7 +101,7 @@ if __name__ == "__main__":
 
     try:
         # The operation will fail because 'repuser' does not have the necessary permissions
-        resp = user.copy(src_dst)
+        resp = api.copy(src_dst)
     except Exception as ex:
         log.error(f"Encountered error: {ex}")
 
@@ -144,7 +123,7 @@ if __name__ == "__main__":
     admin.status(wait=True)
 
     log.info("### Granting 'repuser' the necessary permissions ...")
-    user_id = get_user_id_from_keycloak()
+    user_id = get_user_id_from_keycloak(keycloak_url)
 
     try:
         admin.set_permissions(
@@ -174,8 +153,8 @@ if __name__ == "__main__":
         log.info(f"### Is 'repuser'({user_id}) allowed to read from {target_dir}? -> {resp.allowed}")
 
         log.info("### Trying to copy files as 'repuser' one more time...")
-        resp = user.copy(src_dst)
-        op = user.wait_for([resp.id], timeout=None)[0]
+        resp = api.copy(src_dst)
+        op = api.wait_for([resp.id], timeout=None)[0]
         log.info(f"### Copy operation state: {op.state}")
 
         log.info("### Listing files in the target directory as 'repadmin' ...")
@@ -213,4 +192,48 @@ if __name__ == "__main__":
     log.info("And that's all folks!")
 
     admin_client.stop()
-    user_client.stop()
+
+
+def main(
+    debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
+    username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
+    password: Annotated[
+        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
+    ] = "repadmin",
+):
+    logging.basicConfig(
+        format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG if debug else logging.INFO
+    )
+
+    dt_url = f"{url}/dt/api/v1"
+    auth_url = f"{url}/auth/realms/rep"
+
+    token = authenticate(username=username, password=password, verify=False, url=auth_url)
+    token = token.get("access_token", None)
+    assert token is not None
+
+    log.info("Connecting to the data transfer service client..")
+    client = Client(clean=True)
+
+    client.binary_config.update(
+        verbosity=3,
+        debug=False,
+        insecure=True,
+        token=token,
+        data_transfer_url=dt_url,
+    )
+    client.start()
+
+    api = DataTransferApi(client)
+    api.status(wait=True)
+    storage_names = [f"{s['name']}({s['type']})" for s in api.storages()]
+    log.info(f"Available storages: {storage_names}")
+
+    permissions(api=api, url=url)
+
+    client.stop()
+
+
+if __name__ == "__main__":
+    typer.run(main)

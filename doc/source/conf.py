@@ -44,6 +44,10 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
+    "sphinx_design",
+    "sphinx_tabs.tabs",
+    "sphinxcontrib.autodoc_pydantic",
+    "sphinx_jinja",
 ]
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
