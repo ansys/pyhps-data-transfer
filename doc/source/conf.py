@@ -15,6 +15,9 @@ release = version = __version__
 cname = os.getenv("DOCUMENTATION_CNAME", "https://hps.docs.pyansys.com")
 switcher_version = get_version_match(__version__)
 
+# The short X.Y version
+release = version = __version__
+
 # Select desired logo, theme, and declare the html title
 html_theme = "ansys_sphinx_theme"
 html_short_title = html_title = "hps-data-transfer-client"
@@ -39,10 +42,11 @@ html_theme_options = {
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
-    "numpydoc",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
 ]
+
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # Intersphinx mapping
 intersphinx_mapping = {
