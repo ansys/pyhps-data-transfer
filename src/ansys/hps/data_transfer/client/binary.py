@@ -257,10 +257,6 @@ class Binary:
                 break
             time.sleep(wait * 0.1)
 
-    # TODO: This method is not used anywhere. remove it?
-    def args_str(self):
-        return " ".join(self._args)
-
     def _log_output(self):
         while not self._stop.is_set():
             if self._process is None or self._process.stdout is None:
