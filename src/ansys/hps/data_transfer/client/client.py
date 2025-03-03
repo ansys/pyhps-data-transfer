@@ -154,7 +154,7 @@ class ClientBase:
 
     >>> from ansys.hps.data_transfer.client import Client
     >>> token = authenticate(username=username, password=password, verify=False, url=auth_url)
-    >>> token = token.get("access_token", None)        
+    >>> token = token.get("access_token", None)
     >>> client = Client(clean=True)
     >>> client.binary_config.update(
             verbosity=3,

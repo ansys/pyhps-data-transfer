@@ -82,33 +82,42 @@ class AsyncDataTransferApi:
 
     @retry()
     async def operations(self, ids: List[str]):
+        """Async interface to get a list of operations by their ids."""
         return await self._operations(ids)
 
     async def storages(self):
+        """Async interface to get the list of storage configurations."""
         url = "/storage"
         resp = await self.client.session.get(url)
         json = resp.json()
         return StorageConfigResponse(**json).storage
 
     async def copy(self, operations: List[SrcDst]):
+        """Async interface to copy a list of SrcDst objects."""
         return await self._exec_async_operation_req("copy", operations)
 
     async def exists(self, operations: List[StoragePath]):
+        """Async interface to check if a list of StoragePath objects exist."""
         return await self._exec_async_operation_req("exists", operations)
 
     async def list(self, operations: List[StoragePath]):
+        """Async interface to list a list of StoragePath objects."""
         return await self._exec_async_operation_req("list", operations)
 
     async def mkdir(self, operations: List[StoragePath]):
+        """Async interface to create a list of directories on remote backend."""
         return await self._exec_async_operation_req("mkdir", operations)
 
     async def move(self, operations: List[SrcDst]):
+        """Async interface to move a list of SrcDst objects in the remote backend."""
         return await self._exec_async_operation_req("move", operations)
 
     async def remove(self, operations: List[StoragePath]):
+        """Async interface to remove files in the remote backend."""
         return await self._exec_async_operation_req("remove", operations)
 
     async def rmdir(self, operations: List[StoragePath]):
+        """Async interface to remove directories in the remote backend."""
         return await self._exec_async_operation_req("rmdir", operations)
 
     @retry()
@@ -161,6 +170,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def get_metadata(self, paths: List[str | StoragePath]):
+        """Async interface to get metadata of a list of StoragePath objects."""
         url = "/metadata:get"
         paths = [p if isinstance(p, str) else p.path for p in paths]
         payload = {"paths": paths}
@@ -170,6 +180,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def set_metadata(self, asgs: Dict[str | StoragePath, DataAssignment]):
+        """Async interface to set metadata of a list of DataAssignment objects."""
         url = "/metadata:set"
         d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}
         req = SetMetadataRequest(metadata=d)
