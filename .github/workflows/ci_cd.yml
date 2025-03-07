@@ -88,15 +88,3 @@ jobs:
         path: |
           dist/*.whl
         retention-days: 5
-
-  release:
-    name: Create release
-    uses: ansys-internal/rep-job-management/.github/workflows/release.yml@main
-    needs: ['wheels','tests']
-    secrets: inherit
-    with:
-        tag: v${{ needs.wheels.outputs.version }}
-        force_release: ${{ github.event.inputs.force_release == 'true' }}
-        artifact: ''
-        files: |
-            /tmp/bin/*/*.whl
