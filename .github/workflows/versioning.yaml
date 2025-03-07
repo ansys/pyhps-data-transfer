@@ -1,0 +1,27 @@
+name: "[auto] Tag version"
+
+on:
+  push:
+    branches:
+      - "main"
+    paths-ignore:
+      - .github/**
+      - .vscode/**
+      - .devcontainer/**
+      - .*/**
+      - .*
+    #   - "*.yaml"
+    #   - "*.yml"
+
+jobs:
+  tag-version:
+    name: Tag version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+          fetch-depth: 0
+
+      - name: Create tag
+        uses: ansys-internal/hps-github-actions/.github/actions/version_tag@main

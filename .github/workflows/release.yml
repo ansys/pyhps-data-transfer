@@ -1,0 +1,42 @@
+name: "Release"
+
+on:
+  workflow_run:
+    workflows: ['CI-CD']
+    types: [completed]
+    branches:
+      - 'v*.*.*'
+      - 'main'
+  workflow_call:
+
+jobs:
+  create-release:
+    name: Create release
+    runs-on: ubuntu-latest 
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+
+      - name: Info
+        run: |
+            echo "Workflow run for branch '${{ github.event.workflow_run.head_branch }}', id '${{ github.event.workflow_run.id }}'"
+            echo "URL: '${{ github.event.workflow_run.url }}'"
+
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          name: ansys-hps-data-transfer-client
+          path: /tmp/wheels
+          run-id: ${{github.event.workflow_run.id}}
+          github-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+   
+      - name: Create
+        uses: ansys-internal/hps-github-actions/.github/actions/release_create@main
+        with:
+          release: ${{ startsWith(github.event.workflow_run.head_branch, 'v') }}
+          release-latest-dev: ${{ startsWith(github.event.workflow_run.head_branch, 'main') }}
+          files: |
+           /tmp/wheels/*
+          tag: ${{ github.event.workflow_run.head_branch }}
+          github-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
