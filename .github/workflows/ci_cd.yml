@@ -7,12 +7,7 @@ on:
           type: boolean
           default: false
           description: Force to push a release now
-  create:
-    tags:
-      - "v*.*.*"
   push:
-    branches:
-      - "main"
     tags:
       - "v*.*.*"
   pull_request:
@@ -38,7 +33,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ env. }}
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools tox
