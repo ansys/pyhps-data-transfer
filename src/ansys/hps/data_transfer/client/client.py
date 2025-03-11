@@ -40,6 +40,7 @@ import psutil
 import urllib3
 
 from ansys.hps.data_transfer.client.binary import Binary, BinaryConfig
+from ansys.hps.data_transfer.client.operations import OperationInfo, TimeMe
 from ansys.hps.data_transfer.client.exceptions import BinaryError, async_raise_for_status, raise_for_status
 
 from .token import prepare_token
@@ -570,11 +571,16 @@ class Client(ClientBase):
 
     def wait(self, timeout: float = 60.0, sleep=0.5):
         """Wait on worker binary to start."""
-        start = time.time()
-        while time.time() - start < timeout:
+        
+        def progress_callback(increment, num_completed, num_total):
+            OperationInfo.increase_progress(increment)
+        
+        with TimeMe("Waiting for worker to start"):
             try:
                 if self._session is not None:
+                    OperationInfo.prepare_progress(1)
                     resp = self._session.get(self.base_api_url)
+                    OperationInfo.increase_progress()
                     if resp.status_code != 200:
                         log.debug("Waiting for worker to start")
                     else:
