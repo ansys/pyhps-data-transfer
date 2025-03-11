@@ -25,7 +25,6 @@
 Example usage:
 
     python examples\transfer_files.py --local-path=examples\basic\files\* --remote-path=hello --debug
-    python examples\transfer_files.py --local-path=D:\ANSYSDev\models\rolls-royce-large-engine\d3* --debug
 
 """
 
