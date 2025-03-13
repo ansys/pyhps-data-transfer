@@ -26,7 +26,7 @@ repos:
           .*\.k|
           .*\.cas
       )$
-    args: [-I, .codespellignore]
+    args: ["--ignore-words", "doc/styles/config/vocabularies/ANSYS/accept.txt"]
 
 # For now we disable some of these checks, can be reenabled later
 # - repo: https://github.com/pycqa/pydocstyle
