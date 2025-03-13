@@ -82,12 +82,6 @@ def storage_path(test_name):
     yield f"python_client_tests/{test_name}"
 
 
-@pytest.fixture(scope="session", autouse=True)
-def remove_binaries(binary_dir):
-    if os.path.isdir(binary_dir):
-        shutil.rmtree(binary_dir)
-
-
 @pytest.fixture(scope="session")
 @backoff.on_exception(
     backoff.expo,
@@ -161,20 +155,6 @@ def user_id(keycloak_client):
 
 
 @pytest.fixture(scope="session")
-def event_loop():
-    # https://stackoverflow.com/a/71668965
-    loop = asyncio.get_event_loop()
-
-    yield loop
-
-    pending = asyncio.tasks.all_tasks(loop)
-    loop.run_until_complete(asyncio.gather(*pending))
-    loop.run_until_complete(asyncio.sleep(1))
-
-    loop.close()
-
-
-@pytest.fixture(scope="session")
 def binary_config(admin_access_token, dt_url):
     cfg = BinaryConfig(
         data_transfer_url=dt_url,
@@ -211,17 +191,6 @@ def client(binary_config, binary_dir):
     c.stop()
 
 
-@pytest.fixture(scope="session", autouse=True)
-def cleanup_test_storages(binary_config, binary_dir):
-    yield
-
-    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
-    c.start()
-    api = DataTransferApi(c)
-    op = api.rmdir([StoragePath(path="python_client_tests")])
-    api.wait_for(op.id)
-
-
 @pytest.fixture
 def user_client(user_binary_config, binary_dir):
     c = Client(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
@@ -231,19 +200,11 @@ def user_client(user_binary_config, binary_dir):
 
 
 @pytest.fixture
-async def async_client(binary_config, binary_dir, event_loop):
+async def async_client(binary_config, binary_dir):
     c = AsyncClient(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
     await c.start()
     yield c
 
-    await c.stop()
-
-
-@pytest.fixture
-async def async_user_client(user_binary_config, binary_dir, event_loop):
-    c = AsyncClient(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
-    await c.start()
-    yield c
     await c.stop()
 
 
