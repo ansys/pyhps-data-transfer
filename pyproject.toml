@@ -159,3 +159,27 @@ showcontent = true
 directory = "miscellaneous"
 name = "Miscellaneous"
 showcontent = true
+
+# Usage:
+# bumpver update -n --patch -d --ignore-vcs-tag --verbose
+
+[bumpver]
+current_version = "0.1.2"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = false
+tag = false
+push = false
+
+
+[bumpver.file_patterns]
+"ansys/**/__version__.py" = [
+    '__version__ = "{version}"',
+]
+"bumpver.toml" = [
+    'current_version = "{version}"',
+]
