@@ -1,7 +1,7 @@
 Permissions
 -----------
 
-The permissions plugin allows system admin to make sure that the 'root' directory has permissions set such that not every user can read/write to it.
+The permissions plugin allows system administrator to make sure that the 'root' directory has permissions set such that not every user can read/write to it.
 System user names can be specified either in keycloak or using the user_mapping property.
 In order to get them from keycloak:
 
@@ -11,7 +11,7 @@ In order to get them from keycloak:
 
 * The key must match the keycloak.attribute_name property.
 
-* The value is the system username or it's numerical representation.
+* The value is the system username or its numerical representation.
 
 user_mapping property:
 
@@ -76,7 +76,7 @@ set_permissions and check_permissions
 set_permissions takes a list of RoleAssignment objects with fields resource, role and subject.
 
 * resource: set resource type  with the dir path and ResourceType.
-* role: assign role to the resource. Allowed values are reader, writer and admin.
+* role: assign role to the resource. Allowed values are reader, writer and administrator.
 * subject: pass Subject and SubjectType with user id and user/group/any respectively
 
 Example usage of calls set_permissions():

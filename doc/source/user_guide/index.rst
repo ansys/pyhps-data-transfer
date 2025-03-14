@@ -84,13 +84,13 @@ remote_path is path to the remote directory to transfer files to.
 The paths used by the data transfer components look like
 
 [remote or keyword]:/path/to/file.txt
-The [remote or keyword] part can be either the name of a specific remote, empty or "any". Empty and "any" amount to the same - running the standard logic of our system, working through remotes in priority order. Specifying the name of a remote will perform the given command only against it.
+The [remote or keyword] part can be either the name of a specific remote, "any", or empty. Empty and "any" amount to the same - running the standard logic of the system, working through remotes in priority order. Specifying the name of a remote performs the given command only against it.
 
 If an operation should be performed against a local file or directory, the first part, including the colon, should be removed.
 
 Examples:
-any:my/test/path.txt - a file in any of the available remotes
-:my/test/path.txt - shorthand for any:...
+any:mnt/test/path.txt - a file in any of the available remotes
+:mnt/test/path.txt - shorthand for any:[]
 s3test:some/test/path.txt - a file in storage called "s3test"
 another/test/path.txt - a local path
 
