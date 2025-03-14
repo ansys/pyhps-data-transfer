@@ -71,7 +71,7 @@ jobs:
 
   tests:
     name: "Tests from pyhps repo"
-    uses: ansys/pyhps/.github/workflows/tests.yml@mguntupa/workflow
+    uses: ansys/pyhps/.github/workflows/tests.yml@main
     with:
       runner: "ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
