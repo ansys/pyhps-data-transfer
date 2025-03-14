@@ -3,6 +3,4 @@
 !config/vocabularies
 !config/vocabularies/ANSYS
 !config/vocabularies/ANSYS/**
-!vocabularies
-!vocabularies/**
 !.gitignore
