@@ -1,4 +1,4 @@
-PyHPS Data Transfer
+PyHPS Data Transfer Client
 ==========================
 |pyansys| |python| |pypi| |GH-CI| |codecov| |MIT| |black|
 
