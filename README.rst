@@ -42,7 +42,7 @@ Installation
 ^^^^^^^^^^^^
 
 You can use `pip <https://pypi.org/project/pip/>`_ to install PyHPS Data Transfer.
-Note: This will be available only after released. For now, please install from git
+Note: This can be be available only after released. For now, please install from git
 
 .. code:: bash
 

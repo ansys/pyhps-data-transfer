@@ -64,7 +64,7 @@ Copying files
 Listing files
 -------------
 
-To list files in a set path (base__dir in the following code block):
+To list files in a set path (base directory in the following code block):
 
 .. code-block:: python
 

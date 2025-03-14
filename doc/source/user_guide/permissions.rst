@@ -11,7 +11,7 @@ In order to get them from keycloak:
 
 * The key must match the keycloak.attribute_name property.
 
-* The value is the system username or it's numerical representation (ie. 1001).
+* The value is the system username or it's numerical representation.
 
 user_mapping property:
 

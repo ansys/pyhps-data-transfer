@@ -84,7 +84,7 @@ remote_path is path to the remote directory to transfer files to.
 The paths used by the data transfer components look like
 
 [remote or keyword]:/path/to/file.txt
-The [remote or keyword] part can be either the name of a specific remote, empty or "any". Empty and "any" amount to the same - running the standard logics of our system, working through remotes in priority order. Specifying the name of a remote will perform the given command only against it.
+The [remote or keyword] part can be either the name of a specific remote, empty or "any". Empty and "any" amount to the same - running the standard logic of our system, working through remotes in priority order. Specifying the name of a remote will perform the given command only against it.
 
 If an operation should be performed against a local file or directory, the first part, including the colon, should be removed.
 
@@ -110,7 +110,7 @@ To copy files:
 Listing files
 ----------------
 
-To list files in a set path (base__dir in the following code block):
+To list files in a set path (base_dir in the following code block):
 
 .. code-block:: python
 
