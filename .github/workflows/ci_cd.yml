@@ -7,19 +7,17 @@ on:
           type: boolean
           default: false
           description: Force to push a release now
-  create:
-    tags:
-      - "v*.*.*"
+
   push:
     branches:
       - "main"
     tags:
       - "v*.*.*"
+
   pull_request:
-    branches:
-      - "main"
+
   schedule:
-    - cron: "0 1 * * 1-5"
+    - cron: "0 1 * * *"
 
 env:
   PYTHON_VERSION: '3.10'
