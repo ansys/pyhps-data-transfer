@@ -1,29 +1,56 @@
-"""
-Example script for file operations.
-"""
+# Copyright (C) 2024 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""Example script for file operations."""
 
 import asyncio
 import glob
 import logging
 import os
 
+import typer
+from typing_extensions import Annotated
+
 from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)
-
-
-hps_url = "https://localhost:8443/hps"
-dt_url = f"{hps_url}/dt/api/v1"
-auth_url = f"{hps_url}/auth/realms/rep"
-
 logger = logging.getLogger()
 logging.basicConfig(format="%(asctime)s %(levelname)8s > %(message)s", level=logging.DEBUG)
 
 
-async def main():
-    token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
+async def main(
+    debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
+    username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
+    password: Annotated[
+        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
+    ] = "repadmin",
+):
+
+    dt_url = f"{url}/dt/api/v1"
+    auth_url = f"{url}/auth/realms/rep"
+    token = authenticate(username=username, password=password, verify=False, url=auth_url)
     token = token.get("access_token", None)
     assert token is not None
 
@@ -32,7 +59,7 @@ async def main():
 
     client.binary_config.update(
         verbosity=3,
-        debug=False,
+        debug=debug,
         insecure=True,
         token=token,
         data_transfer_url=dt_url,
