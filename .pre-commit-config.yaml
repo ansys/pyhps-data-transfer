@@ -10,10 +10,11 @@ repos:
   hooks:
   - id: isort
 
-- repo: https://github.com/PyCQA/flake8
-  rev: 7.1.1
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.9.10
   hooks:
-  - id: flake8
+    - id: ruff
+      args: [--fix]
 
 - repo: https://github.com/codespell-project/codespell
   rev: v2.3.0

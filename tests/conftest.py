@@ -20,10 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import asyncio
 import logging
 import os
-import shutil
 import traceback
 
 import backoff
@@ -31,10 +29,9 @@ from keycloak import KeycloakAdmin
 import pytest
 from slugify import slugify
 
-from ansys.hps.data_transfer.client import AsyncClient, Client, DataTransferApi
+from ansys.hps.data_transfer.client import AsyncClient, Client
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.binary import BinaryConfig
-from ansys.hps.data_transfer.client.models.msg import StoragePath
 
 log = logging.getLogger(__name__)
 

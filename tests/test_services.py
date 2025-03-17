@@ -44,7 +44,7 @@ def test_services(client, build_info_path, dt_url):
         f.write(json.dumps(info, indent=2))
 
     with open(build_info_path.replace(".json", ".md"), "w") as f:
-        f.write(f"### Build info")
-        f.write(f"\n```json\n")
+        f.write("### Build info")
+        f.write("\n```json\n")
         f.write(json.dumps(info, indent=2))
-        f.write(f"\n```")
+        f.write("\n```")

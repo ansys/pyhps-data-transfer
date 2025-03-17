@@ -91,7 +91,6 @@ def raise_for_status(response: httpx.Response):
 
     This method mimics the requests.Response.raise_for_status() method.
     """
-
     if response.status_code < 400 or response.status_code >= 600:
         return
 
