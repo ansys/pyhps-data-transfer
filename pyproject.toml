@@ -126,6 +126,36 @@ directory = ".cov/html"
 [tool.coverage.xml]
 output = ".cov/coverage.xml"
 
+[tool.ruff]
+line-length = 120
+extend-exclude = ["examples/**/*.py"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle, see https://beta.ruff.rs/docs/rules/#pycodestyle-e-w
+    "D",   # pydocstyle, see https://beta.ruff.rs/docs/rules/#pydocstyle-d
+    "F",   # pyflakes, see https://beta.ruff.rs/docs/rules/#pyflakes-f
+    "I",   # isort, see https://beta.ruff.rs/docs/rules/#isort-i
+    "N",   # pep8-naming, see https://beta.ruff.rs/docs/rules/#pep8-naming-n
+    "PTH", # flake8-use-pathlib, https://beta.ruff.rs/docs/rules/#flake8-use-pathlib-pth
+]
+ignore = ["D416"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-sort-within-sections = true
+known-first-party = ["ansys"]
+
+[tool.ruff.lint.pydocstyle]
+# Settings: https://docs.astral.sh/ruff/settings/#lintpydocstyle
+convention = "google"
+
+
 [tool.towncrier]
 package = "ansys.hps.data_transfer.client"
 directory = "doc/changelog.d"
@@ -183,3 +213,15 @@ push = false
 "bumpver.toml" = [
     'current_version = "{version}"',
 ]
+
+
+[flake8]
+exclude = venv, __init__.py, doc/_build, .venv
+select = W191, W291, W293, W391, E115, E117, E122, E124, E125, E225, E231, E301, E303, E501, F401, F403, N801, N802, N803, N804, N805, N806, N807, N815, N816
+count = True
+max-complexity = 10
+max-line-length = 120
+statistics = True
+per-file-ignores =
+    __init__.py:F401
+    ansys/rep/orchestration/interfaces/command_option_models.py:N805
