@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module contains tests for verifying the functionality of removing directories 
+"""Module contains tests for verifying the functionality of removing directories
 using the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
 """
 

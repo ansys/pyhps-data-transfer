@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module contains tests for verifying the availability and functionality of services 
+"""Module contains tests for verifying the availability and functionality of services
 used by the Ansys HPS Data Transfer Client.
 """
 

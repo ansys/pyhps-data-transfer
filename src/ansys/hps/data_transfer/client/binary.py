@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module provides utilities for managing binary files and processes related to the 
+"""Module provides utilities for managing binary files and processes related to the
 Ansys HPS Data Transfer Client.
 """
 
@@ -52,6 +52,7 @@ level_map = {
 
 class PrepareSubprocess:
     """Context manager to disable vfork and posix_spawn in subprocess."""
+
     def __enter__(self):
         self._orig_use_vfork = subprocess._USE_VFORK
         self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN

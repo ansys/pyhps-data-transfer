@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module provides utilities for implementing retry mechanisms in the 
-Ansys HPS Data Transfer Client. It includes functionality for handling transient 
+"""Module provides utilities for implementing retry mechanisms in the
+Ansys HPS Data Transfer Client. It includes functionality for handling transient
 errors and ensuring robust and reliable operations during data transfer.
 """
 

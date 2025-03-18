@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module provides asynchronous API functionality for interacting with the 
-Ansys HPS Data Transfer Client. It includes methods and utilities for performing 
+"""Module provides asynchronous API functionality for interacting with the
+Ansys HPS Data Transfer Client. It includes methods and utilities for performing
 data transfer operations asynchronously, managing resources, and handling client interactions.
 """
 
@@ -66,6 +66,7 @@ class AsyncDataTransferApi:
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
         """Async interface to get the status of the worker."""
+
         async def _sleep():
             log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
             s = backoff.full_jitter(sleep) if jitter else sleep

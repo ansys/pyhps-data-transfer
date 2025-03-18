@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module contains tests for verifying the behavior of the Data Transfer API and 
+"""Module contains tests for verifying the behavior of the Data Transfer API and
 Async Data Transfer API from the Ansys HPS Data Transfer Client during client restarts.
 """
 

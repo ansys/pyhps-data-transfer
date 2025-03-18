@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains tests for verifying the creation of directories 
+"""This module contains tests for verifying the creation of directories
 using the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
 """
 

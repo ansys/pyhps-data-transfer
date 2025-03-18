@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module contains tests for verifying the performance, reliability, and correctness 
-of transferring large files using the Data Transfer API and Async Data Transfer API 
+"""Module contains tests for verifying the performance, reliability, and correctness
+of transferring large files using the Data Transfer API and Async Data Transfer API
 from the Ansys HPS Data Transfer Client.
 """
 

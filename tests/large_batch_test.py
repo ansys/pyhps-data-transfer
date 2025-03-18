@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module contains tests for verifying the performance and reliability of 
-large batch file operations using the Data Transfer API and Async Data Transfer API 
+"""Module contains tests for verifying the performance and reliability of
+large batch file operations using the Data Transfer API and Async Data Transfer API
 from the Ansys HPS Data Transfer Client."""
 
 import logging

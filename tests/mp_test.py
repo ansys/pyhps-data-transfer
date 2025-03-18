@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module contains tests for verifying the functionality and performance of 
-data transfer operations using multiprocessing and multithreading techniques 
+"""Module contains tests for verifying the functionality and performance of
+data transfer operations using multiprocessing and multithreading techniques
 with the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
 """
 
