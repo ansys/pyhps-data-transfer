@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import asyncio
 import logging
 import os
 import traceback
@@ -29,9 +30,10 @@ from keycloak import KeycloakAdmin
 import pytest
 from slugify import slugify
 
-from ansys.hps.data_transfer.client import AsyncClient, Client
+from ansys.hps.data_transfer.client import AsyncClient, Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.binary import BinaryConfig
+from ansys.hps.data_transfer.client.models.msg import StoragePath
 
 log = logging.getLogger(__name__)
 
@@ -150,6 +152,19 @@ def user_id(keycloak_client):
     user_id = keycloak_client.get_user_id("repuser")
     return user_id
 
+@pytest.fixture(scope="session")
+def event_loop():
+    # https://stackoverflow.com/a/71668965
+    loop = asyncio.get_event_loop()
+
+    yield loop
+
+    pending = asyncio.tasks.all_tasks(loop)
+    loop.run_until_complete(asyncio.gather(*pending))
+    loop.run_until_complete(asyncio.sleep(1))
+
+    loop.close()
+
 
 @pytest.fixture(scope="session")
 def binary_config(admin_access_token, dt_url):
@@ -188,6 +203,16 @@ def client(binary_config, binary_dir):
     c.stop()
 
 
+@pytest.fixture(scope="session", autouse=True)
+def cleanup_test_storages(binary_config, binary_dir):
+    yield
+
+    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
+    c.start()
+    api = DataTransferApi(c)
+    op = api.rmdir([StoragePath(path="python_client_tests")])
+    api.wait_for(op.id)
+
 @pytest.fixture
 def user_client(user_binary_config, binary_dir):
     c = Client(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
@@ -197,7 +222,7 @@ def user_client(user_binary_config, binary_dir):
 
 
 @pytest.fixture
-async def async_client(binary_config, binary_dir):
+async def async_client(binary_config, binary_dir, event_loop):
     c = AsyncClient(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
     await c.start()
     yield c

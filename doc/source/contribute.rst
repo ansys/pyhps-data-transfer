@@ -83,7 +83,7 @@ Raw testing
 ^^^^^^^^^^^
 
 If required, from the command line, you can call style commands like
-`Black`_, `isort`_, and `Flake8`_. You can also call unit testing commands like `pytest`_.
+`ruff`_. You can also call unit testing commands like `pytest`_.
 However, running these commands do not guarantee that your project is being tested
 in an isolated environment, which is the reason why tools like ``tox`` exist.
 
@@ -107,10 +107,11 @@ This way, it's not possible for you to push code that fails the style checks::
 
   $ pre-commit install
   $ git commit -am "added my cool feature"
-  black....................................................................Passed
-  isort....................................................................Passed
-  flake8...................................................................Passed
+  ruff.....................................................................Passed
   codespell................................................................Passed
+  check for merge conflicts................................................Passed
+  trim trailing whitespace.................................................Passed
+  Validate GitHub Workflows................................................Passed
   Add License Headers......................................................Passed
 
 Documentation
@@ -144,9 +145,7 @@ the building requirements and then executing the build module:
 
 
 .. LINKS AND REFERENCES
-.. _Black: https://github.com/psf/black
-.. _isort: https://github.com/PyCQA/isort
-.. _Flake8: https://flake8.pycqa.org/en/latest/
+.. _ruff: https://docs.astral.sh/ruff/
 .. _pytest: https://docs.pytest.org/en/stable/
 .. _pip: https://pypi.org/project/pip/
 .. _pre-commit: https://pre-commit.com/
