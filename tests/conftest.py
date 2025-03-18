@@ -23,6 +23,7 @@
 import asyncio
 import logging
 import os
+import shutil
 import traceback
 
 import backoff
@@ -79,6 +80,11 @@ def binary_dir():
 @pytest.fixture()
 def storage_path(test_name):
     yield f"python_client_tests/{test_name}"
+
+@pytest.fixture(scope="session", autouse=True)
+def remove_binaries(binary_dir):
+    if os.path.isdir(binary_dir):
+        shutil.rmtree(binary_dir)
 
 
 @pytest.fixture(scope="session")
