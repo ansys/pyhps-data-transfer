@@ -20,7 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Example script for file operations."""
+"""This script is intended to be run from the command line, where it will
+authenticate with the specified HPS service and set up an asynchronous
+client for data transfer operations, transfer files to and from remote backends
+using the data transfer service.
+
+Example usage:
+python examples\async_data_transfer_client.py --debug --url "https://example.com/hps" --username "user" --password "pass"
+"""
 
 import asyncio
 import glob
