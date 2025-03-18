@@ -20,12 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying the creation of directories 
+using the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
+"""
+
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
 from ansys.hps.data_transfer.client.models.msg import StoragePath
 from ansys.hps.data_transfer.client.models.ops import OperationState
 
 
 def test_mkdir(storage_path, client):
+    """Test creating a directory."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -46,6 +51,7 @@ def test_mkdir(storage_path, client):
 
 
 async def test_async_mkdir(storage_path, async_client):
+    """Test creating a directory using the Async Data Transfer API."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 

@@ -20,6 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Module contains tests for verifying file copy operations using the 
+Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
+
+The tests ensure that files are copied correctly between local and remote locations, 
+and validate the integrity of the copied files using file comparison utilities.
+"""
+
 import filecmp
 import logging
 import os
@@ -33,6 +40,7 @@ log = logging.getLogger(__name__)
 
 
 def test_copy(storage_path, client):
+    """Test copying a file from local to remote storage and back."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -56,6 +64,8 @@ def test_copy(storage_path, client):
 
 
 async def test_async_copy(storage_path, async_client):
+    """Test copying a file from local to remote storage and
+    back using the Async Data Transfer API."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 
@@ -79,6 +89,7 @@ async def test_async_copy(storage_path, async_client):
 
 
 def test_copy_empty_file(storage_path, client):
+    """Test copying an empty file from local to remote storage."""
     api = DataTransferApi(client)
     api.status(wait=True)
 

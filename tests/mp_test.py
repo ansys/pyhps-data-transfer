@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Module contains tests for verifying the functionality and performance of 
+data transfer operations using multiprocessing and multithreading techniques 
+with the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
+"""
+
 import concurrent.futures
 import logging
 import multiprocessing as mp
@@ -34,6 +39,7 @@ def _check_storage(dt_api):
 
 
 def test_mp_support(client):
+    """Test multiprocessing support."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -47,6 +53,7 @@ def test_mp_support(client):
 
 
 async def test_async_mp_support(async_client):
+    """Test multiprocessing support using the async API."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 

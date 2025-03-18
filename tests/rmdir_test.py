@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Module contains tests for verifying the functionality of removing directories 
+using the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
+"""
+
 import os
 import tempfile
 
@@ -29,6 +33,7 @@ from ansys.hps.data_transfer.client.models.ops import OperationState
 
 
 def test_rmdir(storage_path, client):
+    """Test removing a directory."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -73,6 +78,7 @@ def test_rmdir(storage_path, client):
 
 
 async def test_async_rmdir(storage_path, async_client):
+    """Test removing a directory using the async API."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 

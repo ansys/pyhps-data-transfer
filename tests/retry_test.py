@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Module contains tests for verifying the retry mechanism in the Data Transfer API 
+from the Ansys HPS Data Transfer Client.
+"""
+
 import logging
 
 import httpx
@@ -31,6 +35,7 @@ log = logging.getLogger(__name__)
 
 
 class Counter:
+    """Simple counter class."""
     def __init__(self):
         self.value = 0
 
@@ -40,6 +45,7 @@ class Counter:
 
 
 def test_retry_not_ready(client, storage_path):
+    """Test retrying on NotReadyError."""
     count = Counter()
 
     @retry(max_time=1, max_tries=2, raise_on_giveup=False)
@@ -53,6 +59,7 @@ def test_retry_not_ready(client, storage_path):
 
 
 def test_retry_timeout_error(client, storage_path):
+    """Test retrying on TimeoutError."""
     count = Counter()
 
     @retry(max_time=1, max_tries=20, raise_on_giveup=False)
@@ -67,6 +74,7 @@ def test_retry_timeout_error(client, storage_path):
 
 
 def test_retry_hpserror_giveup(client, storage_path):
+    """Test retrying on HPSError with give_up=True."""
     count = Counter()
 
     @retry(max_time=1, max_tries=20, raise_on_giveup=False)
@@ -81,6 +89,7 @@ def test_retry_hpserror_giveup(client, storage_path):
 
 
 def test_give_up_status(client, storage_path):
+    """Test give_up_on status codes."""
     count = Counter()
 
     @retry(max_time=1, max_tries=20, raise_on_giveup=False)

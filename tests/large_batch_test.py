@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Module contains tests for verifying the performance and reliability of 
+large batch file operations using the Data Transfer API and Async Data Transfer API 
+from the Ansys HPS Data Transfer Client."""
+
 import logging
 import os
 import tempfile
@@ -35,6 +39,7 @@ content = "Mock file; " * 100
 
 
 def test_large_batch(storage_path, client):
+    """Test copying a large batch of files from local to remote storage."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -56,6 +61,8 @@ def test_large_batch(storage_path, client):
 
 
 async def test_async_large_batch(storage_path, async_client):
+    """Test copying a large batch of files from local to remote
+    using the AsyncDataTransferApi"""
     api = AsyncDataTransferApi(async_client)
     api.status(wait=True)
 

@@ -20,10 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Module contains tests for verifying the functionality of retrieving storage information 
+using the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
+"""
+
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
 
 
 def test_storage(client):
+    """Test getting storage information."""
     api = DataTransferApi(client)
     api.status(wait=True)
     resp = api.storages()
@@ -31,6 +36,7 @@ def test_storage(client):
 
 
 async def test_async_storage(async_client):
+    """Test getting storage information using the async API."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
     resp = await api.storages()
