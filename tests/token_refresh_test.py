@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module contains tests for verifying the token refresh functionality
+"""This module contains tests for verifying the token refresh functionality
 in the Ansys HPS Data Transfer Client.
 """
 

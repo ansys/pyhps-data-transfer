@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module that provides authentication for the user with a password or refresh token against the
+"""This module provides authentication for the user with a password or refresh token against the
 HPS authentication service.
 """
 

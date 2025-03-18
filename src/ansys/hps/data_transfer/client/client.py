@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module providing the Python client to the HPS data transfer APIs."""
+"""This module provides the Python client to the HPS data transfer APIs."""
 
 import asyncio
 import atexit

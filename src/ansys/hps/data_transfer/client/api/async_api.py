@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module provides asynchronous API functionality for interacting with the
+"""This module provides asynchronous API functionality for interacting with the
 Ansys HPS Data Transfer Client. It includes methods and utilities for performing
 data transfer operations asynchronously, managing resources, and handling client interactions.
 """

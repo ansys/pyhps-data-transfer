@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module provides utilities for configuring OpenTelemetry (Otel) settings for the
+"""This module provides utilities for configuring OpenTelemetry (Otel) settings for the
 Ansys HPS Data Transfer Client. It allows setting up environment variables required
 for telemetry data export and resource attributes.
 """

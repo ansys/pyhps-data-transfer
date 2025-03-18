@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module provides utilities for managing binary files and processes related to the
+"""This module provides utilities for managing binary files and processes related to the
 Ansys HPS Data Transfer Client.
 """
 

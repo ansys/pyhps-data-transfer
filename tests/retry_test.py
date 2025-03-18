@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module contains tests for verifying the retry mechanism in the Data Transfer API
+"""This module contains tests for verifying the retry mechanism in the Data Transfer API
 from the Ansys HPS Data Transfer Client.
 """
 

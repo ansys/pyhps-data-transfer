@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module provides the core API functionality for interacting with the
+"""This module provides the core API functionality for interacting with the
 Ansys HPS Data Transfer Client. It includes methods and utilities for performing
 data transfer operations, managing resources, and handling client interactions.
 """
