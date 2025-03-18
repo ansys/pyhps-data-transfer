@@ -20,6 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Example script to start data transfer service client and query available storage.
+
+Example usage:
+python examples\data_transfer_runner.py --debug
+"""
+
 import json
 import logging
 import time
