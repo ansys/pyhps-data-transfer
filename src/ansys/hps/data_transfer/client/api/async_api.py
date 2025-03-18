@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Module provides asynchronous API functionality for interacting with the 
+Ansys HPS Data Transfer Client. It includes methods and utilities for performing 
+data transfer operations asynchronously, managing resources, and handling client interactions.
+"""
+
 import asyncio
 import logging
 import textwrap
@@ -60,6 +65,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
+        """Async interface to get the status of the worker."""
         async def _sleep():
             log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
             s = backoff.full_jitter(sleep) if jitter else sleep
@@ -196,6 +202,7 @@ class AsyncDataTransferApi:
         cap: float = 2.0,
         raise_on_error: bool = False,
     ):
+        """Async interface to wait for a list of operations to complete."""
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
         operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]

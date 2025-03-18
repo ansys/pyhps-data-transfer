@@ -60,6 +60,7 @@ log = logging.getLogger(__name__)
 
 
 def bin_in_use(bin_path):
+    """Check if a binary is in use."""
     for proc in psutil.process_iter():
         try:
             cmd = proc.cmdline()
@@ -94,6 +95,7 @@ class MonitorState:
         self._last_exc = None
 
     def mark_ready(self, ready):
+        """Mark worker as ready or not ready."""
         self._was_ready = True
         msg = f"Worker is running, reporting {'' if ready else 'not '}ready"
         if ready:
@@ -105,6 +107,7 @@ class MonitorState:
             log.warning(msg)
 
     def mark_failed(self, exc=None, binary=None):
+        """Mark worker as failed."""
         exc_str = "" if exc is None else f": {exc}"
         if binary:
             bin_str = f", binary is {'' if binary.is_started else 'not '}running"
@@ -117,6 +120,7 @@ class MonitorState:
         self._last_exc = exc
 
     def report(self, binary):
+        """Report worker status."""
         if self._failed and self._was_ready:
             descr = "running" if binary.is_started else "not running"
             if self._last_exc is not None:
@@ -324,6 +328,7 @@ class ClientBase:
         return bin_path
 
     def _check_binary(self, build_info, bin_path):
+        """Check if there is a need to download the binary."""
         branch = build_info["branch"]
 
         # Check if we need to download the binary

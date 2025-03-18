@@ -21,7 +21,9 @@
 # SOFTWARE.
 
 """Module that provides authentication for the user with a password or refresh token against the
-HPS authentication service."""
+HPS authentication service.
+"""
+
 import logging
 from typing import Union
 import urllib.parse
