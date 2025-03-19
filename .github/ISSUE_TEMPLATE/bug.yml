@@ -20,7 +20,7 @@ body:
       placeholder: Please write the steps to reproduce the issue.
     validations:
       required: true
-      
+
   - type: textarea
     id: installed-packages
     attributes:
@@ -48,7 +48,7 @@ body:
     attributes:
       label: '📦 Support ticket ID'
       description: Give the CRM ticket ID if it's not an internal defect.
-      placeholder: 
+      placeholder:
     validations:
       required: false
 
@@ -57,7 +57,7 @@ body:
     attributes:
       label: '🐞 Found in'
       description: Give the version number the bug has been found.
-      placeholder: 
+      placeholder:
     validations:
       required: false
 
@@ -66,7 +66,7 @@ body:
     attributes:
       label: '🩹 Fixed in'
       description: Give the version number the bug has been fixed.
-      placeholder: 
+      placeholder:
     validations:
       required: false
 
@@ -75,7 +75,7 @@ body:
     attributes:
       label: 'Root cause'
       description: Provide the cause of the bug.
-      placeholder: 
+      placeholder:
     validations:
       required: false
 
@@ -83,7 +83,7 @@ body:
     id: third-party
     attributes:
       label: Third Party
-      description: 
+      description:
       options:
         - label: This bug is introduced by a third party
 
@@ -91,7 +91,7 @@ body:
     id: bug-released
     attributes:
       label: Released Bug
-      description: 
+      description:
       options:
         - label: This bug is in a released product
 

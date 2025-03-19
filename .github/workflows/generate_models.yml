@@ -12,10 +12,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  
+
   generate:
     name: Model generation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-8-cores
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,29 +47,37 @@ jobs:
       - name: Create venv
         run: |
             python3 -m venv dev_env
-            dev_env/bin/python build.py dev
 
       - name: Generate models
         run: |
             cp core/docs/worker/swagger.json openapi2.json
-            ./generate_models.sh
+            ./scripts/generate_models.sh
             ls -lah
             sudo rm -rf out
 
 
-      - name: Start services
+      - name: Install dependencies
         run: |
-            docker-compose pull
-            docker-compose up -d
+          python -m pip install --upgrade pip setuptools tox tox-gh-actions
+          mkdir docker-compose-artifact
 
-      - name: Run tests
-        run: |
-            dev_env/bin/python build.py tests
+      - name: Start HPS services
+        id: hps-services
+        uses: ansys/pyhps/.github/actions/hps_services@main
+        with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          ghcr-username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+          ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
+          version: ${{ inputs.hps-version || 'latest-dev' }}
+          feature: ${{ inputs.hps-feature || 'main' }}
 
-      - name: Stop services
-        if: always()
-        run: |
-            docker-compose down -v
+      - name: Test with tox
+        run: tox -e py310-coverage
+        env:
+          HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
+          HPS_TEST_USERNAME: repadmin
+          HPS_TEST_PASSWORD: repadmin
+
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v4

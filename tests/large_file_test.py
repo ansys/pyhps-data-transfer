@@ -1,3 +1,30 @@
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+"""This module contains tests for verifying the performance, reliability, and correctness
+of transferring large files using the Data Transfer API and Async Data Transfer API
+from the Ansys HPS Data Transfer Client.
+"""
+
 import logging
 import os
 import tempfile
@@ -14,6 +41,7 @@ file_size = 5  # GB
 
 
 def write_file(file_name, size):
+    """Write a file with random data."""
     start_time = time.time()
     log.info(f"Generating file {file_name} with size {size} GB")
     gb1 = 1024 * 1024 * 1024  # 1GB
@@ -25,6 +53,7 @@ def write_file(file_name, size):
 
 
 def test_large_batch(storage_path, client):
+    """Test copying a large file to a remote storage."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -46,6 +75,7 @@ def test_large_batch(storage_path, client):
 
 
 async def test_async_large_batch(storage_path, async_client):
+    """Test copying a large file to a remote storage using the AsyncDataTransferApi."""
     api = AsyncDataTransferApi(async_client)
     api.status(wait=True)
 

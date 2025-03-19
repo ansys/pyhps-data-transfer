@@ -1,7 +1,7 @@
 version: 2
 updates:
-  - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "pip"
+    directory: "/"
     insecure-external-code-execution: allow
     schedule:
       interval: "daily"
@@ -9,11 +9,21 @@ updates:
       - "maintenance"
       - "dependencies"
     groups:
-      opentelemetry:
+      general-dependencies:
         patterns:
-          - "opentelemetry*"
-      dependencies:
-        patterns:
-          - "*" # Update all packages together
+          - "*"
         exclude-patterns:
-          - "opentelemetry*"
+          - "*sphinx*"
+          - "pytest*"
+      test-dependencies:
+        patterns:
+          - "pytest*"
+      doc-dependencies:
+        patterns:
+          - "*sphinx*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "maintenance"

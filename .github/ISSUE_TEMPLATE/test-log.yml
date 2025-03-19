@@ -45,6 +45,6 @@ body:
     id: overall-test-passed
     attributes:
       label: Overall result
-      description: 
+      description:
       options:
         - label: Test passed
