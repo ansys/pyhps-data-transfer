@@ -20,7 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Basic script to transfer files to remote backends and back using the data transfer service.
+"""
+.. _ref_transfer:
+
+==============================
+Basic script to transfer files
+==============================
+
+Basic script to transfer files to remote backends and back using the data transfer service.
 'local-path' is the path to the files or directory to transfer. Supports wildcards.
 
 Example usage:
@@ -40,6 +47,10 @@ from typing import Optional
 from humanfriendly import format_size
 import typer
 from typing_extensions import Annotated
+
+###################################################
+# Necessary imports
+# =================
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
@@ -157,6 +168,9 @@ def main(
     assert token is not None
 
     log.info("Connecting to the data transfer service client..")
+    ##############################
+    # Create a ``client`` instance
+    # ============================
     client = Client(clean=True)
 
     client.binary_config.update(

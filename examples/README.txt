@@ -1,5 +1,3 @@
-.. _examples:
-
 Examples
 ========
 
@@ -14,27 +12,3 @@ You can execute many Python scripts with these command-line arguments:
 * ``--username``: HPS username (default: repadmin)
 * ``--password``: HPS password (default: repadmin)
 * ``--debug``: Enable debug logging [default: no-debug]
-
-
-.. toctree::
-  :hidden:
-  :maxdepth: 3
-
-  ex_transfer_files
-  ex_startup
-  ex_permissions
-  ex_run_async
-
-.. list-table::
-   :header-rows: 1
-
-   * - Name
-     - Description
-   * - :ref:`example_transfer_files`
-     - Basic script to transfer files to remote backends and back using data transfer service.
-   * - :ref:`example_startup`
-     - Script to startup PyHPS Data Transfer components to use data transfer service components
-   * - :ref:`example_permissions`
-     - Script to set and query permissions on files
-   * - :ref:`example_run_async`
-     - Script to run async operations using data transfer service.

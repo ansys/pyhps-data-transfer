@@ -20,7 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Example script to start data transfer service client and query available storage.
+"""
+.. _ref_runner:
+
+===========================
+Startup PyHPS Data Transfer
+===========================
+
+Example script to start data transfer service client and query available storage.
 
 Example usage:
 python examples\data_transfer_runner.py --debug
@@ -53,6 +60,10 @@ def main(
     user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)
     assert user_token is not None
+
+    ##########################
+    # Create a Client instance
+    # ========================
 
     client = Client()
     client.binary_config.update(

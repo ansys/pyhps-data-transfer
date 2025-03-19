@@ -20,7 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Example script intended to be run from the command line,
+"""
+.. _ref_file:
+
+===============
+File Operations
+===============
+
+Example script intended to be run from the command line,
 where it will perform the specified file operations based on the provided arguments.
 
 Example usage:
@@ -65,6 +72,10 @@ def run(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None
     op = api.copy([SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)])
     op = api.wait_for([op.id])
     log.info(f"Operation {op[0].state}")
+
+    ####################################
+    # Listing files and getting metadata
+    # ==================================
 
     log.info("Listing files ...")
     op = api.list([StoragePath(path=base_dir)])
