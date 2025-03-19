@@ -86,7 +86,6 @@ def authenticate(
     dict
         JSON-encoded content of a :class:`requests.Response` object.
     """
-
     auth_postfix = f"auth/realms/{realm}"
     if url.endswith(f"/{auth_postfix}") or url.endswith(f"/{auth_postfix}/"):
         auth_url = url

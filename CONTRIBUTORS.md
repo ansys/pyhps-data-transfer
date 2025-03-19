@@ -2,8 +2,9 @@
 
 ## Project Lead or Owner
 
-* [First Last]()
+* [Michal Pawlik](https://github.com/nezgrath)
+* [Oliver Koenig](https://github.com/ojkoenig)
 
 ## Individual Contributors
 
-* [First Last]()
+* [Manikanth Sai](https://github.com/saimanikant)

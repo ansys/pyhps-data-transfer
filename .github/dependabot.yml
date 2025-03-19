@@ -9,14 +9,18 @@ updates:
       - "maintenance"
       - "dependencies"
     groups:
-      opentelemetry:
+      general-dependencies:
         patterns:
-          - "opentelemetry*"
-      dependencies:
-        patterns:
-          - "*" # Update all packages together
+          - "*"
         exclude-patterns:
-          - "opentelemetry*"
+          - "*sphinx*"
+          - "pytest*"
+      test-dependencies:
+        patterns:
+          - "pytest*"
+      doc-dependencies:
+        patterns:
+          - "*sphinx*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

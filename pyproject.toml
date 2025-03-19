@@ -87,17 +87,6 @@ Tracker = "https://github.com/ansys-internal/hps-data-transfer-client/issues"
 Homepage = "https://github.com/ansys-internal/hps-data-transfer-client/"
 Documentation = "https://hps_data_transfer.docs.pyansys.com"
 
-
-[tool.black]
-line-length = 120
-
-[tool.isort]
-profile = "black"
-force_sort_within_sections = true
-line_length = 120
-default_section = "THIRDPARTY"
-src_paths = ["doc", "src", "tests"]
-
 [tool.pydocstyle]
 convention = "numpy"
 
@@ -125,6 +114,29 @@ directory = ".cov/html"
 
 [tool.coverage.xml]
 output = ".cov/coverage.xml"
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["examples/**/*.py"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle, see https://beta.ruff.rs/docs/rules/#pycodestyle-e-w
+    "F",   # pyflakes, see https://beta.ruff.rs/docs/rules/#pyflakes-f
+    "I",   # isort, see https://beta.ruff.rs/docs/rules/#isort-i
+    "N",   # pep8-naming, see https://beta.ruff.rs/docs/rules/#pep8-naming-n
+]
+ignore = ["E402", "E712", "E722", "F401", "F841", "F821"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-sort-within-sections = true
+known-first-party = ["ansys"]
+
+[tool.ruff.lint.pydocstyle]
+# Settings: https://docs.astral.sh/ruff/settings/#lintpydocstyle
+convention = "google"
+
 
 [tool.towncrier]
 package = "ansys.hps.data_transfer.client"
@@ -159,3 +171,27 @@ showcontent = true
 directory = "miscellaneous"
 name = "Miscellaneous"
 showcontent = true
+
+# Usage:
+# bumpver update -n --patch -d --ignore-vcs-tag --verbose
+
+[bumpver]
+current_version = "0.1.2"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = false
+tag = false
+push = false
+
+
+[bumpver.file_patterns]
+"ansys/**/__version__.py" = [
+    '__version__ = "{version}"',
+]
+"bumpver.toml" = [
+    'current_version = "{version}"',
+]

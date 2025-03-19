@@ -25,7 +25,7 @@
 
 Example usage:
 
-    python examples\transfer_files.py --local-path=examples\basic\files\* --remote-path=hello --debug
+    python examples\transfer_files.py --local_path=examples\basic\files\* --remote-path=hello --debug
 
 """
 

@@ -47,4 +47,5 @@ Wrapping around data transfer client REST APIs, PyHPS Data Transfer allows you t
     getting_started/index
     user_guide/index
     examples/index
+    api/index.rst
     contribute
