@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying the functionality of listing files and directories
+using the Data Transfer API from the Ansys HPS Data Transfer Client.
+"""
+
 import logging
 import tempfile
 
@@ -31,6 +35,7 @@ log = logging.getLogger(__name__)
 
 
 def test_list(storage_path, client):
+    """Test listing files in a directory."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -57,6 +62,7 @@ def test_list(storage_path, client):
 
 
 async def test_async_list(storage_path, async_client):
+    """Test listing files in a directory using the AsyncDataTransferApi."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 

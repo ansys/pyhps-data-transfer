@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying the existence of files or directories
+using the Data Transfer API from the Ansys HPS Data Transfer Client.
+"""
+
 import os
 import tempfile
 
@@ -28,7 +32,8 @@ from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.ops import OperationState
 
 
-def test_exists(storage_path, client):
+def test_exists(client):
+    """Test checking the existence of a file."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -57,7 +62,8 @@ def test_exists(storage_path, client):
     assert op[0].result == True
 
 
-async def test_async_exists(storage_path, async_client):
+async def test_async_exists(async_client):
+    """Test checking the existence of a file using the AsyncDataTransferApi."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 

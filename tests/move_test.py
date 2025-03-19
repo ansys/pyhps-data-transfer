@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying the functionality of moving files and directories
+using the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
+"""
+
 import os
 import tempfile
 
@@ -29,6 +33,7 @@ from ansys.hps.data_transfer.client.models.ops import OperationState
 
 
 def test_move(storage_path, client):
+    """Test moving a file."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -52,6 +57,7 @@ def test_move(storage_path, client):
 
 
 async def test_async_move(storage_path, async_client):
+    """Test moving a file using the async API."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 

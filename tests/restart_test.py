@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying the behavior of the Data Transfer API and
+Async Data Transfer API from the Ansys HPS Data Transfer Client during client restarts.
+"""
+
 import asyncio
 import logging
 import time
@@ -32,6 +36,7 @@ log = logging.getLogger(__name__)
 
 
 def test_restart(client):
+    """Test restarting the client."""
     # Let it start up
     api = DataTransferApi(client)
     api.status(wait=True)
@@ -48,6 +53,7 @@ def test_restart(client):
 
 
 async def test_async_restart(async_client):
+    """Test restarting the async client."""
     # Let it start up
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)

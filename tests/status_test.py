@@ -20,10 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying the functionality of retrieving the status
+of the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
+"""
+
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
 
 
 def test_status(client):
+    """Test getting the status of the client."""
     api = DataTransferApi(client)
     api.status(wait=True)
     resp = api.status()
@@ -31,6 +36,7 @@ def test_status(client):
 
 
 async def test_async_status(async_client):
+    """Test getting the status of the async client."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
     resp = await api.status()

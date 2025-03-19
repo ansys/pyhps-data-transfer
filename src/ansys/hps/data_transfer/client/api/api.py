@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module provides the core API functionality for interacting with the
+Ansys HPS Data Transfer Client. It includes methods and utilities for performing
+data transfer operations, managing resources, and handling client interactions.
+"""
+
 import logging
 import textwrap
 import time
@@ -276,6 +281,7 @@ class DataTransferApi:
         cap: float = 2.0,
         raise_on_error: bool = False,
     ):
+        """Wait for operations to complete."""
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
         operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]

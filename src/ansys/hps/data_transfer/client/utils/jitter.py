@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module provides utilities for implementing exponential backoff with optional jitter,
+commonly used in retry mechanisms to handle transient errors in distributed systems.
+"""
+
 from random import uniform
 
 

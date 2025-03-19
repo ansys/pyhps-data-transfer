@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module provides utilities for managing binary files and processes related to the
+Ansys HPS Data Transfer Client.
+"""
+
 import json
 import logging
 import os
@@ -47,6 +51,8 @@ level_map = {
 
 
 class PrepareSubprocess:
+    """Context manager to disable vfork and posix_spawn in subprocess."""
+
     def __enter__(self):
         self._orig_use_vfork = subprocess._USE_VFORK
         self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
@@ -135,18 +141,22 @@ class BinaryConfig:
 
     @property
     def port(self):
+        """Return port."""
         return self._selected_port or self._detected_port
 
     @port.setter
     def port(self, value):
+        """Set port."""
         self._selected_port = value
 
     @property
     def token(self):
+        """Return token."""
         return self._token
 
     @token.setter
     def token(self, value):
+        """Set token."""
         if self.debug:
             log.debug(
                 f"Setting token to ...{value[-10:]}, old token: {f'...{self._token[-10:]}' if self._token else 'none'}"
@@ -157,6 +167,7 @@ class BinaryConfig:
 
     @property
     def url(self):
+        """Return url."""
         return f"http://{self.host}:{self.port}/api/v1"
 
 

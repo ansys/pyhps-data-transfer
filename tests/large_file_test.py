@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying the performance, reliability, and correctness
+of transferring large files using the Data Transfer API and Async Data Transfer API
+from the Ansys HPS Data Transfer Client.
+"""
+
 import logging
 import os
 import tempfile
@@ -36,6 +41,7 @@ file_size = 5  # GB
 
 
 def write_file(file_name, size):
+    """Write a file with random data."""
     start_time = time.time()
     log.info(f"Generating file {file_name} with size {size} GB")
     gb1 = 1024 * 1024 * 1024  # 1GB
@@ -47,6 +53,7 @@ def write_file(file_name, size):
 
 
 def test_large_batch(storage_path, client):
+    """Test copying a large file to a remote storage."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -68,6 +75,7 @@ def test_large_batch(storage_path, client):
 
 
 async def test_async_large_batch(storage_path, async_client):
+    """Test copying a large file to a remote storage using the AsyncDataTransferApi."""
     api = AsyncDataTransferApi(async_client)
     api.status(wait=True)
 

@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying the retrieval and validation of metadata
+associated with files and directories using the Data Transfer API and Async Data Transfer API
+from the Ansys HPS Data Transfer Client.
+"""
+
 import logging
 import os
 import tempfile
@@ -33,6 +38,7 @@ log = logging.getLogger(__name__)
 
 
 def test_get_basic_metadata(storage_path, client):
+    """Test retrieving basic metadata for a file."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -60,6 +66,7 @@ def test_get_basic_metadata(storage_path, client):
 
 
 def test_set_custom_metadata(storage_path, client):
+    """Test setting custom metadata for a file."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -93,6 +100,7 @@ def test_set_custom_metadata(storage_path, client):
 
 
 async def test_async_get_basic_metadata(storage_path, async_client):
+    """Test retrieving basic metadata for a file using the Async Data Transfer API."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 
@@ -121,6 +129,7 @@ async def test_async_get_basic_metadata(storage_path, async_client):
 
 
 async def test_async_set_custom_metadata(storage_path, async_client):
+    """Test setting custom metadata for a file using the Async Data Transfer API."""
     api = AsyncDataTransferApi(async_client)
     api.status(wait=True)
 

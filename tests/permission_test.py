@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying permission management and access control
+using the Data Transfer API from the Ansys HPS Data Transfer Client.
+"""
+
 import tempfile
 
 import pytest
@@ -31,6 +35,7 @@ from ansys.hps.data_transfer.client.models.permissions import Resource, RoleAssi
 
 
 def test_permissions(storage_path, client, user_client, user_id):
+    """Test setting and checking permissions."""
     admin = DataTransferApi(client)
     admin.status(wait=True)
     user = DataTransferApi(user_client)

@@ -20,7 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Basic script to transfer files to remote backends and back using new data transfer service.
+"""Basic script to transfer files to remote backends and back using the data transfer service.
+'local-path' is the path to the files or directory to transfer. Supports wildcards.
 
 Example usage:
 
@@ -48,6 +49,7 @@ log = logging.getLogger(__name__)
 
 
 def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
+    """Transfer files to remote backends and back using new data transfer service."""
     if not remote_path:
         remote_path = Path(local_path).parent.name
     local_dir = os.path.dirname(local_path)

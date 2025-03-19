@@ -20,10 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying metadata information related to the
+Ansys HPS Data Transfer Client package.
+"""
+
 from ansys.hps.data_transfer.client import __version__
 
 
 def test_pkg_version():
+    """Test the package version."""
     import importlib.metadata as importlib_metadata
 
     # Read from the pyproject.toml

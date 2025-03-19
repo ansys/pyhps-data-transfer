@@ -20,6 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""This module contains tests for verifying the token refresh functionality
+in the Ansys HPS Data Transfer Client.
+"""
+
 import logging
 import time
 
@@ -30,6 +34,7 @@ log = logging.getLogger(__name__)
 
 
 def test_token_passing(client, admin_token, auth_url):
+    """Test passing a token to the client."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -50,6 +55,7 @@ def test_token_passing(client, admin_token, auth_url):
 
 
 async def test_async_token_passing(async_client, admin_token, auth_url):
+    """Test passing a token to the async client."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 

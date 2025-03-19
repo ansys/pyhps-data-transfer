@@ -69,20 +69,24 @@ def _success_handler(details, title):
 
 @pytest.fixture()
 def test_name(request):
+    """Return the name of the test."""
     return slugify(request.node.name)
 
 
 @pytest.fixture(scope="session")
 def binary_dir():
+    """Return the directory where the binaries are stored."""
     return os.path.join(os.getcwd(), "test_run", "bin")
 
 
 @pytest.fixture()
 def storage_path(test_name):
+    """Return the storage path for the test."""
     yield f"python_client_tests/{test_name}"
 
 @pytest.fixture(scope="session", autouse=True)
 def remove_binaries(binary_dir):
+    """Remove the binaries directory after the tests."""
     if os.path.isdir(binary_dir):
         shutil.rmtree(binary_dir)
 
@@ -100,11 +104,13 @@ def remove_binaries(binary_dir):
     logger=__name__,
 )
 def admin_token(auth_url):
+    """Return the admin token."""
     return authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
 
 
 @pytest.fixture(scope="session")
 def admin_access_token(admin_token):
+    """Return the admin access token."""
     return admin_token.get("access_token", None)
 
 
@@ -121,27 +127,32 @@ def admin_access_token(admin_token):
     logger=__name__,
 )
 def user_access_token(auth_url):
+    """Return the user access token."""
     tokens = authenticate(username="repuser", password="repuser", verify=False, url=auth_url)
     return tokens.get("access_token", None)
 
 
 @pytest.fixture(scope="session")
 def dt_url():
+    """Return the data transfer URL."""
     return "https://localhost:8443/hps/dt/api/v1"
 
 
 @pytest.fixture(scope="session")
 def keycloak_url():
+    """Return the Keycloak URL."""
     return "https://localhost:8443/hps/auth"
 
 
 @pytest.fixture(scope="session")
 def auth_url(keycloak_url):
+    """Return the authentication URL."""
     return f"{keycloak_url}/realms/rep"
 
 
 @pytest.fixture(scope="session")
 def keycloak_client(keycloak_url):
+    """Return the Keycloak client."""
     admin = KeycloakAdmin(
         server_url=keycloak_url + "/",
         username="keycloak",
@@ -155,11 +166,13 @@ def keycloak_client(keycloak_url):
 
 @pytest.fixture(scope="session")
 def user_id(keycloak_client):
+    """Return the user ID."""
     user_id = keycloak_client.get_user_id("repuser")
     return user_id
 
 @pytest.fixture(scope="session")
 def event_loop():
+    """Create an instance of the event loop."""
     # https://stackoverflow.com/a/71668965
     loop = asyncio.get_event_loop()
 
@@ -174,6 +187,7 @@ def event_loop():
 
 @pytest.fixture(scope="session")
 def binary_config(admin_access_token, dt_url):
+    """Return the binary configuration."""
     cfg = BinaryConfig(
         data_transfer_url=dt_url,
         insecure=True,
@@ -187,6 +201,7 @@ def binary_config(admin_access_token, dt_url):
 
 @pytest.fixture(scope="session")
 def user_binary_config(user_access_token, dt_url):
+    """Return the user binary configuration."""
     cfg = BinaryConfig(
         data_transfer_url=dt_url,
         insecure=True,
@@ -200,6 +215,7 @@ def user_binary_config(user_access_token, dt_url):
 
 @pytest.fixture
 def client(binary_config, binary_dir):
+    """Return the client."""
     from ansys.hps.data_transfer.client import Client
 
     c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
@@ -211,6 +227,7 @@ def client(binary_config, binary_dir):
 
 @pytest.fixture(scope="session", autouse=True)
 def cleanup_test_storages(binary_config, binary_dir):
+    """Remove the test storages after the tests."""
     yield
 
     c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
@@ -221,6 +238,7 @@ def cleanup_test_storages(binary_config, binary_dir):
 
 @pytest.fixture
 def user_client(user_binary_config, binary_dir):
+    """Start and return the user client."""
     c = Client(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
     c.start()
     yield c
@@ -229,6 +247,7 @@ def user_client(user_binary_config, binary_dir):
 
 @pytest.fixture
 async def async_client(binary_config, binary_dir, event_loop):
+    """Start and return the async client."""
     c = AsyncClient(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
     await c.start()
     yield c
@@ -238,4 +257,5 @@ async def async_client(binary_config, binary_dir, event_loop):
 
 @pytest.fixture
 def build_info_path():
+    """Return the path to the build info."""
     return os.path.join(os.getcwd(), "build_info.json")
