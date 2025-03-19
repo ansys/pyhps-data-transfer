@@ -17,6 +17,7 @@ Async APIs
 ----------
 
 .. module:: ansys.hps.data_transfer.client.api
+   :no-index:
 
 .. autosummary::
    :toctree: _autosummary

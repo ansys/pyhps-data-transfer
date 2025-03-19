@@ -51,7 +51,7 @@ jobs:
       - name: Generate models
         run: |
             cp core/docs/worker/swagger.json openapi2.json
-            ./generate_models.sh
+            ./scripts/generate_models.sh
             ls -lah
             sudo rm -rf out
 

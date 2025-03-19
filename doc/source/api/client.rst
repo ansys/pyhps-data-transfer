@@ -43,6 +43,7 @@ AsyncClient object
 ------------------
 
 .. module:: ansys.hps.data_transfer.client
+   :no-index:
 
 .. autosummary::
    :toctree: _autosummary

@@ -81,7 +81,6 @@ def binary_dir():
 def storage_path(test_name):
     yield f"python_client_tests/{test_name}"
 
-
 @pytest.fixture(scope="session", autouse=True)
 def remove_binaries(binary_dir):
     if os.path.isdir(binary_dir):
@@ -159,7 +158,6 @@ def user_id(keycloak_client):
     user_id = keycloak_client.get_user_id("repuser")
     return user_id
 
-
 @pytest.fixture(scope="session")
 def event_loop():
     # https://stackoverflow.com/a/71668965
@@ -221,7 +219,6 @@ def cleanup_test_storages(binary_config, binary_dir):
     op = api.rmdir([StoragePath(path="python_client_tests")])
     api.wait_for(op.id)
 
-
 @pytest.fixture
 def user_client(user_binary_config, binary_dir):
     c = Client(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
@@ -236,14 +233,6 @@ async def async_client(binary_config, binary_dir, event_loop):
     await c.start()
     yield c
 
-    await c.stop()
-
-
-@pytest.fixture
-async def async_user_client(user_binary_config, binary_dir, event_loop):
-    c = AsyncClient(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
-    await c.start()
-    yield c
     await c.stop()
 
 

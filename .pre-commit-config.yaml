@@ -1,19 +1,10 @@
 repos:
 
-- repo: https://github.com/psf/black
-  rev: 24.8.0
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: v0.9.10
   hooks:
-  - id: black
-
-- repo: https://github.com/pycqa/isort
-  rev: 5.13.2
-  hooks:
-  - id: isort
-
-- repo: https://github.com/PyCQA/flake8
-  rev: 7.1.1
-  hooks:
-  - id: flake8
+    - id: ruff
+      args: [--fix]
 
 - repo: https://github.com/codespell-project/codespell
   rev: v2.3.0
@@ -26,7 +17,7 @@ repos:
           .*\.k|
           .*\.cas
       )$
-    args: [-I, .codespellignore]
+    args: ["--ignore-words", "doc/styles/config/vocabularies/ANSYS/accept.txt"]
 
 # For now we disable some of these checks, can be reenabled later
 # - repo: https://github.com/pycqa/pydocstyle

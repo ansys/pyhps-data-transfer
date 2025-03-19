@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 import logging
-import os
 import tempfile
 
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
@@ -37,7 +36,6 @@ def test_list(storage_path, client):
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
-    temp_file_name = os.path.basename(temp_file.name)
 
     names = ["file_1", "file_2"]
 
@@ -64,7 +62,6 @@ async def test_async_list(storage_path, async_client):
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         temp_file.write("Mock file")
-    temp_file_name = os.path.basename(temp_file.name)
 
     names = ["file_1", "file_2"]
 

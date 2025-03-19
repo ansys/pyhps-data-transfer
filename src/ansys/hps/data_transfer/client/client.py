@@ -66,9 +66,9 @@ def bin_in_use(bin_path):
             for c in cmd:
                 if bin_path in c:
                     return True
-        except psutil.NoSuchProcess as err:
+        except psutil.NoSuchProcess:
             pass
-        except psutil.AccessDenied as err:
+        except psutil.AccessDenied:
             pass
         except Exception as err:
             log.debug(f"Error checking process: {err}")
@@ -149,7 +149,6 @@ class ClientBase:
 
     Examples
     --------
-
     Create a client object and connect to HPS data transfer with a access_token.
 
     >>> from ansys.hps.data_transfer.client import Client
