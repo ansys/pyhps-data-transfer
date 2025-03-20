@@ -40,22 +40,14 @@ html_theme_options = {
 
 # Sphinx extensions
 extensions = [
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx_copybutton",
     "sphinx_design",
-    "sphinx_tabs.tabs",
-    "sphinxcontrib.autodoc_pydantic",
     "sphinx_jinja",
-    #"numpydoc",
-    #"ansys_sphinx_theme.extension.autoapi",
+    "numpydoc",
+    "ansys_sphinx_theme.extension.autoapi",
     "sphinx_gallery.gen_gallery",
 ]
-
-autoapi_type = "python"
-autoapi_dirs = ["../../src"]
-autoapi_generate_api_docs = True
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
@@ -88,7 +80,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     #"scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "numpy": ("https://numpy.org/devdocs", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
+    #"matplotlib": ("https://matplotlib.org/stable", None),
     #"pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     #"pyvista": ("https://docs.pyvista.org/", None),
     #"grpc": ("https://grpc.github.io/grpc/python/", None),
@@ -116,10 +108,21 @@ numpydoc_validation_checks = {
     # type, unless multiple values are being returned"
 }
 
-# autodoc/autosummary flags
-autoclass_content = "both"
-#autodoc_default_flags = ["members"]
-autosummary_generate = True
+
+autoapi_type = "python"
+autoapi_dirs = ["../../src"]
+autoapi_generate_api_docs = True
+autoapi_root = "api"
+
+# Configuration for Sphinx autoapi
+suppress_warnings = [
+    "design.grid",
+    "docutils",
+    "autoapi.duplicate_object",
+    "toc.not_readable",
+    "toc.not_included",
+    "ref.python"
+]
 
 
 # static path
@@ -133,9 +136,6 @@ source_suffix = ".rst"
 
 # The master toctree document.
 master_doc = "index"
-
-# Configuration for Sphinx autoapi
-suppress_warnings = ["autoapi.python_import_resolution", "design.grid", "config.cache"]
 
 
 # Keep these while the repository is private

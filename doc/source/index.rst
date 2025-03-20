@@ -12,41 +12,46 @@ Wrapping around data transfer client REST APIs, PyHPS Data Transfer allows you t
 * Set and view permissions.
 
 
-.. grid:: 1 1 2 2
-        :gutter: 2
+.. grid:: 1 2 2 2
+
 
         .. grid-item-card:: Getting started :fa:`person-running`
+            :padding: 2 2 2 2
             :link: getting_started/index
             :link-type: doc
 
             Learn how to install and start using PyHPS Data Transfer.
 
         .. grid-item-card:: User guide :fa:`book-open-reader`
+            :padding: 2 2 2 2
             :link: user_guide/index
             :link-type: doc
 
             Understand the basics of how to interact with PyHPS Data Transfer.
 
-        .. grid-item-card:: API reference :material-regular:`bookmark`
-            :padding: 2 2 2 2
-            :link: api/index
-            :link-type: doc
-
-            Understand how to use Python to interact programmatically with
-            PyHPS Data Transfer .
-
         .. jinja:: main_toctree
 
+            {% if build_api %}
+            .. grid-item-card:: API reference :material-regular:`bookmark`
+                :padding: 2 2 2 2
+                :link: api/index
+                :link-type: doc
+
+                Understand how to use Python to interact programmatically with
+                PyHPS Data Transfer.
+            {% endif %}
+
             {% if build_examples %}
+            .. grid-item-card:: Examples :fa:`scroll`
+                :padding: 2 2 2 2
+                :link: examples/index
+                :link-type: doc
 
-                .. grid-item-card:: Examples :fa:`scroll`
-                    :link: examples/index
-                    :link-type: doc
-
-                    Explore examples that show how to use PyHPS Data Transfer.
+                Explore examples that show how to use PyHPS Data Transfer.
             {% endif %}
 
             .. grid-item-card:: Contribute :fa:`people-group`
+                :padding: 2 2 2 2
                 :link: contribute
                 :link-type: doc
 
