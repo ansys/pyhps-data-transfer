@@ -9,21 +9,27 @@ updates:
       - "maintenance"
       - "dependencies"
     groups:
-      general-dependencies:
-        patterns:
-          - "*"
-        exclude-patterns:
-          - "*sphinx*"
-          - "pytest*"
-      test-dependencies:
+      pytest-dependencies:
         patterns:
           - "pytest*"
       doc-dependencies:
         patterns:
-          - "*sphinx*"
+          - "numpydoc"
+          - "Sphinx"
+          - "sphinx*"
+          - "ansys-sphinx-theme*"
+          - "myst-parser"
+          - "nbconvert"
+          - "nbsphinx"
+          - "autodoc_pydantic"
+          - "jupyter_sphinx"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     labels:
       - "maintenance"
+    groups:
+      actions:
+        patterns:
+          - "*"

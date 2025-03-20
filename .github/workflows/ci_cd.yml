@@ -39,7 +39,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: ansys/actions/doc-deploy-changelog@v7
+      - uses: ansys/actions/doc-deploy-changelog@v8
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
@@ -60,11 +60,12 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   tests:
-    name: "Tests from pyhps repo"
+    name: "Tests"
     uses: ansys/pyhps/.github/workflows/tests.yml@main
     with:
       runner: "ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
+      hps-version: "v1.2.0"
     secrets: inherit # pass all secrets
 
   docs:
@@ -95,15 +96,12 @@ jobs:
           sudo apt update
           sudo apt install latexmk texlive-latex-extra
 
-      - name: Generate the documentation with tox
-        run: tox -e doc
-
-      - name: Upload HTML Documentation
-        uses: actions/upload-artifact@v4
+      - name: "Run Ansys documentation building action"
+        uses: ansys/actions/doc-build@v8
         with:
-          name: documentation-html
-          path: doc/_build/html
-          retention-days: 7
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          check-links: false
+          sphinxopts: "-j auto -W --color --keep-going"
 
   smoke-tests:
     name: Build and Smoke tests

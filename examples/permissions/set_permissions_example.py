@@ -20,11 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Example script to set and query permissions on files and
+"""
+.. _ref_permissions:
+
+=========================
+Set and query permissions
+=========================
+
+Example script to set and query permissions on files and
 directories using the data transfer service.
 
 Example usage:
-python examples\set_permissions_example.py --local-path=examples\basic\files\hello
+``python examples/set_permissions_example.py --local-path=examples/basic/files/hello``
 """
 
 import glob
@@ -125,6 +132,10 @@ def permissions(api: DataTransferApi, url: str):
         data_transfer_url=dt_url,
     )
     admin_client.start()
+
+    ###################################
+    # Create a DataTransferApi instance
+    # =================================
 
     admin = DataTransferApi(admin_client)
     admin.status(wait=True)
