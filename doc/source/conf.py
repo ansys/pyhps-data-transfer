@@ -122,7 +122,8 @@ suppress_warnings = [
     "toc.not_readable",
     "toc.not_included",
     "toc.excluded",
-    "ref.python"
+    "ref.python",
+    "design.fa-build",
 ]
 
 
