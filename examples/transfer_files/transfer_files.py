@@ -32,7 +32,7 @@ Basic script to transfer files to remote backends and back using the data transf
 
 Example usage:
 
-    python examples\transfer_files.py --local_path=examples\basic\files\* --remote-path=hello --debug
+    ``python examples/transfer_files.py --local_path=examples/basic/files/* --remote-path=hello --debug``
 
 """
 

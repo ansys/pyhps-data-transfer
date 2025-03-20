@@ -33,7 +33,7 @@ client for data transfer operations, transfer files to and from remote backends
 using the data transfer service.
 
 Example usage:
-python examples\async_data_transfer_client.py --url "https://example.com/hps" --username "user" --password "pass"
+``python examples/async_data_transfer_client.py --url "https://example.com/hps" --username "user" --password "pass"``
 """
 
 import asyncio

@@ -31,7 +31,7 @@ Example script intended to be run from the command line,
 where it will perform the specified file operations based on the provided arguments.
 
 Example usage:
-python examples\file_operations_client.py --local-path=examples\basic\files\* --remote-path=hello --debug
+``python examples/file_operations_client.py --local-path=examples/basic/files/* --remote-path=hello --debug``
 """
 
 import glob

@@ -30,7 +30,7 @@ Startup PyHPS Data Transfer
 Example script to start data transfer service client and query available storage.
 
 Example usage:
-python examples\data_transfer_runner.py --debug
+``python examples/data_transfer_runner.py --debug``
 """
 
 import json

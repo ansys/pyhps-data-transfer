@@ -31,7 +31,7 @@ Example script to set and query permissions on files and
 directories using the data transfer service.
 
 Example usage:
-python examples\set_permissions_example.py --local-path=examples\basic\files\hello
+``python examples/set_permissions_example.py --local-path=examples/basic/files/hello``
 """
 
 import glob
