@@ -65,7 +65,7 @@ jobs:
     with:
       runner: "ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
-      hps-version: "1.2.0"
+      hps-version: "v1.2.0"
     secrets: inherit # pass all secrets
 
   docs:
