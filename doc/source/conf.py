@@ -116,11 +116,12 @@ autoapi_root = "api"
 
 # Configuration for Sphinx autoapi
 suppress_warnings = [
+    "autoapi.duplicate_object",
     "design.grid",
     "docutils",
-    "autoapi.duplicate_object",
     "toc.not_readable",
     "toc.not_included",
+    "toc.excluded",
     "ref.python"
 ]
 
@@ -156,6 +157,8 @@ nbsphinx_execute = "always"
 # -- Declare the Jinja context -----------------------------------------------
 exclude_patterns = [
     "examples/**/*.txt",
+    "api/client/client/index.rst",
+    "api/client/index.rst",
 ]
 
 BUILD_API = True
