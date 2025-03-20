@@ -4,7 +4,6 @@ User guide
 ==========
 
 This section walks you through the basics of how to interact with the Data transfer client service.
-For more elaborate examples, see :ref:`examples`.
 
 To reproduce the code samples provided in this section, you must have these
 prerequisites:
