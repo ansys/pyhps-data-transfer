@@ -46,11 +46,9 @@ from .token import prepare_token
 
 urllib3.disable_warnings()
 
-httpx_log = logging.getLogger("httpx")
-httpx_log.setLevel(logging.CRITICAL)
-
-httpcore_log = logging.getLogger("httpcore")
-httpcore_log.setLevel(logging.CRITICAL)
+for n in ["httpx", "httpcore", "requests", "urllib3"]:
+    logger = logging.getLogger(n)
+    logger.setLevel(logging.CRITICAL)
 
 log = logging.getLogger(__name__)
 
