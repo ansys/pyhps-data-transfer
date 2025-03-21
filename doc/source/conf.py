@@ -8,7 +8,7 @@ from ansys_sphinx_theme import get_version_match
 from ansys.hps.data_transfer.client import __version__
 
 # Project information
-project = "ansys-hps-data-transfer-client"
+project = "PyHPS Data Transfer"
 copyright = f"(c) {datetime.now().year} ANSYS, Inc. All rights reserved"
 author = "ANSYS, Inc."
 release = version = __version__

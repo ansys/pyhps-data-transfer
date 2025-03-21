@@ -22,7 +22,6 @@ on:
 env:
   PYTHON_VERSION: '3.10'
   DOCUMENTATION_CNAME: 'hps_data_transfer.docs.pyansys.com'
-  LIBRARY_NAME: 'ansys-hps_data_transfer-client'
   PACKAGE_NAME: 'ansys-hps-data-transfer-client'
 
 
