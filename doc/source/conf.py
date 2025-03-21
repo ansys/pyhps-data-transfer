@@ -20,11 +20,11 @@ release = version = __version__
 
 # Select desired logo, theme, and declare the html title
 html_theme = "ansys_sphinx_theme"
-html_short_title = html_title = "hps-data-transfer-client"
+html_short_title = html_title = "pyhps-data-transfer-client"
 
 # specify the location of your github repo
 html_theme_options = {
-    "github_url": "https://github.com/ansys-internal/hps-data-transfer-client/",
+    "github_url": "https://github.com/ansys/pyhps-data-transfer-client/",
     "show_prev_next": False,
     "show_breadcrumbs": True,
     "additional_breadcrumbs": [
@@ -143,7 +143,7 @@ master_doc = "index"
 
 # Keep these while the repository is private
 linkcheck_ignore = [
-    "https://github.com/ansys-internal/hps-data-transfer-client//*",
+    "https://github.com/ansys/pyhps-data-transfer-client//*",
     "https://hps.docs.pyansys.com/version/stable/*",
     "https://pypi.org/project/ansys-hps-data-transfer-client",
 ]
@@ -151,7 +151,7 @@ linkcheck_ignore = [
 # If we are on a release, we have to ignore the "release" URLs, since it is not
 # available until the release is published.
 if switcher_version != "dev":
-    linkcheck_ignore.append(f"https://github.com/ansys/ansys.hps.data_transfer_client/releases/tag/v{__version__}")
+    linkcheck_ignore.append(f"https://github.com/ansys/pyhps-data-transfer-client/releases/tag/v{__version__}")
 
 # Examples gallery customization
 nbsphinx_execute = "always"

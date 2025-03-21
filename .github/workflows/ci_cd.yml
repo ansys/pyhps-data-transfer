@@ -21,7 +21,7 @@ on:
 
 env:
   PYTHON_VERSION: '3.10'
-  DOCUMENTATION_CNAME: 'hps_data_transfer.docs.pyansys.com'
+  DOCUMENTATION_CNAME: 'data-transfer.hps.docs.pyansys.com'
   PACKAGE_NAME: 'ansys-hps-data-transfer-client'
 
 
@@ -30,17 +30,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  update-changelog:
-    name: "Update CHANGELOG (on release)"
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - uses: ansys/actions/doc-deploy-changelog@v8
-        with:
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
   code-style:
     name: Code style
@@ -241,8 +230,7 @@ jobs:
         uses: ansys/actions/release-pypi-public@v8
         with:
           library-name: ${{ env.PACKAGE_NAME }}
-          twine-username: "__token__"
-          twine-token: ${{ secrets.PYPI_TOKEN }}
+          use-trusted-publisher: true
 
       - name: Release to GitHub
         uses: ansys/actions/release-github@v8

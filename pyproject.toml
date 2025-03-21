@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
 name = "ansys-hps-data-transfer-client"
-version = "0.1.dev0"
+version = "0.2.dev0"
 description = "Python client library for hps data transfer service"
 readme = "README.rst"
 requires-python = ">=3.10,<4.0"
@@ -82,10 +82,10 @@ build = [
 name = "ansys.hps.data_transfer.client"
 
 [project.urls]
-Source = "https://github.com/ansys-internal/hps-data-transfer-client/"
-Tracker = "https://github.com/ansys-internal/hps-data-transfer-client/issues"
-Homepage = "https://github.com/ansys-internal/hps-data-transfer-client/"
-Documentation = "https://hps_data_transfer.docs.pyansys.com"
+Source = "https://github.com/ansys/pyhps-data-transfer-client/"
+Tracker = "https://github.com/ansys/pyhps-data-transfer-client/issues"
+Homepage = "https://github.com/ansys/pyhps-data-transfer-client/"
+Documentation = "https://data-transfer.hps.docs.pyansys.com"
 
 [tool.pydocstyle]
 convention = "numpy"

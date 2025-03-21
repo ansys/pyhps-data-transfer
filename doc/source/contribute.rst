@@ -21,13 +21,13 @@ Installing PyHPS Data Transfer in developer mode allows you to modify and enhanc
 
    .. code:: bash
 
-      git clone https://github.com/ansys-internal/hps-data-transfer-client.git
+      git clone https://github.com/ansys/pyhps-data-transfer-client.git
 
 #. Access the directory where you have cloned the repository:
 
    .. code:: bash
 
-      cd hps-data-transfer-client
+      cd pyhps-data-transfer-client
 
 #. Create a clean Python virtual environment and activate it:
 

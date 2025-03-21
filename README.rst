@@ -15,11 +15,11 @@ PyHPS Data Transfer
    :alt: PyPI
 
 .. |codecov| image:: https://codecov.io/gh/ansys/hps-data-transfer-client/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/ansys-internal/hps-data-transfer-client
+   :target: https://codecov.io/gh/ansys/pyhps-data-transfer-client
    :alt: Codecov
 
 .. |GH-CI| image:: https://github.com/ansys/hps-data-transfer-client/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/ansys-internal/hps-data-transfer-client/actions/workflows/ci_cd.yml
+   :target: https://github.com/ansys/pyhps-data-transfer-client/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -52,8 +52,8 @@ To install the latest development version, run these commands:
 
 .. code:: bash
 
-    git clone https://github.com/ansys-internal/hps-data-transfer-client/
-    cd hps-data-transfer-client
+    git clone https://github.com/ansys/pyhps-data-transfer-client/
+    cd pyhps-data-transfer-client
     pip install -e .
 
 For more information, see `Getting Started`_.
@@ -78,9 +78,9 @@ In the upper right corner of the documentation's title bar, there is an option f
 viewing the documentation for the latest stable release to viewing the documentation for the
 development version or previously released versions.
 
-On the `PyHPS Data Transfer Issues <https://github.com/ansys-internal/hps-data-transfer-client/issues>`_ page,
+On the `PyHPS Data Transfer Issues <https://github.com/ansys/pyhps-data-transfer-client/issues>`_ page,
 you can create issues to report bugs and request new features. On the `PyHPS Data Transfer Discussions
-<https://github.com/ansys-internal/hps-data-transfer-client/projects>`_ page or the `Discussions <https://discuss.ansys.com/>`_
+<https://github.com/ansys/pyhps-data-transfer-client/projects>`_ page or the `Discussions <https://discuss.ansys.com/>`_
 page on the Ansys Developer portal, you can post questions, share ideas, and get community feedback.
 
 To reach the project support team, email `pyansys.core@ansys.com <mailto:pyansys.core@ansys.com>`_.
