@@ -45,17 +45,3 @@ To install ansys-hps-data-transfer-client in user mode, run this command:
 .. code:: bash
 
     python -m pip install ansys-hps-data-transfer-client
-
-Dependencies
-~~~~~~~~~~~~
-
-ansys-hps-data-transfer-client requires these packages as dependencies:
-
-* `requests <https://pypi.org/project/requests/>`_
-* `marshmallow <https://pypi.org/project/marshmallow/>`_
-* `marshmallow_oneofschema <https://pypi.org/project/marshmallow-oneofschema/>`_
-* `pydantic <https://pypi.org/project/pydantic/>`_
-* `PyJWT <https://pypi.org/project/PyJWT/>`_
-
-.. LINKS AND REFERENCES
-.. _pip: https://pypi.org/project/pip/
