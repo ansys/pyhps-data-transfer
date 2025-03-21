@@ -15,11 +15,11 @@ PyHPS Data Transfer
    :alt: PyPI
 
 .. |codecov| image:: https://codecov.io/gh/ansys/hps-data-transfer-client/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/ansys/hps-data-transfer-client
+   :target: https://codecov.io/gh/ansys-internal/hps-data-transfer-client
    :alt: Codecov
 
 .. |GH-CI| image:: https://github.com/ansys/hps-data-transfer-client/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/ansys/hps-data-transfer-client/actions/workflows/ci_cd.yml
+   :target: https://github.com/ansys-internal/hps-data-transfer-client/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
