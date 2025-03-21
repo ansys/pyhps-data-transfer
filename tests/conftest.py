@@ -38,12 +38,6 @@ from ansys.hps.data_transfer.client.models.msg import StoragePath
 
 log = logging.getLogger(__name__)
 
-# @pytest.fixture(scope="session")
-# def binary_path():
-#     bin_ext = ".exe" if sys.platform == "win32" else ""
-#     return os.environ.get("BINARY_PATH", os.path.join("bin", f"hpsdata{bin_ext}"))
-
-
 def _backoff_handler(details, title, exc_info=True):
     try:
         title = f"{title[0].upper()}{title[1:]}"
