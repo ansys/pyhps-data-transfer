@@ -40,16 +40,16 @@ You must have pip_ and Python 3.9, 3.10, 3.11, or 3.12 installed.
 Installation
 ------------
 
-To install pyhps-data-transfer-client in user mode, run this command:
+To install ansys-hps-data-transfer-client in user mode, run this command:
 
 .. code:: bash
 
-    python -m pip install pyhps-data-transfer-client
+    python -m pip install ansys-hps-data-transfer-client
 
 Dependencies
 ~~~~~~~~~~~~
 
-pyhps-data-transfer-client requires these packages as dependencies:
+ansys-hps-data-transfer-client requires these packages as dependencies:
 
 * `requests <https://pypi.org/project/requests/>`_
 * `marshmallow <https://pypi.org/project/marshmallow/>`_

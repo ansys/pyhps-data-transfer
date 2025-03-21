@@ -113,6 +113,7 @@ autoapi_type = "python"
 autoapi_dirs = ["../../src"]
 autoapi_generate_api_docs = True
 autoapi_root = "api"
+autoapi_keep_files = True
 
 # Configuration for Sphinx autoapi
 suppress_warnings = [
@@ -158,8 +159,7 @@ nbsphinx_execute = "always"
 # -- Declare the Jinja context -----------------------------------------------
 exclude_patterns = [
     "examples/**/*.txt",
-    "api/client/client/index.rst",
-    "api/client/index.rst",
+    "api/client/__version__/index.rst",
 ]
 
 BUILD_API = True

@@ -14,12 +14,12 @@ PyHPS Data Transfer
    :target: https://pypi.org/project/ansys-hps-data-transfer-client
    :alt: PyPI
 
-.. |codecov| image:: https://codecov.io/gh/ansys/pyhps-data-transfer-client/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/ansys/pyhps-data-transfer-client
+.. |codecov| image:: https://codecov.io/gh/ansys/hps-data-transfer-client/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/ansys/hps-data-transfer-client
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/ansys/pyhps-data-transfer-client/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/ansys/pyhps-data-transfer-client/actions/workflows/ci_cd.yml
+.. |GH-CI| image:: https://github.com/ansys/hps-data-transfer-client/actions/workflows/ci_cd.yml/badge.svg
+   :target: https://github.com/ansys/hps-data-transfer-client/actions/workflows/ci_cd.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -65,7 +65,8 @@ This code shows how to import PyHPS Data Transfer and use some basic capabilitie
 
 .. code:: python
 
-    print("Put sample code here")
+    from ansys.hps.data_transfer.client import Client    # Import the Client class
+    client = Client()   # Create a client object
 
 For comprehensive usage information, see `Examples`_ in the `PyHPS Data Transfer documentation`_.
 
