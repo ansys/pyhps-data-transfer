@@ -46,7 +46,7 @@ tests = [
     "python-on-whales==0.73.0",
     "pytest-rerunfailures==15.0",
     "pytest-asyncio==0.25.3",
-    "python-keycloak==4.6.2",
+    "python-keycloak==5.3.1",
     "python-slugify>=8.0.4",
     "tox==4.24.2",
 ]
