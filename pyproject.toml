@@ -52,7 +52,7 @@ tests = [
 ]
 doc = [
     "ansys-sphinx-theme==1.2.6",
-    "autodoc_pydantic==2.1.0",
+    "autodoc_pydantic==2.2.0",
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.6",
     "numpydoc==1.8.0",
