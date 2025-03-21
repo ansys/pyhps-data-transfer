@@ -82,9 +82,9 @@ build = [
 name = "ansys.hps.data_transfer.client"
 
 [project.urls]
-Source = "https://github.com/ansys/pyhps-data-transfer-client/"
-Tracker = "https://github.com/ansys/pyhps-data-transfer-client/issues"
-Homepage = "https://github.com/ansys/pyhps-data-transfer-client/"
+Source = "https://github.com/ansys/pyhps-data-transfer/"
+Tracker = "https://github.com/ansys/pyhps-data-transfer/issues"
+Homepage = "https://github.com/ansys/pyhps-data-transfer/"
 Documentation = "https://data-transfer.hps.docs.pyansys.com"
 
 [tool.pydocstyle]
