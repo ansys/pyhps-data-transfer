@@ -51,7 +51,7 @@ jobs:
     name: "Tests"
     uses: ansys/pyhps/.github/workflows/tests.yml@main
     with:
-      runner: "ubuntu-latest-8-cores"
+      runner: "public-ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
       hps-version: "v1.2.0"
     secrets: inherit # pass all secrets

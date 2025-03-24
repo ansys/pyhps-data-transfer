@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
+requires = ["flit_core >=3.2, <3.11"] # THIS SHOULD BE REVERTED TO '["flit_core >=3.2,<4"]'
 build-backend = "flit_core.buildapi"
 
 [project]
@@ -136,62 +136,3 @@ known-first-party = ["ansys"]
 [tool.ruff.lint.pydocstyle]
 # Settings: https://docs.astral.sh/ruff/settings/#lintpydocstyle
 convention = "google"
-
-
-[tool.towncrier]
-package = "ansys.hps.data_transfer.client"
-directory = "doc/changelog.d"
-filename = "doc/source/changelog.rst"
-start_string = ".. towncrier release notes start\n"
-template = "doc/changelog.d/changelog_template.jinja"
-title_format = "`{version} <https://github.com/ansys/ansys.hps.data_transfer_client/releases/tag/v{version}>`_ - {project_date}"
-issue_format = "`#{issue} <https://github.com/ansys/ansys.hps.data_transfer_client/pull/{issue}>`_"
-
-[[tool.towncrier.type]]
-directory = "added"
-name = "Added"
-showcontent = true
-
-[[tool.towncrier.type]]
-directory = "changed"
-name = "Changed"
-showcontent = true
-
-[[tool.towncrier.type]]
-directory = "fixed"
-name = "Fixed"
-showcontent = true
-
-[[tool.towncrier.type]]
-directory = "dependencies"
-name = "Dependencies"
-showcontent = true
-
-[[tool.towncrier.type]]
-directory = "miscellaneous"
-name = "Miscellaneous"
-showcontent = true
-
-# Usage:
-# bumpver update -n --patch -d --ignore-vcs-tag --verbose
-
-[bumpver]
-current_version = "0.1.2"
-version_pattern = "MAJOR.MINOR.PATCH"
-commit_message = "bump version {old_version} -> {new_version}"
-tag_message = "{new_version}"
-tag_scope = "default"
-pre_commit_hook = ""
-post_commit_hook = ""
-commit = false
-tag = false
-push = false
-
-
-[bumpver.file_patterns]
-"ansys/**/__version__.py" = [
-    '__version__ = "{version}"',
-]
-"bumpver.toml" = [
-    'current_version = "{version}"',
-]
