@@ -197,6 +197,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main')
         with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           tag_name: "v${{ needs.library-version.outputs.library_version }}"
           name: "v${{ needs.library-version.outputs.library_version }}"
           prerelease: true
