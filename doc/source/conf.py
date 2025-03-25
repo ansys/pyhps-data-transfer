@@ -116,6 +116,12 @@ autoapi_root = "api"
 autoapi_keep_files = True
 
 # Configuration for Sphinx autoapi
+autoapi_options = [
+    "members",
+    "undoc-members",
+    "show-module-summary",
+]
+
 suppress_warnings = [
     "autoapi.duplicate_object",
     "design.grid",
@@ -159,7 +165,7 @@ nbsphinx_execute = "always"
 # -- Declare the Jinja context -----------------------------------------------
 exclude_patterns = [
     "examples/**/*.txt",
-    "api/client/__version__/index.rst",
+    "api/client/models/*",
 ]
 
 BUILD_API = True
