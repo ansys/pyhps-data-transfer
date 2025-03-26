@@ -46,7 +46,7 @@ def authenticate(
     password: str = None,
     refresh_token: str = None,
     timeout: float = 10.0,
-    verify: Union[bool, str] = True,
+    verify: bool | str = True,
     **kwargs,
 ):
     """Authenticates the user with a password or refresh token against the HPS authentication service.
@@ -81,7 +81,7 @@ def authenticate(
         path to the CA bundle to use. For more information, see the :class:`requests.Session`
         documentation.
 
-    Returns
+    Returns:
     -------
     dict
         JSON-encoded content of a :class:`requests.Response` object.

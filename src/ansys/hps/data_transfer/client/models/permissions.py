@@ -50,22 +50,22 @@ class SubjectType(Enum):
 
 
 class Resource(BaseModel):
-    path: Optional[str] = "my/path/to/data/file.txt"
-    type: Optional[ResourceType] = None
+    path: str | None = "my/path/to/data/file.txt"
+    type: ResourceType | None = None
 
 
 class Subject(BaseModel):
-    id: Optional[str] = "946991ec-828c-4de4-acbe-962ada8bc441"
-    type: Optional[SubjectType] = None
+    id: str | None = "946991ec-828c-4de4-acbe-962ada8bc441"
+    type: SubjectType | None = None
 
 
 class RoleAssignment(BaseModel):
-    resource: Optional[Resource] = None
-    role: Optional[RoleType] = None
-    subject: Optional[Subject] = None
+    resource: Resource | None = None
+    role: RoleType | None = None
+    subject: Subject | None = None
 
 
 class RoleQuery(BaseModel):
-    resource: Optional[Resource] = None
-    role: Optional[RoleType] = None
-    subject: Optional[Subject] = None
+    resource: Resource | None = None
+    role: RoleType | None = None
+    subject: Subject | None = None

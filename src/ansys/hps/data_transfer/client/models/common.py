@@ -31,8 +31,8 @@ from pydantic import BaseModel
 
 
 class UserInfo(BaseModel):
-    groups: Optional[List[str]] = None
-    id: Optional[str] = None
-    is_admin: Optional[bool] = None
-    roles: Optional[List[str]] = None
-    username: Optional[str] = None
+    groups: list[str] | None = None
+    id: str | None = None
+    is_admin: bool | None = None
+    roles: list[str] | None = None
+    username: str | None = None

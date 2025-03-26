@@ -33,57 +33,57 @@ from . import metadata, ops
 
 
 class BuildInfo(BaseModel):
-    branch: Optional[str] = None
-    mode: Optional[str] = None
-    revision: Optional[str] = None
-    short_revision: Optional[str] = None
-    timestamp: Optional[str] = None
-    version: Optional[str] = None
-    version_hash: Optional[str] = None
+    branch: str | None = None
+    mode: str | None = None
+    revision: str | None = None
+    short_revision: str | None = None
+    timestamp: str | None = None
+    version: str | None = None
+    version_hash: str | None = None
 
 
 class CheckPermissionsResponse(BaseModel):
-    allowed: Optional[bool] = None
+    allowed: bool | None = None
 
 
 class CopyMetadataRequest(BaseModel):
-    recursive: Optional[bool] = None
-    src_dst: List[metadata.SrcDst]
+    recursive: bool | None = None
+    src_dst: list[metadata.SrcDst]
 
 
 class FileDownloadTokenResponse(BaseModel):
-    token: Optional[str] = None
+    token: str | None = None
 
 
 class GetMetadataRequest(BaseModel):
-    paths: Optional[List[str]] = None
+    paths: list[str] | None = None
 
 
 class MetadataConfigResponse(BaseModel):
-    config: Optional[Dict[str, Any]] = None
+    config: dict[str, Any] | None = None
 
 
 class MoveMetadataRequest(BaseModel):
-    recursive: Optional[bool] = None
-    src_dst: List[metadata.SrcDst]
+    recursive: bool | None = None
+    src_dst: list[metadata.SrcDst]
 
 
 class OpIdResponse(BaseModel):
-    id: Optional[str] = "2diK2kCkpgeHAQSNthIZ1JYyPte"
-    location: Optional[str] = "/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte"
+    id: str | None = "2diK2kCkpgeHAQSNthIZ1JYyPte"
+    location: str | None = "/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte"
 
 
 class OpsRequest(BaseModel):
-    ids: List[str]
+    ids: list[str]
 
 
 class PermissionsConfigResponse(BaseModel):
-    config: Optional[Dict[str, Any]] = None
+    config: dict[str, Any] | None = None
 
 
 class RemoveMetadataRequest(BaseModel):
-    paths: List[str]
-    recursive: Optional[bool] = None
+    paths: list[str]
+    recursive: bool | None = None
 
 
 class SetMetadataRequest(BaseModel):
@@ -91,22 +91,22 @@ class SetMetadataRequest(BaseModel):
 
 
 class Status(BaseModel):
-    build_info: Optional[BuildInfo] = None
-    ready: Optional[bool] = None
-    time: Optional[str] = None
+    build_info: BuildInfo | None = None
+    ready: bool | None = None
+    time: str | None = None
 
 
 class StorageConfigResponse(BaseModel):
-    storage: Optional[List[Dict[str, Any]]] = None
+    storage: list[dict[str, Any]] | None = None
 
 
 class StoragePath(BaseModel):
     path: str
-    remote: Optional[str] = "any"
+    remote: str | None = "any"
 
 
 class PathOperations(BaseModel):
-    operations: List[StoragePath]
+    operations: list[StoragePath]
 
 
 class SrcDst(BaseModel):
@@ -115,28 +115,28 @@ class SrcDst(BaseModel):
 
 
 class SrcDstOperations(BaseModel):
-    operations: List[SrcDst]
+    operations: list[SrcDst]
 
 
 class OpsResponse(BaseModel):
-    operations: Optional[List[ops.Operation]] = None
+    operations: list[ops.Operation] | None = None
 
 
 class CheckPermissionsRequest(BaseModel):
-    permissions: Optional[List[perms.RoleAssignment]] = None
+    permissions: list[perms.RoleAssignment] | None = None
 
 
 class GetPermissionsRequest(BaseModel):
-    permissions: Optional[List[perms.RoleQuery]] = None
+    permissions: list[perms.RoleQuery] | None = None
 
 
 class GetPermissionsResponse(BaseModel):
-    permissions: Optional[List[perms.RoleAssignment]] = None
+    permissions: list[perms.RoleAssignment] | None = None
 
 
 class RemovePermissionsRequest(BaseModel):
-    permissions: Optional[List[perms.RoleAssignment]] = None
+    permissions: list[perms.RoleAssignment] | None = None
 
 
 class SetPermissionsRequest(BaseModel):
-    permissions: Optional[List[perms.RoleAssignment]] = None
+    permissions: list[perms.RoleAssignment] | None = None

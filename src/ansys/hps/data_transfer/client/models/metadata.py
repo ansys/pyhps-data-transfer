@@ -31,11 +31,11 @@ from pydantic import BaseModel, RootModel
 
 
 class DataAssignment(BaseModel):
-    custom: Optional[Dict[str, Any]] = None
+    custom: dict[str, Any] | None = None
 
 
-class DataAssignments(RootModel[Optional[Dict[str, DataAssignment]]]):
-    root: Optional[Dict[str, DataAssignment]] = None
+class DataAssignments(RootModel[Optional[dict[str, DataAssignment]]]):
+    root: dict[str, DataAssignment] | None = None
 
 
 class SrcDst(BaseModel):

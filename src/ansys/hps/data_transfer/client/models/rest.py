@@ -28,4 +28,4 @@ from pydantic import BaseModel
 
 
 class CompatCopyRequest(BaseModel):
-    destination: Optional[str] = None
+    destination: str | None = None

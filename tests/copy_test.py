@@ -65,7 +65,8 @@ def test_copy(storage_path, client):
 
 async def test_async_copy(storage_path, async_client):
     """Test copying a file from local to remote storage and
-    back using the Async Data Transfer API."""
+    back using the Async Data Transfer API.
+    """
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 

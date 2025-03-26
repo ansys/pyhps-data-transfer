@@ -145,7 +145,7 @@ class ClientBase:
     retries: int
         Default is 10
 
-    Examples
+    Examples:
     --------
     Create a client object and connect to HPS data transfer with a access_token.
 

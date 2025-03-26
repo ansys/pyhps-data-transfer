@@ -28,4 +28,4 @@ from pydantic import BaseModel
 
 
 class ErrorResponse(BaseModel):
-    error: Optional[str] = "something bad happened"
+    error: str | None = "something bad happened"
