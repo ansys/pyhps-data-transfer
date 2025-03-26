@@ -165,7 +165,6 @@ nbsphinx_execute = "always"
 # -- Declare the Jinja context -----------------------------------------------
 exclude_patterns = [
     "examples/**/*.txt",
-    #"api/client/models/*",
     "api/client/__version__/index.rst",
 ]
 
