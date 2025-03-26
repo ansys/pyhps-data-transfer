@@ -62,10 +62,10 @@ Basic usage
 
 The following sections show how to import PyHPS Data Transfer and use some basic capabilities:
 
-requesting access token
+Requesting access token
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The client library requires an access token to connect to the HPS Data Transfer service. You can request an access token by calling the :func:`authenticate` function:
+The client library requires an access token to connect to the HPS Data Transfer service.
 
 .. code:: python
 
