@@ -36,6 +36,19 @@ html_theme_options = {
     },
     "check_switcher": False,
     "logo": "pyansys",
+    "ansys_sphinx_theme_autoapi": {
+        "project": project,
+        "output": "api",
+        "directory": "../../src/ansys/",
+        "own_page_level":"module",
+        "add_toctree_entry": True,
+        "package_depth": 4,
+        "options":[
+            "members",
+            "undoc-members",
+            "show-module-summary",
+        ],
+    },
 }
 
 # Sphinx extensions
@@ -108,13 +121,6 @@ numpydoc_validation_checks = {
     # type, unless multiple values are being returned"
 }
 
-
-autoapi_type = "python"
-autoapi_dirs = ["../../src"]
-autoapi_generate_api_docs = True
-autoapi_root = "api"
-autoapi_keep_files = True
-
 # Configuration for Sphinx autoapi
 suppress_warnings = [
     "autoapi.duplicate_object",
@@ -159,7 +165,7 @@ nbsphinx_execute = "always"
 # -- Declare the Jinja context -----------------------------------------------
 exclude_patterns = [
     "examples/**/*.txt",
-    "api/client/models/*",
+    #"api/client/models/*",
     "api/client/__version__/index.rst",
 ]
 
