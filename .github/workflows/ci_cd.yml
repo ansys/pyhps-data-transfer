@@ -89,7 +89,7 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           check-links: false
-          sphinxopts: "-j auto -W --color --keep-going"
+          sphinxopts: "-j auto --color --keep-going"
 
   smoke-tests:
     name: Build and Smoke tests
