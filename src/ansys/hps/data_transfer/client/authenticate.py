@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides authentication for the user with a password or refresh token against the
-HPS authentication service.
+"""This module provides authentication for the user with a password or refresh token.
+
+It interacts with the HPS authentication service.
 """
 
 import logging

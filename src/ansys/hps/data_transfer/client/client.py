@@ -536,6 +536,7 @@ class AsyncClient(ClientBase):
 
 class Client(ClientBase):
     """Provide the Python client to the HPS data transfer APIs.
+
     This class uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
     """

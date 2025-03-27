@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides utilities for managing binary files and processes related to the
-Ansys HPS Data Transfer Client.
+"""This module provides utilities for managing binary files.
+
+It also handles processes related to the Ansys HPS Data Transfer Client.
 """
 
 import json
@@ -219,6 +220,7 @@ class Binary:
 
     def start(self):
         """Start the worker binary.
+
         check for binary in a set path, marks the binary as an executable and then start the executable.
         """
         if self._process is not None and self._process.returncode is None:

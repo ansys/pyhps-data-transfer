@@ -20,12 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides the core API functionality for interacting with the
-Ansys HPS Data Transfer Client. It includes methods and utilities for performing
+"""This module provides the core API functionality for interacting with the Ansys HPS Data Transfer Client.
+
+It includes methods and utilities for performing
 data transfer operations, managing resources, and handling client interactions.
 """
 
-import builtins
 import logging
 import textwrap
 import time
@@ -137,7 +137,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("list", operations)
 
-    def mkdir(self, operations: builtins.list[StoragePath]):
+    def mkdir(self, operations: list[StoragePath]):
         """Create a dir.
 
         Parameters
@@ -146,7 +146,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("mkdir", operations)
 
-    def move(self, operations: builtins.list[SrcDst]):
+    def move(self, operations: list[SrcDst]):
         """Move a file on the backend storage.
 
         Parameters
@@ -155,7 +155,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("move", operations)
 
-    def remove(self, operations: builtins.list[StoragePath]):
+    def remove(self, operations: list[StoragePath]):
         """Delete a file.
 
         Parameters
@@ -164,7 +164,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("remove", operations)
 
-    def rmdir(self, operations: builtins.list[StoragePath]):
+    def rmdir(self, operations: list[StoragePath]):
         """Delete a dir.
 
         Parameters
@@ -174,9 +174,7 @@ class DataTransferApi:
         return self._exec_operation_req("rmdir", operations)
 
     @retry()
-    def _exec_operation_req(
-        self, storage_operation: str, operations: builtins.list[StoragePath] | builtins.list[SrcDst]
-    ):
+    def _exec_operation_req(self, storage_operation: str, operations: list[StoragePath] | list[SrcDst]):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
         resp = self.client.session.post(url, json=payload)
@@ -184,14 +182,14 @@ class DataTransferApi:
         r = OpIdResponse(**json)
         return r
 
-    def _operations(self, ids: builtins.list[str]):
+    def _operations(self, ids: list[str]):
         url = "/operations"
         resp = self.client.session.get(url, params={"ids": ids})
         json = resp.json()
         return OpsResponse(**json).operations
 
     @retry()
-    def check_permissions(self, permissions: builtins.list[RoleAssignment]):
+    def check_permissions(self, permissions: list[RoleAssignment]):
         """Checks permissions of a path (including parent directory) using a list of RoleAssignment objects.
 
         Parameters
@@ -205,7 +203,7 @@ class DataTransferApi:
         return CheckPermissionsResponse(**json)
 
     @retry()
-    def get_permissions(self, permissions: builtins.list[RoleQuery]):
+    def get_permissions(self, permissions: list[RoleQuery]):
         """Return permissions of a file from a list of RoleQuery objects.
 
         Parameters
@@ -219,7 +217,7 @@ class DataTransferApi:
         return GetPermissionsResponse(**json)
 
     @retry()
-    def remove_permissions(self, permissions: builtins.list[RoleAssignment]):
+    def remove_permissions(self, permissions: list[RoleAssignment]):
         """Remove permissions using a list of RoleAssignment objects.
 
         Parameters
@@ -231,7 +229,7 @@ class DataTransferApi:
         self.client.session.post(url, json=payload)
 
     @retry()
-    def set_permissions(self, permissions: builtins.list[RoleAssignment]):
+    def set_permissions(self, permissions: list[RoleAssignment]):
         """Set permissions using a list of RoleAssignment objects.
 
         Parameters
@@ -243,7 +241,7 @@ class DataTransferApi:
         self.client.session.post(url, json=payload)
 
     @retry()
-    def get_metadata(self, paths: builtins.list[str | StoragePath]):
+    def get_metadata(self, paths: list[str | StoragePath]):
         """Get metadata of a path on backend storage.
 
         Parameters
@@ -275,7 +273,7 @@ class DataTransferApi:
 
     def wait_for(
         self,
-        operation_ids: builtins.list[str | Operation | OpIdResponse],
+        operation_ids: list[str | Operation | OpIdResponse],
         timeout: float | None = None,
         interval: float = 0.1,
         cap: float = 2.0,
