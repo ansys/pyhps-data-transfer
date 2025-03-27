@@ -54,12 +54,14 @@ class PrepareSubprocess:
     """Context manager to disable vfork and posix_spawn in subprocess."""
 
     def __enter__(self):
+        """Disable vfork and posix_spawn in subprocess."""
         self._orig_use_vfork = subprocess._USE_VFORK
         self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
         subprocess._USE_VFORK = False
         subprocess._USE_POSIX_SPAWN = False
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        """Restore original values of _USE_VFORK and _USE_POSIX_SPAWN."""
         subprocess._USE_VFORK = self._orig_use_vfork
         subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
 
@@ -109,6 +111,7 @@ class BinaryConfig:
         insecure: bool = False,
         debug: bool = False,
     ):
+        """Initialize the BinaryConfig class object."""
         self.data_transfer_url = data_transfer_url
 
         # Process related settings
@@ -131,8 +134,8 @@ class BinaryConfig:
         self._on_process_died = None
         self._on_port_changed = None
 
-    # TODO: Should this begin with underscore?
     def update(self, **kwargs):
+        """Update worker config settings."""
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
@@ -182,9 +185,10 @@ class Binary:
 
     def __init__(
         self,
-        config: BinaryConfig = BinaryConfig(),
+        config: BinaryConfig | None = None,
     ):
-        self._config = config
+        """Initialize the Binary class object."""
+        self._config = config or BinaryConfig()
 
         self._base_args = []
         self._args = []
@@ -193,6 +197,7 @@ class Binary:
         self._process = None
 
     def __getstate__(self):
+        """Return state of the object."""
         state = self.__dict__.copy()
         del state["_stop"]
         del state["_prepared"]
@@ -306,9 +311,8 @@ class Binary:
         level_no = level_map.get(level, logging.INFO)
         other = ""
         for k, v in d.items():
-            if isinstance(v, str) and " " in v:
-                v = f'"{v}"'
-            other += f"{k}={v} "
+            formatted_value = f'"{v}"' if isinstance(v, str) and " " in v else v
+            other += f"{k}={formatted_value} "
         other = other.strip()
         if other:
             msg += f" {other}"

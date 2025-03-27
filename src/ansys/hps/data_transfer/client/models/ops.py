@@ -26,12 +26,14 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
 
 class OperationState(Enum):
+    """State of an operation."""
+
     Unknown = "unknown"
     Queued = "queued"
     Running = "running"
@@ -40,6 +42,8 @@ class OperationState(Enum):
 
 
 class Operation(BaseModel):
+    """Operation schema for a single operation in the system."""
+
     children: list[str] | None = None
     description: str | None = None
     ended_at: str | None = None

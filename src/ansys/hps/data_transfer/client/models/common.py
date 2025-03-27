@@ -25,12 +25,12 @@
 
 from __future__ import annotations
 
-from typing import List, Optional
-
 from pydantic import BaseModel
 
 
 class UserInfo(BaseModel):
+    """User information schema for the current user."""
+
     groups: list[str] | None = None
     id: str | None = None
     is_admin: bool | None = None

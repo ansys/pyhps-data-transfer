@@ -25,7 +25,6 @@ HPS authentication service.
 """
 
 import logging
-from typing import Union
 import urllib.parse
 
 import requests

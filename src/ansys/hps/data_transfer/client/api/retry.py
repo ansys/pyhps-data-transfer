@@ -82,6 +82,7 @@ def retry(
     raise_on_giveup=True,
     jitter=backoff.full_jitter,
 ):
+    """Decorator for retrying a function call with exponential backoff."""
     return backoff.on_exception(
         backoff.expo,
         Exception,

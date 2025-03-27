@@ -30,7 +30,6 @@ import builtins
 import logging
 import textwrap
 import time
-from typing import Dict, List
 
 import backoff
 import humanfriendly as hf
@@ -61,6 +60,7 @@ class AsyncDataTransferApi:
     """Wrapper for the Data Transfer Worker REST API, offering an async interface."""
 
     def __init__(self, client: AsyncClient):
+        """Initialize the async data transfer API with the client object."""
         self.dump_mode = "json"
         self.client = client
 
@@ -207,7 +207,7 @@ class AsyncDataTransferApi:
         """Async interface to wait for a list of operations to complete."""
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
-        operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]
+        operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]
         start = time.time()
         attempt = 0
         op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")

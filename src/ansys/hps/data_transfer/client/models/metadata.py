@@ -25,19 +25,25 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel, RootModel
 
 
 class DataAssignment(BaseModel):
+    """Data assignment schema for a single data assignment."""
+
     custom: dict[str, Any] | None = None
 
 
-class DataAssignments(RootModel[Optional[dict[str, DataAssignment]]]):
+class DataAssignments(RootModel[dict[str, DataAssignment] | None]):
+    """Data assignments schema for a collection of data assignments."""
+
     root: dict[str, DataAssignment] | None = None
 
 
 class SrcDst(BaseModel):
+    """Source and destination schema for a data transfer."""
+
     dst: str
     src: str

@@ -48,8 +48,8 @@ def _backoff_handler(details, title, exc_info=True):
             try:
                 ex_str = "\n".join(traceback.format_exception(details["exception"]))
                 log.debug(f"Backoff caused by:\n{ex_str}")
-            except:
-                pass
+            except Exception as ex:
+                log.warning(f"Unexpected error while formatting exception: {ex}")
     except Exception as ex:
         log.warning(f"Failed to log in backoff handler: {ex}")
 

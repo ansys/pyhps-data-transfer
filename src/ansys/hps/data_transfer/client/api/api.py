@@ -25,17 +25,12 @@ Ansys HPS Data Transfer Client. It includes methods and utilities for performing
 data transfer operations, managing resources, and handling client interactions.
 """
 
+import builtins
 import logging
 import textwrap
 import time
-from typing import Dict, List
 
 import backoff
-
-log = logging.getLogger(__name__)
-
-import builtins
-
 import humanfriendly as hf
 
 from ..client import Client
@@ -57,6 +52,8 @@ from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
 from .retry import retry
 
+log = logging.getLogger(__name__)
+
 
 class DataTransferApi:
     """Class for Data transfer API.
@@ -68,6 +65,7 @@ class DataTransferApi:
     """
 
     def __init__(self, client: Client):
+        """Initializes the DataTransferApi class object."""
         self.dump_mode = "json"
         self.client = client
 
@@ -286,7 +284,7 @@ class DataTransferApi:
         """Wait for operations to complete."""
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
-        operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]
+        operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]
         start = time.time()
         attempt = 0
         op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")

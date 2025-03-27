@@ -25,7 +25,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -33,6 +33,8 @@ from . import metadata, ops
 
 
 class BuildInfo(BaseModel):
+    """Build information schema for the current build."""
+
     branch: str | None = None
     mode: str | None = None
     revision: str | None = None
@@ -43,100 +45,146 @@ class BuildInfo(BaseModel):
 
 
 class CheckPermissionsResponse(BaseModel):
+    """Check permissions response schema for the current user."""
+
     allowed: bool | None = None
 
 
 class CopyMetadataRequest(BaseModel):
+    """Copy metadata request schema for copying metadata."""
+
     recursive: bool | None = None
     src_dst: list[metadata.SrcDst]
 
 
 class FileDownloadTokenResponse(BaseModel):
+    """File download token response schema for downloading a file."""
+
     token: str | None = None
 
 
 class GetMetadataRequest(BaseModel):
+    """Get metadata request schema for getting metadata."""
+
     paths: list[str] | None = None
 
 
 class MetadataConfigResponse(BaseModel):
+    """Metadata configuration response schema for the current user."""
+
     config: dict[str, Any] | None = None
 
 
 class MoveMetadataRequest(BaseModel):
+    """Move metadata request schema for moving metadata."""
+
     recursive: bool | None = None
     src_dst: list[metadata.SrcDst]
 
 
 class OpIdResponse(BaseModel):
+    """Operation ID response schema for an operation ID."""
+
     id: str | None = "2diK2kCkpgeHAQSNthIZ1JYyPte"
     location: str | None = "/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte"
 
 
 class OpsRequest(BaseModel):
+    """Operations request schema for operations."""
+
     ids: list[str]
 
 
 class PermissionsConfigResponse(BaseModel):
+    """Permissions configuration response schema for the current user."""
+
     config: dict[str, Any] | None = None
 
 
 class RemoveMetadataRequest(BaseModel):
+    """Remove metadata request schema for removing metadata."""
+
     paths: list[str]
     recursive: bool | None = None
 
 
 class SetMetadataRequest(BaseModel):
+    """Set metadata request schema for setting metadata."""
+
     metadata: metadata.DataAssignments
 
 
 class Status(BaseModel):
+    """Status schema for the current status."""
+
     build_info: BuildInfo | None = None
     ready: bool | None = None
     time: str | None = None
 
 
 class StorageConfigResponse(BaseModel):
+    """Storage configuration response schema for the current user."""
+
     storage: list[dict[str, Any]] | None = None
 
 
 class StoragePath(BaseModel):
+    """Storage path schema for a storage path with a remote."""
+
     path: str
     remote: str | None = "any"
 
 
 class PathOperations(BaseModel):
+    """Path operations schema for a list of storage paths."""
+
     operations: list[StoragePath]
 
 
 class SrcDst(BaseModel):
+    """Source destination schema for a source and destination storage path pair."""
+
     dst: StoragePath
     src: StoragePath
 
 
 class SrcDstOperations(BaseModel):
+    """Source destination operations schema for a list of source and destination storage path pairs."""
+
     operations: list[SrcDst]
 
 
 class OpsResponse(BaseModel):
+    """Operations response schema for a list of operations."""
+
     operations: list[ops.Operation] | None = None
 
 
 class CheckPermissionsRequest(BaseModel):
+    """Check permissions request schema for checking permissions for the current user."""
+
     permissions: list[perms.RoleAssignment] | None = None
 
 
 class GetPermissionsRequest(BaseModel):
+    """Get permissions request schema for getting permissions for the current user."""
+
     permissions: list[perms.RoleQuery] | None = None
 
 
 class GetPermissionsResponse(BaseModel):
+    """Get permissions response schema for getting permissions for the current user."""
+
     permissions: list[perms.RoleAssignment] | None = None
 
 
 class RemovePermissionsRequest(BaseModel):
+    """Remove permissions request schema for removing permissions for the current user."""
+
     permissions: list[perms.RoleAssignment] | None = None
 
 
 class SetPermissionsRequest(BaseModel):
+    """Set permissions request schema for setting permissions for the current user."""
+
     permissions: list[perms.RoleAssignment] | None = None

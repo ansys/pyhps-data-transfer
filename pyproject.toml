@@ -139,7 +139,15 @@ select = [
     "LOG",     # flake8-logging
     "D",       # pydocstyle
 ]
-ignore = ["E402", "E712", "E722", "F401", "F841", "F821"]
+
+# ignore Blank line D205
+ignore = ["D205"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"src/ansys/hps/data_transfer/client/models/msg.py" = ["F821"]
+# ignore docstring requirements amd equility comparisons issues for tests
+"tests/**/*.py" = ["D", "PT011", "E712"]
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
@@ -149,8 +157,3 @@ known-first-party = ["ansys"]
 [tool.ruff.lint.pydocstyle]
 # Settings: https://docs.astral.sh/ruff/settings/#lintpydocstyle
 convention = "google"
-
-[tool.ruff.lint.per-file-ignores]
-# ignore docstring requirements for tests, examples
-"tests/**/*.py" = ["D", "PT011"]
-"examples/**/*.py" = ["D"]

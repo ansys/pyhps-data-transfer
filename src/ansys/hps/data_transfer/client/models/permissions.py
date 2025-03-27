@@ -28,44 +28,57 @@ Permission functionality related RoleAssignment and  RoleQuery schema.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel
 
 
 class ResourceType(Enum):
+    """Resource type schema."""
+
     Doc = "document"
 
 
 class RoleType(Enum):
+    """Role type schema for the role of the user."""
+
     Reader = "reader"
     Writer = "writer"
     Admin = "admin"
 
 
 class SubjectType(Enum):
+    """Subject type schema for the user or group."""
+
     User = "user"
     Group = "group"
     Any = "any"
 
 
 class Resource(BaseModel):
+    """Resource schema for the resource type."""
+
     path: str | None = "my/path/to/data/file.txt"
     type: ResourceType | None = None
 
 
 class Subject(BaseModel):
+    """Subject schema for the subject type."""
+
     id: str | None = "946991ec-828c-4de4-acbe-962ada8bc441"
     type: SubjectType | None = None
 
 
 class RoleAssignment(BaseModel):
+    """Role assignment schema for the role of the user."""
+
     resource: Resource | None = None
     role: RoleType | None = None
     subject: Subject | None = None
 
 
 class RoleQuery(BaseModel):
+    """Role query schema for the role of the user."""
+
     resource: Resource | None = None
     role: RoleType | None = None
     subject: Subject | None = None
