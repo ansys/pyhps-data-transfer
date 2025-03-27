@@ -169,7 +169,7 @@ def main(
     token = authenticate(username=username, password=password, verify=False, url=auth_url)
     token = token.get("access_token", None)
     assert token is not None
-    
+
 ###################################################
 # Create a ``client`` instance
 # ============================

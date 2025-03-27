@@ -144,7 +144,7 @@ def permissions(api: DataTransferApi, url: str):
         token=admin_token,
         data_transfer_url=dt_url,
     )
-    admin_client.start()    
+    admin_client.start()
 
     admin = DataTransferApi(admin_client)
     admin.status(wait=True)
@@ -227,7 +227,7 @@ def permissions(api: DataTransferApi, url: str):
                 )
             ]
         )
-        
+
     admin_client.stop()
 
 ###################################################
