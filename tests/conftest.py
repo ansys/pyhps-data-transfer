@@ -38,6 +38,7 @@ from ansys.hps.data_transfer.client.models.msg import StoragePath
 
 log = logging.getLogger(__name__)
 
+
 def _backoff_handler(details, title, exc_info=True):
     try:
         title = f"{title[0].upper()}{title[1:]}"
@@ -47,8 +48,8 @@ def _backoff_handler(details, title, exc_info=True):
             try:
                 ex_str = "\n".join(traceback.format_exception(details["exception"]))
                 log.debug(f"Backoff caused by:\n{ex_str}")
-            except:
-                pass
+            except Exception as ex:
+                log.warning(f"Unexpected error while formatting exception: {ex}")
     except Exception as ex:
         log.warning(f"Failed to log in backoff handler: {ex}")
 
@@ -61,7 +62,7 @@ def _success_handler(details, title):
         log.warning(f"Failed to log in success handler: {ex}")
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_name(request):
     """Return the name of the test."""
     return slugify(request.node.name)
@@ -73,10 +74,11 @@ def binary_dir():
     return os.path.join(os.getcwd(), "test_run", "bin")
 
 
-@pytest.fixture()
+@pytest.fixture
 def storage_path(test_name):
     """Return the storage path for the test."""
-    yield f"python_client_tests/{test_name}"
+    return f"python_client_tests/{test_name}"
+
 
 @pytest.fixture(scope="session", autouse=True)
 def remove_binaries(binary_dir):
@@ -155,7 +157,7 @@ def keycloak_client(keycloak_url):
         user_realm_name="master",
         verify=False,
     )
-    yield admin
+    return admin
 
 
 @pytest.fixture(scope="session")
@@ -163,6 +165,7 @@ def user_id(keycloak_client):
     """Return the user ID."""
     user_id = keycloak_client.get_user_id("repuser")
     return user_id
+
 
 @pytest.fixture(scope="session")
 def event_loop():
@@ -190,7 +193,7 @@ def binary_config(admin_access_token, dt_url):
         # path=binary_path,
         token=admin_access_token,
     )
-    yield cfg
+    return cfg
 
 
 @pytest.fixture(scope="session")
@@ -204,7 +207,7 @@ def user_binary_config(user_access_token, dt_url):
         # path=binary_path,
         token=user_access_token,
     )
-    yield cfg
+    return cfg
 
 
 @pytest.fixture
@@ -229,6 +232,7 @@ def cleanup_test_storages(binary_config, binary_dir):
     api = DataTransferApi(c)
     op = api.rmdir([StoragePath(path="python_client_tests")])
     api.wait_for(op.id)
+
 
 @pytest.fixture
 def user_client(user_binary_config, binary_dir):

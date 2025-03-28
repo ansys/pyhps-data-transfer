@@ -26,12 +26,14 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
 
 class OperationState(Enum):
+    """State of an operation."""
+
     Unknown = "unknown"
     Queued = "queued"
     Running = "running"
@@ -40,18 +42,20 @@ class OperationState(Enum):
 
 
 class Operation(BaseModel):
-    children: Optional[List[str]] = None
-    description: Optional[str] = None
-    ended_at: Optional[str] = None
-    error: Optional[str] = None
-    id: Optional[str] = None
-    messages: Optional[List[str]] = None
-    progress: Optional[float] = None
-    progress_current: Optional[int] = None
-    progress_total: Optional[int] = None
-    queued_at: Optional[str] = None
-    result: Optional[Any] = None
-    started_at: Optional[str] = None
-    state: Optional[OperationState] = None
-    succeeded_on: Optional[List[str]] = Field(None, description="Remotes that the operation succeeded on")
-    user_id: Optional[str] = None
+    """Operation schema for a single operation in the system."""
+
+    children: list[str] | None = None
+    description: str | None = None
+    ended_at: str | None = None
+    error: str | None = None
+    id: str | None = None
+    messages: list[str] | None = None
+    progress: float | None = None
+    progress_current: int | None = None
+    progress_total: int | None = None
+    queued_at: str | None = None
+    result: Any | None = None
+    started_at: str | None = None
+    state: OperationState | None = None
+    succeeded_on: list[str] | None = Field(None, description="Remotes that the operation succeeded on")
+    user_id: str | None = None

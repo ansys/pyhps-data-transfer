@@ -20,9 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides utilities for implementing retry mechanisms in the
-Ansys HPS Data Transfer Client. It includes functionality for handling transient
-errors and ensuring robust and reliable operations during data transfer.
+"""This module provides utilities for implementing retry mechanisms in the Ansys HPS Data Transfer Client.
+
+It includes functionality for handling transient errors and ensuring
+robust and reliable operations during data transfer.
 """
 
 import logging
@@ -82,6 +83,7 @@ def retry(
     raise_on_giveup=True,
     jitter=backoff.full_jitter,
 ):
+    """Decorator for retrying a function call with exponential backoff."""
     return backoff.on_exception(
         backoff.expo,
         Exception,

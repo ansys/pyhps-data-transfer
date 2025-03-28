@@ -20,20 +20,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides the core API functionality for interacting with the
-Ansys HPS Data Transfer Client. It includes methods and utilities for performing
+"""This module provides the core API functionality for interacting with the Ansys HPS Data Transfer Client.
+
+It includes methods and utilities for performing
 data transfer operations, managing resources, and handling client interactions.
 """
 
+import builtins
 import logging
 import textwrap
 import time
-from typing import Dict, List
 
 import backoff
-
-log = logging.getLogger(__name__)
-
 import humanfriendly as hf
 
 from ..client import Client
@@ -55,6 +53,8 @@ from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
 from .retry import retry
 
+log = logging.getLogger(__name__)
+
 
 class DataTransferApi:
     """Class for Data transfer API.
@@ -66,6 +66,7 @@ class DataTransferApi:
     """
 
     def __init__(self, client: Client):
+        """Initializes the DataTransferApi class object."""
         self.dump_mode = "json"
         self.client = client
 
@@ -93,7 +94,7 @@ class DataTransferApi:
             return s
 
     @retry()
-    def operations(self, ids: List[str]):
+    def operations(self, ids: list[str]):
         """Get a list of operations.
 
         Parameters
@@ -110,7 +111,7 @@ class DataTransferApi:
         json = resp.json()
         return StorageConfigResponse(**json).storage
 
-    def copy(self, operations: List[SrcDst]):
+    def copy(self, operations: list[SrcDst]):
         """Get API response for copying a list of files.
 
         Parameters
@@ -119,7 +120,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("copy", operations)
 
-    def exists(self, operations: List[StoragePath]):
+    def exists(self, operations: list[StoragePath]):
         """Check if a path exists.
 
         Parameters
@@ -128,7 +129,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("exists", operations)
 
-    def list(self, operations: List[StoragePath]):
+    def list(self, operations: list[StoragePath]):
         """List files in a path.
 
         Parameters
@@ -137,7 +138,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("list", operations)
 
-    def mkdir(self, operations: List[StoragePath]):
+    def mkdir(self, operations: builtins.list[StoragePath]):
         """Create a dir.
 
         Parameters
@@ -146,7 +147,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("mkdir", operations)
 
-    def move(self, operations: List[SrcDst]):
+    def move(self, operations: builtins.list[SrcDst]):
         """Move a file on the backend storage.
 
         Parameters
@@ -155,7 +156,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("move", operations)
 
-    def remove(self, operations: List[StoragePath]):
+    def remove(self, operations: builtins.list[StoragePath]):
         """Delete a file.
 
         Parameters
@@ -164,7 +165,7 @@ class DataTransferApi:
         """
         return self._exec_operation_req("remove", operations)
 
-    def rmdir(self, operations: List[StoragePath]):
+    def rmdir(self, operations: builtins.list[StoragePath]):
         """Delete a dir.
 
         Parameters
@@ -174,7 +175,9 @@ class DataTransferApi:
         return self._exec_operation_req("rmdir", operations)
 
     @retry()
-    def _exec_operation_req(self, storage_operation: str, operations: List[StoragePath] | List[SrcDst]):
+    def _exec_operation_req(
+        self, storage_operation: str, operations: builtins.list[StoragePath] | builtins.list[SrcDst]
+    ):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
         resp = self.client.session.post(url, json=payload)
@@ -182,14 +185,14 @@ class DataTransferApi:
         r = OpIdResponse(**json)
         return r
 
-    def _operations(self, ids: List[str]):
+    def _operations(self, ids: builtins.list[str]):
         url = "/operations"
         resp = self.client.session.get(url, params={"ids": ids})
         json = resp.json()
         return OpsResponse(**json).operations
 
     @retry()
-    def check_permissions(self, permissions: List[RoleAssignment]):
+    def check_permissions(self, permissions: builtins.list[RoleAssignment]):
         """Checks permissions of a path (including parent directory) using a list of RoleAssignment objects.
 
         Parameters
@@ -203,7 +206,7 @@ class DataTransferApi:
         return CheckPermissionsResponse(**json)
 
     @retry()
-    def get_permissions(self, permissions: List[RoleQuery]):
+    def get_permissions(self, permissions: builtins.list[RoleQuery]):
         """Return permissions of a file from a list of RoleQuery objects.
 
         Parameters
@@ -217,7 +220,7 @@ class DataTransferApi:
         return GetPermissionsResponse(**json)
 
     @retry()
-    def remove_permissions(self, permissions: List[RoleAssignment]):
+    def remove_permissions(self, permissions: builtins.list[RoleAssignment]):
         """Remove permissions using a list of RoleAssignment objects.
 
         Parameters
@@ -227,10 +230,9 @@ class DataTransferApi:
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
-        return None
 
     @retry()
-    def set_permissions(self, permissions: List[RoleAssignment]):
+    def set_permissions(self, permissions: builtins.list[RoleAssignment]):
         """Set permissions using a list of RoleAssignment objects.
 
         Parameters
@@ -240,10 +242,9 @@ class DataTransferApi:
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         self.client.session.post(url, json=payload)
-        return None
 
     @retry()
-    def get_metadata(self, paths: List[str | StoragePath]):
+    def get_metadata(self, paths: builtins.list[str | StoragePath]):
         """Get metadata of a path on backend storage.
 
         Parameters
@@ -258,7 +259,7 @@ class DataTransferApi:
         return OpIdResponse(**json)
 
     @retry()
-    def set_metadata(self, asgs: Dict[str | StoragePath, DataAssignment]):
+    def set_metadata(self, asgs: dict[str | StoragePath, DataAssignment]):
         """Setting metadata for a path on backend storage.
 
         Parameters
@@ -275,7 +276,7 @@ class DataTransferApi:
 
     def wait_for(
         self,
-        operation_ids: List[str | Operation | OpIdResponse],
+        operation_ids: builtins.list[str | Operation | OpIdResponse],
         timeout: float | None = None,
         interval: float = 0.1,
         cap: float = 2.0,
@@ -284,7 +285,7 @@ class DataTransferApi:
         """Wait for operations to complete."""
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
-        operation_ids = [op.id if isinstance(op, (Operation, OpIdResponse)) else op for op in operation_ids]
+        operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]
         start = time.time()
         attempt = 0
         op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")

@@ -20,5 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Pyhps data transfer API subpackage."""
+
 from .api import DataTransferApi
 from .async_api import AsyncDataTransferApi
