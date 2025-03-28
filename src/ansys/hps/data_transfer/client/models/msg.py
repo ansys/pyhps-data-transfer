@@ -25,7 +25,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -33,110 +33,158 @@ from . import metadata, ops
 
 
 class BuildInfo(BaseModel):
-    branch: Optional[str] = None
-    mode: Optional[str] = None
-    revision: Optional[str] = None
-    short_revision: Optional[str] = None
-    timestamp: Optional[str] = None
-    version: Optional[str] = None
-    version_hash: Optional[str] = None
+    """Build information schema for the current build."""
+
+    branch: str | None = None
+    mode: str | None = None
+    revision: str | None = None
+    short_revision: str | None = None
+    timestamp: str | None = None
+    version: str | None = None
+    version_hash: str | None = None
 
 
 class CheckPermissionsResponse(BaseModel):
-    allowed: Optional[bool] = None
+    """Check permissions response schema for the current user."""
+
+    allowed: bool | None = None
 
 
 class CopyMetadataRequest(BaseModel):
-    recursive: Optional[bool] = None
-    src_dst: List[metadata.SrcDst]
+    """Copy metadata request schema for copying metadata."""
+
+    recursive: bool | None = None
+    src_dst: list[metadata.SrcDst]
 
 
 class FileDownloadTokenResponse(BaseModel):
-    token: Optional[str] = None
+    """File download token response schema for downloading a file."""
+
+    token: str | None = None
 
 
 class GetMetadataRequest(BaseModel):
-    paths: Optional[List[str]] = None
+    """Get metadata request schema for getting metadata."""
+
+    paths: list[str] | None = None
 
 
 class MetadataConfigResponse(BaseModel):
-    config: Optional[Dict[str, Any]] = None
+    """Metadata configuration response schema for the current user."""
+
+    config: dict[str, Any] | None = None
 
 
 class MoveMetadataRequest(BaseModel):
-    recursive: Optional[bool] = None
-    src_dst: List[metadata.SrcDst]
+    """Move metadata request schema for moving metadata."""
+
+    recursive: bool | None = None
+    src_dst: list[metadata.SrcDst]
 
 
 class OpIdResponse(BaseModel):
-    id: Optional[str] = "2diK2kCkpgeHAQSNthIZ1JYyPte"
-    location: Optional[str] = "/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte"
+    """Operation ID response schema for an operation ID."""
+
+    id: str | None = "2diK2kCkpgeHAQSNthIZ1JYyPte"
+    location: str | None = "/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte"
 
 
 class OpsRequest(BaseModel):
-    ids: List[str]
+    """Operations request schema for operations."""
+
+    ids: list[str]
 
 
 class PermissionsConfigResponse(BaseModel):
-    config: Optional[Dict[str, Any]] = None
+    """Permissions configuration response schema for the current user."""
+
+    config: dict[str, Any] | None = None
 
 
 class RemoveMetadataRequest(BaseModel):
-    paths: List[str]
-    recursive: Optional[bool] = None
+    """Remove metadata request schema for removing metadata."""
+
+    paths: list[str]
+    recursive: bool | None = None
 
 
 class SetMetadataRequest(BaseModel):
+    """Set metadata request schema for setting metadata."""
+
     metadata: metadata.DataAssignments
 
 
 class Status(BaseModel):
-    build_info: Optional[BuildInfo] = None
-    ready: Optional[bool] = None
-    time: Optional[str] = None
+    """Status schema for the current status."""
+
+    build_info: BuildInfo | None = None
+    ready: bool | None = None
+    time: str | None = None
 
 
 class StorageConfigResponse(BaseModel):
-    storage: Optional[List[Dict[str, Any]]] = None
+    """Storage configuration response schema for the current user."""
+
+    storage: list[dict[str, Any]] | None = None
 
 
 class StoragePath(BaseModel):
+    """Storage path schema for a storage path with a remote."""
+
     path: str
-    remote: Optional[str] = "any"
+    remote: str | None = "any"
 
 
 class PathOperations(BaseModel):
-    operations: List[StoragePath]
+    """Path operations schema for a list of storage paths."""
+
+    operations: list[StoragePath]
 
 
 class SrcDst(BaseModel):
+    """Source destination schema for a source and destination storage path pair."""
+
     dst: StoragePath
     src: StoragePath
 
 
 class SrcDstOperations(BaseModel):
-    operations: List[SrcDst]
+    """Source destination operations schema for a list of source and destination storage path pairs."""
+
+    operations: list[SrcDst]
 
 
 class OpsResponse(BaseModel):
-    operations: Optional[List[ops.Operation]] = None
+    """Operations response schema for a list of operations."""
+
+    operations: list[ops.Operation] | None = None
 
 
 class CheckPermissionsRequest(BaseModel):
-    permissions: Optional[List[perms.RoleAssignment]] = None
+    """Check permissions request schema for checking permissions for the current user."""
+
+    permissions: list[perms.RoleAssignment] | None = None
 
 
 class GetPermissionsRequest(BaseModel):
-    permissions: Optional[List[perms.RoleQuery]] = None
+    """Get permissions request schema for getting permissions for the current user."""
+
+    permissions: list[perms.RoleQuery] | None = None
 
 
 class GetPermissionsResponse(BaseModel):
-    permissions: Optional[List[perms.RoleAssignment]] = None
+    """Get permissions response schema for getting permissions for the current user."""
+
+    permissions: list[perms.RoleAssignment] | None = None
 
 
 class RemovePermissionsRequest(BaseModel):
-    permissions: Optional[List[perms.RoleAssignment]] = None
+    """Remove permissions request schema for removing permissions for the current user."""
+
+    permissions: list[perms.RoleAssignment] | None = None
 
 
 class SetPermissionsRequest(BaseModel):
-    permissions: Optional[List[perms.RoleAssignment]] = None
+    """Set permissions request schema for setting permissions for the current user."""
+
+    permissions: list[perms.RoleAssignment] | None = None

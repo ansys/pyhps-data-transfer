@@ -45,45 +45,51 @@ class HPSError(RequestException):
     """
 
     def __init__(self, *args, **kwargs):
+        """Initializes the HPSError class."""
         self.reason = kwargs.pop("reason", None)
         self.description = kwargs.pop("description", None)
         self.give_up = kwargs.pop("give_up", False)
-        super(HPSError, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class APIError(HPSError):
     """Provides server-side related errors."""
 
     def __init__(self, *args, **kwargs):
-        super(APIError, self).__init__(*args, **kwargs)
+        """Initializes the APIError class object."""
+        super().__init__(*args, **kwargs)
 
 
 class ClientError(HPSError):
     """Provides client-side related errors."""
 
     def __init__(self, *args, **kwargs):
-        super(ClientError, self).__init__(*args, **kwargs)
+        """Initializes the ClientError class object."""
+        super().__init__(*args, **kwargs)
 
 
 class BinaryError(HPSError):
     """Provides client-side related errors."""
 
     def __init__(self, *args, **kwargs):
-        super(BinaryError, self).__init__(*args, **kwargs)
+        """Initializes the BinaryError class object."""
+        super().__init__(*args, **kwargs)
 
 
 class NotReadyError(ClientError):
     """Provides client-side related errors."""
 
     def __init__(self, *args, **kwargs):
-        super(NotReadyError, self).__init__(*args, **kwargs)
+        """Initializes the NotReadyError class object."""
+        super().__init__(*args, **kwargs)
 
 
 class TimeoutError(ClientError):
     """Provides client-side related errors."""
 
     def __init__(self, *args, **kwargs):
-        super(TimeoutError, self).__init__(*args, **kwargs)
+        """Initializes the TimeoutError class object."""
+        super().__init__(*args, **kwargs)
 
 
 def raise_for_status(response: httpx.Response):
@@ -122,24 +128,14 @@ def raise_for_status(response: httpx.Response):
         )
 
     if 400 <= response.status_code < 500:
-        error_msg = "%s Client Error: %s for: %s %s" % (
-            response.status_code,
-            reason,
-            response.request.method,
-            response.url,
-        )
+        error_msg = f"{response.status_code} Client Error: {reason} for: {response.request.method} {response.url}"
         if description:
             error_msg += f"\n{description}"
 
         give_up = response.status_code in [401, 403]
         raise ClientError(error_msg, reason=reason, description=description, response=response, give_up=give_up)
     elif 500 <= response.status_code < 600:
-        error_msg = "%s Server Error: %s for: %s %s" % (
-            response.status_code,
-            reason,
-            response.request.method,
-            response.url,
-        )
+        error_msg = f"{response.status_code} Server Error: {reason} for: {response.request.method} {response.url}"
         if description:
             error_msg += f"\n{description}"
         raise APIError(error_msg, reason=reason, description=description, response=response)
@@ -147,4 +143,5 @@ def raise_for_status(response: httpx.Response):
 
 
 async def async_raise_for_status(response: httpx.Response):
+    """Method for httpx.Response objects that checks HTTP errors."""
     return raise_for_status(response)

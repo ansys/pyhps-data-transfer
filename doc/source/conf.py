@@ -40,10 +40,10 @@ html_theme_options = {
         "project": project,
         "output": "api",
         "directory": "../../src/ansys/",
-        "own_page_level":"module",
+        "own_page_level": "module",
         "add_toctree_entry": True,
         "package_depth": 4,
-        "options":[
+        "options": [
             "members",
             "undoc-members",
             "show-module-summary",
@@ -72,7 +72,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": ["examples"],
     # Pattern to search for example files
     "filename_pattern": r".*\.py",
-    "run_stale_examples": False,         # Do not re-run examples
+    "run_stale_examples": False,  # Do not re-run examples
     "plot_gallery": False,
     # Remove the "Download all examples" button from the top level gallery
     "download_all_examples": False,
@@ -91,12 +91,12 @@ sphinx_gallery_conf = {
 # Intersphinx mapping
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    #"scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
+    # "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "numpy": ("https://numpy.org/devdocs", None),
-    #"matplotlib": ("https://matplotlib.org/stable", None),
-    #"pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    #"pyvista": ("https://docs.pyvista.org/", None),
-    #"grpc": ("https://grpc.github.io/grpc/python/", None),
+    # "matplotlib": ("https://matplotlib.org/stable", None),
+    # "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
+    # "pyvista": ("https://docs.pyvista.org/", None),
+    # "grpc": ("https://grpc.github.io/grpc/python/", None),
 }
 
 # numpydoc configuration
@@ -109,7 +109,7 @@ numpydoc_validate = True
 numpydoc_validation_checks = {
     "GL06",  # Found unknown section
     "GL07",  # Sections are in the wrong order.
-    #"GL08",  # The object does not have a docstring
+    # "GL08",  # The object does not have a docstring
     "GL09",  # Deprecation warning should precede extended summary
     "GL10",  # reST directives {directives} must be followed by two colons
     "SS01",  # No summary found
@@ -188,7 +188,7 @@ jinja_contexts = {
 def prepare_jinja_env(jinja_env) -> None:
     """Customize the jinja env.
 
-    Notes
+    Notes:
     -----
     See https://jinja.palletsprojects.com/en/3.0.x/api/#jinja2.Environment
 

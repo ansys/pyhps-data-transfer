@@ -22,7 +22,8 @@
 
 """This module contains tests for verifying the performance and reliability of
 large batch file operations using the Data Transfer API and Async Data Transfer API
-from the Ansys HPS Data Transfer Client."""
+from the Ansys HPS Data Transfer Client.
+"""
 
 import logging
 import os
@@ -62,7 +63,8 @@ def test_large_batch(storage_path, client):
 
 async def test_async_large_batch(storage_path, async_client):
     """Test copying a large batch of files from local to remote
-    using the AsyncDataTransferApi"""
+    using the AsyncDataTransferApi
+    """
     api = AsyncDataTransferApi(async_client)
     api.status(wait=True)
 

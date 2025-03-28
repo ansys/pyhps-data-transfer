@@ -74,15 +74,18 @@ class MonitorState:
     """Monitor and track state of worker binary."""
 
     def __init__(self):
+        """Initialize the MonitorState class object."""
         self.reset()
         self._sleep_not_started = 2
         self._sleep_while_running = 5
 
     @property
     def sleep_for(self):
+        """Return sleep time based on worker state."""
         return self._sleep_while_running if self._was_ready else self._sleep_not_started
 
     def reset(self):
+        """Reset monitor state to initial values."""
         self._ok_reported = False
         self._was_ready = False
         self._failed = False
@@ -145,7 +148,7 @@ class ClientBase:
     retries: int
         Default is 10
 
-    Examples
+    Examples:
     --------
     Create a client object and connect to HPS data transfer with a access_token.
 
@@ -165,6 +168,8 @@ class ClientBase:
     """
 
     class Meta:
+        """Meta class for ClientBase class."""
+
         is_async = False
 
     def __init__(
@@ -177,6 +182,7 @@ class ClientBase:
         timeout=60.0,
         retries=10,
     ):
+        """Initializes the Client class object."""
         self._bin_config = bin_config or BinaryConfig()
         self._download_dir = download_dir
         self._clean = clean
@@ -192,12 +198,14 @@ class ClientBase:
         self._monitor_state = MonitorState()
 
     def __getstate__(self):
+        """Return pickled state of the object."""
         state = self.__dict__.copy()
         del state["_session"]
         del state["_monitor_stop"]
         return state
 
     def __setstate__(self, state):
+        """Restore state from pickled state."""
         self.__dict__.update(state)
         self._session = None
         self._monitor_stop = None
@@ -252,8 +260,8 @@ class ClientBase:
         if self._clean and os.path.exists(self._download_dir):
             try:
                 shutil.rmtree(self._download_dir)
-            except:
-                pass
+            except Exception as ex:
+                log.debug(f"Failed to remove directory {self._download_dir}: {ex}")
 
         self._monitor_stop = threading.Event()
         self._monitor_state.reset()
@@ -312,7 +320,6 @@ class ClientBase:
     def _prepare_bin_path(self, build_info):
         log.debug(f"Server version: {build_info}")
         version_hash = build_info["version_hash"]
-        branch = build_info["branch"]
 
         # Figure out binary download path
         bin_ext = ".exe" if platform.system() == "Windows" else ""
@@ -378,8 +385,8 @@ class ClientBase:
                 if not os.path.exists(bin_dir):
                     try:
                         os.makedirs(bin_dir)
-                    except:
-                        pass
+                    except Exception as ex:
+                        log.warning(f"Failed to create directory {bin_dir}: {ex}")
 
                 platform_str = self._platform()
                 log.debug(
@@ -405,8 +412,8 @@ class ClientBase:
                 os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
                 if self._bin_config.debug:
                     log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
-        except filelock.Timeout:
-            raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}")
+        except filelock.Timeout as ex:
+            raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}") from ex
 
     def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
@@ -449,9 +456,12 @@ class AsyncClient(ClientBase):
     """An async interface to the Python client to the HPS data transfer APIs."""
 
     class Meta(ClientBase.Meta):
+        """Meta class for AsyncClient class."""
+
         is_async = True
 
     def __init__(self, *args, **kwargs):
+        """Initializes the AsyncClient class object."""
         super().__init__(*args, **kwargs)
         self._bin_config._on_token_update = self._update_token
 
@@ -466,8 +476,8 @@ class AsyncClient(ClientBase):
             try:
                 await self._session.post(self.base_api_url + "/shutdown")
                 await asyncio.sleep(0.1)
-            except:
-                pass
+            except Exception as ex:
+                log.warning(f"Failed to send shutdown request: {ex}")
         super().stop(wait=wait)
         # asyncio_atexit.register(self.stop)
 
@@ -526,24 +536,30 @@ class AsyncClient(ClientBase):
 
 class Client(ClientBase):
     """Provide the Python client to the HPS data transfer APIs.
+
     This class uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
     """
 
     class Meta(ClientBase.Meta):
+        """Meta class for Client class."""
+
         is_async = False
 
     def __init__(self, *args, **kwargs):
+        """Initializes the Client class object."""
         super().__init__(*args, **kwargs)
         self._bin_config._on_token_update = self._update_token
         self._monitor_thread = None
 
     def __getstate__(self):
+        """Return pickled state of the object."""
         state = super().__getstate__()
         del state["_monitor_thread"]
         return state
 
     def __setstate__(self, state):
+        """Restore state from pickled state."""
         super().__setstate__(state)
         self.__dict__.update(state)
         self._monitor_thread = None
@@ -562,8 +578,8 @@ class Client(ClientBase):
         if self._session is not None:
             try:
                 self._session.post(self.base_api_url + "/shutdown")
-            except:
-                pass
+            except Exception as ex:
+                log.warning(f"Failed to send shutdown request: {ex}")
         super().stop(wait=wait)
 
     def wait(self, timeout: float = 60.0, sleep=0.5):
@@ -591,6 +607,8 @@ class Client(ClientBase):
             self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
             # Make sure the token gets intercepted by the worker
             resp = self.session.get("/")
+            if resp.status_code != 200:
+                log.error(f"Failed to update token, server responded with: {resp.status_code}")
         except Exception as e:
             log.debug(f"Error updating token: {e}")
 
