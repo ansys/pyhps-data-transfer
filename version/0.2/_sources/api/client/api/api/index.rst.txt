@@ -1,0 +1,541 @@
+client.api.api
+==============
+
+.. py:module:: client.api.api
+
+.. autoapi-nested-parse::
+
+   This module provides the core API functionality for interacting with the
+   Ansys HPS Data Transfer Client. It includes methods and utilities for performing
+   data transfer operations, managing resources, and handling client interactions.
+
+   ..
+       !! processed by numpydoc !!
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   client.api.api.log
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   client.api.api.DataTransferApi
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:class:: DataTransferApi(client: client.client.Client)
+
+   
+   Class for Data transfer API.
+
+
+   :Parameters:
+
+       **client: Client**
+           Client object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:attribute:: dump_mode
+      :value: 'json'
+
+
+
+   .. py:attribute:: client
+
+
+   .. py:method:: status(wait=False, sleep=5, jitter=True, timeout: float | None = 20.0)
+
+      
+      Status of worker binary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: operations(ids: List[str])
+
+      
+      Get a list of operations.
+
+
+      :Parameters:
+
+          **ids: List[str]**
+              List of ids.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: storages()
+
+      
+      Get types of storages available on the storage backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: copy(operations: List[client.models.msg.SrcDst])
+
+      
+      Get API response for copying a list of files.
+
+
+      :Parameters:
+
+          **operations: List[SrcDst]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: exists(operations: List[client.models.msg.StoragePath])
+
+      
+      Check if a path exists.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: list(operations: List[client.models.msg.StoragePath])
+
+      
+      List files in a path.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: mkdir(operations: List[client.models.msg.StoragePath])
+
+      
+      Create a dir.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: move(operations: List[client.models.msg.SrcDst])
+
+      
+      Move a file on the backend storage.
+
+
+      :Parameters:
+
+          **operations: List[SrcDst]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: remove(operations: List[client.models.msg.StoragePath])
+
+      
+      Delete a file.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: rmdir(operations: List[client.models.msg.StoragePath])
+
+      
+      Delete a dir.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _exec_operation_req(storage_operation: str, operations: List[client.models.msg.StoragePath] | List[client.models.msg.SrcDst])
+
+
+   .. py:method:: _operations(ids: List[str])
+
+
+   .. py:method:: check_permissions(permissions: List[client.models.permissions.RoleAssignment])
+
+      
+      Checks permissions of a path (including parent directory) using a list of RoleAssignment objects.
+
+
+      :Parameters:
+
+          **permissions: List[RoleAssignment]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: get_permissions(permissions: List[client.models.permissions.RoleQuery])
+
+      
+      Return permissions of a file from a list of RoleQuery objects.
+
+
+      :Parameters:
+
+          **permissions: List[RoleQuery]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: remove_permissions(permissions: List[client.models.permissions.RoleAssignment])
+
+      
+      Remove permissions using a list of RoleAssignment objects.
+
+
+      :Parameters:
+
+          **permissions: List[RoleAssignment]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: set_permissions(permissions: List[client.models.permissions.RoleAssignment])
+
+      
+      Set permissions using a list of RoleAssignment objects.
+
+
+      :Parameters:
+
+          **permissions: List[RoleAssignment]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: get_metadata(paths: List[str | client.models.msg.StoragePath])
+
+      
+      Get metadata of a path on backend storage.
+
+
+      :Parameters:
+
+          **paths: List[str | StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: set_metadata(asgs: Dict[str | client.models.msg.StoragePath, client.models.metadata.DataAssignment])
+
+      
+      Setting metadata for a path on backend storage.
+
+
+      :Parameters:
+
+          **asgs: Dict[str | StoragePath, DataAssignment]**
+              List of paths with key of type string or StoragePath and value of DataAssignment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: wait_for(operation_ids: List[str | client.models.ops.Operation | client.models.msg.OpIdResponse], timeout: float | None = None, interval: float = 0.1, cap: float = 2.0, raise_on_error: bool = False)
+
+      
+      Wait for operations to complete.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+

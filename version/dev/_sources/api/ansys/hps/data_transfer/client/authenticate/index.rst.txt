@@ -1,0 +1,156 @@
+
+
+
+
+
+
+The ``authenticate.py`` module
+==============================
+
+.. py:module:: ansys.hps.data_transfer.client.authenticate
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: authenticate
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~authenticate`
+            - Authenticates the user with a password or refresh token against the HPS authentication service.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~log`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module provides authentication for the user with a password or refresh token.
+
+It interacts with the HPS authentication service.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: authenticate(url: str = 'https://localhost:8443/hps', realm: str = 'rep', grant_type: str = 'password', scope='openid', client_id: str = 'rep-cli', client_secret: str = None, username: str = None, password: str = None, refresh_token: str = None, timeout: float = 10.0, verify: bool | str = True, **kwargs)
+
+   
+   Authenticates the user with a password or refresh token against the HPS authentication service.
+
+   If this method is successful, the response includes access and refresh tokens.
+
+   :Parameters:
+
+       **url** : :class:`python:str`, :obj:`optional`
+           Base path for the server to call. The default is ``'https://localhost:8443/rep'``.
+
+       **realm** : :class:`python:str`, :obj:`optional`
+           Keycloak realm. The default is ``'rep'``.
+
+       **grant_type: str, optional**
+           Authentication method. The default is ``'password'``.
+
+       **scope** : :class:`python:str`, :obj:`optional`
+           String containing one or more requested scopes. The default is ``'openid'``.
+
+       **client_id** : :class:`python:str`, :obj:`optional`
+           Client type. The default is ``'rep-cli'``.
+
+       **client_secret** : :class:`python:str`, :obj:`optional`
+           Client secret. The default is ``None``.
+
+       **username** : :class:`python:str`, :obj:`optional`
+           Username.
+
+       **password** : :class:`python:str`, optional.
+           Password.
+
+       **refresh_token** : :class:`python:str`, :obj:`optional`
+           Refresh token.
+
+       **timeout** : :class:`python:float`, :obj:`optional`
+           Timeout in seconds. The default is ``10.0``.
+
+       **verify: Union[bool, str], optional**
+           If a Boolean, whether to verify the server's TLS certificate. If a string, the
+           path to the CA bundle to use. For more information, see the :class:`requests.Session`
+           documentation.
+
+       **Returns:**
+           ..
+
+       **-------**
+           ..
+
+       **dict**
+           JSON-encoded content of a :class:`requests.Response` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: log
+
+
+
