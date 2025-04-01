@@ -51,9 +51,8 @@ def write_file(file_name, size):
     log.info(f"File {file_name} has been generated after {(time.time() - start_time):.2f} seconds")
     return 0
 
-
-def test_large_batch(storage_path, client):
-    """Test copying a large file to a remote storage."""
+def sync_copy(storage_path, client):
+    """copying a large file to a remote storage."""
     api = DataTransferApi(client)
     api.status(wait=True)
 
@@ -69,8 +68,24 @@ def test_large_batch(storage_path, client):
 
     log.info("Starting copy ...")
     op = api.copy(dsts)
+    return api, op
+
+def test_large_batch(storage_path, client):
+    """Test copying a large file to a remote storage."""
+    api, op = sync_copy(storage_path, client)
     assert op.id is not None
     op = api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+
+def test_large_batch_with_progress_handler(storage_path, client):
+    """Test copying a large file to a remote storage."""       
+    api, op = sync_copy(storage_path, client)
+    assert op.id is not None    
+    # test progress handler
+    def handler(current_progress):
+        log.info(f"{current_progress * 100.0}% completed")
+    op = api.wait_for(op.id, progress_handler=handler)
     assert op[0].state == OperationState.Succeeded, op[0].messages
 
 

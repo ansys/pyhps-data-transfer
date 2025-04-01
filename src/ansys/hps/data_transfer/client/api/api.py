@@ -191,11 +191,13 @@ class DataTransferApi:
         url = "/operations"
         if stream:
             with self.client.session.stream("GET", url, params={"ids": ids}) as resp:
-                for chunk in resp.iter_bytes(chunk_size=None):
-                    if progress_handler is not None:
-                        progress_handler(len(chunk))
+                for chunk in resp.iter_bytes(chunk_size=None):                    
                     chunk_json = js.loads(chunk.decode("utf-8"))
-                    return OpsResponse(**chunk_json).operations
+                    resp = OpsResponse(**chunk_json).operations
+                    if progress_handler is not None:
+                        for op in resp:                        
+                            progress_handler(op.progress)
+                    return resp
         else:
             resp = self.client.session.get(url, params={"ids": ids})
             json = resp.json()
