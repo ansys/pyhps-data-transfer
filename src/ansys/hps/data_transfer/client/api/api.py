@@ -33,6 +33,8 @@ import time
 
 import backoff
 import humanfriendly as hf
+import json as js
+from collections.abc import Callable
 
 from ..client import Client
 from ..exceptions import TimeoutError
@@ -185,11 +187,19 @@ class DataTransferApi:
         r = OpIdResponse(**json)
         return r
 
-    def _operations(self, ids: builtins.list[str]):
+    def _operations(self, ids: builtins.list[str], progress_handler: Callable[[int], None] = None, stream: bool = True):
         url = "/operations"
-        resp = self.client.session.get(url, params={"ids": ids})
-        json = resp.json()
-        return OpsResponse(**json).operations
+        if stream:
+            with self.client.session.stream("GET", url, params={"ids": ids}) as resp:
+                for chunk in resp.iter_bytes(chunk_size=None):
+                    if progress_handler is not None:
+                        progress_handler(len(chunk))
+                    chunk_json = js.loads(chunk.decode("utf-8"))
+                    return OpsResponse(**chunk_json).operations
+        else:
+            resp = self.client.session.get(url, params={"ids": ids})
+            json = resp.json()
+            return OpsResponse(**json).operations
 
     @retry()
     def check_permissions(self, permissions: builtins.list[RoleAssignment]):
@@ -281,6 +291,8 @@ class DataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
+        progress_handler: Callable[[int], None] = None,
+        stream: bool = True,
     ):
         """Wait for operations to complete."""
         if not isinstance(operation_ids, list):
@@ -293,7 +305,7 @@ class DataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = self._operations(operation_ids)
+                ops = self._operations(operation_ids, progress_handler, stream)
                 so_far = hf.format_timespan(time.time() - start)
                 log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
                 if self.client.binary_config.debug:
