@@ -28,6 +28,8 @@ data transfer operations asynchronously, managing resources, and handling client
 
 import asyncio
 import builtins
+from collections.abc import Callable
+import json as js
 import logging
 import textwrap
 import time
@@ -139,11 +141,23 @@ class AsyncDataTransferApi:
         json = resp.json()
         return OpIdResponse(**json)
 
-    async def _operations(self, ids: builtins.list[str]):
+    async def _operations(
+        self, ids: builtins.list[str], progress_handler: Callable[[int], None] = None, stream: bool = True
+    ):
         url = "/operations"
-        resp = await self.client.session.get(url, params={"ids": ids})
-        json = resp.json()
-        return OpsResponse(**json).operations
+        if stream:
+            async with self.client.session.stream("GET", url, params={"ids": ids}) as resp:
+                async for chunk in resp.aiter_bytes(chunk_size=None):
+                    chunk_json = js.loads(chunk.decode("utf-8"))
+                    opresp = OpsResponse(**chunk_json).operations
+                    if progress_handler is not None:
+                        for op in opresp:
+                            progress_handler(op.progress)
+                    return opresp
+        else:
+            resp = await self.client.session.get(url, params={"ids": ids})
+            json = resp.json()
+            return OpsResponse(**json).operations
 
     @retry()
     async def check_permissions(self, permissions: builtins.list[RoleAssignment]):
@@ -204,6 +218,8 @@ class AsyncDataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
+        progress_handler: Callable[[int], None] = None,
+        stream: bool = True,
     ):
         """Async interface to wait for a list of operations to complete."""
         if not isinstance(operation_ids, list):
@@ -216,7 +232,7 @@ class AsyncDataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = await self._operations(operation_ids)
+                ops = await self._operations(operation_ids, progress_handler, stream)
                 so_far = hf.format_timespan(time.time() - start)
                 log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
                 if self.client.binary_config.debug:

@@ -37,7 +37,6 @@ from ansys.hps.data_transfer.client.models.ops import OperationState
 log = logging.getLogger(__name__)
 
 num_files = 2
-file_size = 5  # GB
 
 
 def write_file(file_name, size):
@@ -51,9 +50,9 @@ def write_file(file_name, size):
     log.info(f"File {file_name} has been generated after {(time.time() - start_time):.2f} seconds")
     return 0
 
-def sync_copy(storage_path, client):
+
+def sync_copy(storage_path, api, file_size=5):
     """copying a large file to a remote storage."""
-    api = DataTransferApi(client)
     api.status(wait=True)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
@@ -68,30 +67,11 @@ def sync_copy(storage_path, client):
 
     log.info("Starting copy ...")
     op = api.copy(dsts)
-    return api, op
-
-def test_large_batch(storage_path, client):
-    """Test copying a large file to a remote storage."""
-    api, op = sync_copy(storage_path, client)
-    assert op.id is not None
-    op = api.wait_for(op.id)
-    assert op[0].state == OperationState.Succeeded, op[0].messages
+    return op
 
 
-def test_large_batch_with_progress_handler(storage_path, client):
-    """Test copying a large file to a remote storage."""       
-    api, op = sync_copy(storage_path, client)
-    assert op.id is not None    
-    # test progress handler
-    def handler(current_progress):
-        log.info(f"{current_progress * 100.0}% completed")
-    op = api.wait_for(op.id, progress_handler=handler)
-    assert op[0].state == OperationState.Succeeded, op[0].messages
-
-
-async def test_async_large_batch(storage_path, async_client):
-    """Test copying a large file to a remote storage using the AsyncDataTransferApi."""
-    api = AsyncDataTransferApi(async_client)
+async def async_copy(storage_path, api, file_size=5):
+    """copying a large file to a remote storage using the AsyncDataTransferApi."""
     api.status(wait=True)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
@@ -106,6 +86,66 @@ async def test_async_large_batch(storage_path, async_client):
 
     log.info("Starting copy ...")
     op = await api.copy(dsts)
+    return op
+
+
+def test_large_batch(storage_path, client):
+    """Test copying a large file to a remote storage."""
+    api = DataTransferApi(client)
+    op = sync_copy(storage_path, api)
+    assert op.id is not None
+    op = api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+
+def test_batch_with_wait_parameters(storage_path, client):
+    """Test copying a large file to a remote storage."""
+    api = DataTransferApi(client)
+    log.info("Copy with progress handler")
+    op = sync_copy(storage_path, api, 1)
+    assert op.id is not None
+
+    # test progress handler
+    def handler(current_progress):
+        log.info(f"{current_progress * 100.0}% completed")
+
+    op = api.wait_for(op.id, progress_handler=handler)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    # test without streaming
+    log.info("Copy without streaming")
+    op = sync_copy(storage_path, api, 1)
+    assert op.id is not None
+    op = api.wait_for(op.id, stream=False)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+
+async def test_async_large_batch(storage_path, async_client):
+    """Test copying a large file to a remote storage using the AsyncDataTransferApi."""
+    api = AsyncDataTransferApi(async_client)
+    op = await async_copy(storage_path, api)
     assert op.id is not None
     op = await api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+
+async def test_async_batch_with_wait_parameters(storage_path, async_client):
+    """Test copying a large file to a remote storage using the AsyncDataTransferApi."""
+    api = AsyncDataTransferApi(async_client)
+    log.info("Copy with progress handler")
+    op = await async_copy(storage_path, api, 1)
+    assert op.id is not None
+
+    # test progress handler
+    def handler(current_progress):
+        log.info(f"{current_progress * 100.0}% completed")
+
+    op = await api.wait_for(op.id, progress_handler=handler)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    # test without streaming
+    log.info("Copy without streaming")
+    op = await async_copy(storage_path, api, 1)
+    assert op.id is not None
+    op = await api.wait_for(op.id, stream=False)
     assert op[0].state == OperationState.Succeeded, op[0].messages

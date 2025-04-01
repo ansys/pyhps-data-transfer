@@ -27,14 +27,14 @@ data transfer operations, managing resources, and handling client interactions.
 """
 
 import builtins
+from collections.abc import Callable
+import json as js
 import logging
 import textwrap
 import time
 
 import backoff
 import humanfriendly as hf
-import json as js
-from collections.abc import Callable
 
 from ..client import Client
 from ..exceptions import TimeoutError
@@ -191,13 +191,13 @@ class DataTransferApi:
         url = "/operations"
         if stream:
             with self.client.session.stream("GET", url, params={"ids": ids}) as resp:
-                for chunk in resp.iter_bytes(chunk_size=None):                    
+                for chunk in resp.iter_bytes(chunk_size=None):
                     chunk_json = js.loads(chunk.decode("utf-8"))
-                    resp = OpsResponse(**chunk_json).operations
+                    opresp = OpsResponse(**chunk_json).operations
                     if progress_handler is not None:
-                        for op in resp:                        
+                        for op in opresp:
                             progress_handler(op.progress)
-                    return resp
+                    return opresp
         else:
             resp = self.client.session.get(url, params={"ids": ids})
             json = resp.json()
