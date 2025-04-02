@@ -117,7 +117,7 @@ def test_large_batch(storage_path, client):
 
 
 def test_batch_with_wait_parameters(storage_path, client):
-    """Test copying a large file to a remote storage."""
+    """Test copying a large file to a remote storage with wait parameter progress_handler."""
     api = DataTransferApi(client)
     log.info("Copy with progress handler")
     op = sync_copy(storage_path, api, 2)
@@ -141,7 +141,8 @@ async def test_async_large_batch(storage_path, async_client):
 
 
 async def test_async_batch_with_wait_parameters(storage_path, async_client):
-    """Test copying a large file to a remote storage using the AsyncDataTransferApi."""
+    """Test copying a large file to a remote storage using the AsyncDataTransferApi
+    with wait parameter progress_handler."""
     api = AsyncDataTransferApi(async_client)
     log.info("Copy with progress handler")
     op = await async_copy(storage_path, api, 2)
