@@ -52,7 +52,16 @@ def write_file(file_name, size):
 
 
 def sync_copy(storage_path, api, file_size=5):
-    """copying a large file to a remote storage."""
+    """Copying a large file to a remote storage.
+
+    Parameters:
+    storage_path: str
+        The path to the remote storage.
+    api: DataTransferApi
+        The DataTransferApi object.
+    file_size: int
+        The size of the file to be copied in GB.
+    """
     api.status(wait=True)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
@@ -71,7 +80,16 @@ def sync_copy(storage_path, api, file_size=5):
 
 
 async def async_copy(storage_path, api, file_size=5):
-    """copying a large file to a remote storage using the AsyncDataTransferApi."""
+    """Copying a large file to a remote storage using the AsyncDataTransferApi.
+
+    Parameters:
+    storage_path: str
+        The path to the remote storage.
+    api: DataTransferApi
+        The DataTransferApi object.
+    file_size: int
+        The size of the file to be copied in GB.
+    """
     api.status(wait=True)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
@@ -102,7 +120,7 @@ def test_batch_with_wait_parameters(storage_path, client):
     """Test copying a large file to a remote storage."""
     api = DataTransferApi(client)
     log.info("Copy with progress handler")
-    op = sync_copy(storage_path, api, 1)
+    op = sync_copy(storage_path, api, 2)
     assert op.id is not None
 
     # test progress handler
@@ -110,13 +128,6 @@ def test_batch_with_wait_parameters(storage_path, client):
         log.info(f"{current_progress * 100.0}% completed")
 
     op = api.wait_for(op.id, progress_handler=handler)
-    assert op[0].state == OperationState.Succeeded, op[0].messages
-
-    # test without streaming
-    log.info("Copy without streaming")
-    op = sync_copy(storage_path, api, 1)
-    assert op.id is not None
-    op = api.wait_for(op.id, stream=False)
     assert op[0].state == OperationState.Succeeded, op[0].messages
 
 
@@ -133,7 +144,7 @@ async def test_async_batch_with_wait_parameters(storage_path, async_client):
     """Test copying a large file to a remote storage using the AsyncDataTransferApi."""
     api = AsyncDataTransferApi(async_client)
     log.info("Copy with progress handler")
-    op = await async_copy(storage_path, api, 1)
+    op = await async_copy(storage_path, api, 2)
     assert op.id is not None
 
     # test progress handler
@@ -141,11 +152,4 @@ async def test_async_batch_with_wait_parameters(storage_path, async_client):
         log.info(f"{current_progress * 100.0}% completed")
 
     op = await api.wait_for(op.id, progress_handler=handler)
-    assert op[0].state == OperationState.Succeeded, op[0].messages
-
-    # test without streaming
-    log.info("Copy without streaming")
-    op = await async_copy(storage_path, api, 1)
-    assert op.id is not None
-    op = await api.wait_for(op.id, stream=False)
-    assert op[0].state == OperationState.Succeeded, op[0].messages
+    assert op[0].state == OperationState.Succeeded, op[0].messages    

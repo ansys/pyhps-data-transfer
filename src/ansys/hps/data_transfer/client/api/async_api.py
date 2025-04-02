@@ -141,23 +141,11 @@ class AsyncDataTransferApi:
         json = resp.json()
         return OpIdResponse(**json)
 
-    async def _operations(
-        self, ids: builtins.list[str], progress_handler: Callable[[int], None] = None, stream: bool = True
-    ):
-        url = "/operations"
-        if stream:
-            async with self.client.session.stream("GET", url, params={"ids": ids}) as resp:
-                async for chunk in resp.aiter_bytes(chunk_size=None):
-                    chunk_json = js.loads(chunk.decode("utf-8"))
-                    opresp = OpsResponse(**chunk_json).operations
-                    if progress_handler is not None:
-                        for op in opresp:
-                            progress_handler(op.progress)
-                    return opresp
-        else:
-            resp = await self.client.session.get(url, params={"ids": ids})
-            json = resp.json()
-            return OpsResponse(**json).operations
+    async def _operations(self, ids: builtins.list[str]):
+        url = "/operations"        
+        resp = await self.client.session.get(url, params={"ids": ids})
+        json = resp.json()
+        return OpsResponse(**json).operations
 
     @retry()
     async def check_permissions(self, permissions: builtins.list[RoleAssignment]):
@@ -218,8 +206,7 @@ class AsyncDataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
-        progress_handler: Callable[[int], None] = None,
-        stream: bool = True,
+        progress_handler: Callable[[int], None] = None,       
     ):
         """Async interface to wait for a list of operations to complete."""
         if not isinstance(operation_ids, list):
@@ -232,7 +219,7 @@ class AsyncDataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = await self._operations(operation_ids, progress_handler, stream)
+                ops = await self._operations(operation_ids)
                 so_far = hf.format_timespan(time.time() - start)
                 log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
                 if self.client.binary_config.debug:
@@ -246,6 +233,9 @@ class AsyncDataTransferApi:
                         if op.progress > 0:
                             fields.append(f"progress={op.progress:.3f}")
                         log.debug(f"- Operation '{op.description}' {' '.join(fields)}")
+                if progress_handler is not None:
+                    for op in ops:
+                        progress_handler(op.progress)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
