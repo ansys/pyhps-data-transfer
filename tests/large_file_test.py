@@ -152,4 +152,4 @@ async def test_async_batch_with_wait_parameters(storage_path, async_client):
         log.info(f"{current_progress * 100.0}% completed")
 
     op = await api.wait_for(op.id, progress_handler=handler)
-    assert op[0].state == OperationState.Succeeded, op[0].messages    
+    assert op[0].state == OperationState.Succeeded, op[0].messages

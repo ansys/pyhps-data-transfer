@@ -29,7 +29,6 @@ data transfer operations asynchronously, managing resources, and handling client
 import asyncio
 import builtins
 from collections.abc import Callable
-import json as js
 import logging
 import textwrap
 import time
@@ -142,7 +141,7 @@ class AsyncDataTransferApi:
         return OpIdResponse(**json)
 
     async def _operations(self, ids: builtins.list[str]):
-        url = "/operations"        
+        url = "/operations"
         resp = await self.client.session.get(url, params={"ids": ids})
         json = resp.json()
         return OpsResponse(**json).operations
@@ -206,7 +205,7 @@ class AsyncDataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
-        progress_handler: Callable[[int], None] = None,       
+        progress_handler: Callable[[int], None] = None,
     ):
         """Async interface to wait for a list of operations to complete."""
         if not isinstance(operation_ids, list):

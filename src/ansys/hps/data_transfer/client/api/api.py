@@ -28,7 +28,6 @@ data transfer operations, managing resources, and handling client interactions.
 
 import builtins
 from collections.abc import Callable
-import json as js
 import logging
 import textwrap
 import time
@@ -188,7 +187,7 @@ class DataTransferApi:
         return r
 
     def _operations(self, ids: builtins.list[str]):
-        url = "/operations"        
+        url = "/operations"
         resp = self.client.session.get(url, params={"ids": ids})
         json = resp.json()
         return OpsResponse(**json).operations
