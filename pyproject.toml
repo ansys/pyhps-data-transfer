@@ -40,7 +40,7 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "pytest==8.3.5",
-    "pytest-cov==6.0.0",
+    "pytest-cov==6.1.0",
     "pytest-timeout==2.3.1",
     "pytest-mock-resources[redis]==2.12.2",
     "pytest-rerunfailures==15.0",
