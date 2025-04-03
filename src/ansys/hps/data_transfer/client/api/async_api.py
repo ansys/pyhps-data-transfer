@@ -208,6 +208,7 @@ class AsyncDataTransferApi:
         progress_handler: Callable[[str, float], None] = None,
     ):
         """Async interface to wait for a list of operations to complete.
+
         Parameters
         ----------
         operation_ids: list[str | Operation]
@@ -241,15 +242,15 @@ class AsyncDataTransferApi:
                     for op in ops:
                         progress_handler(op.id, op.progress)
                         if self.client.binary_config.debug:
-                                fields = [
-                                    f"id={op.id}",
-                                    f"state={op.state}",
-                                    f"start={op.started_at}",
-                                    f"succeeded_on={op.succeeded_on}",
-                                ]
-                                if op.progress > 0:
-                                    fields.append(f"progress={op.progress:.3f}")
-                                log.debug(f"- Operation '{op.description}' {' '.join(fields)}")                
+                            fields = [
+                                f"id={op.id}",
+                                f"state={op.state}",
+                                f"start={op.started_at}",
+                                f"succeeded_on={op.succeeded_on}",
+                            ]
+                            if op.progress > 0:
+                                fields.append(f"progress={op.progress:.3f}")
+                            log.debug(f"- Operation '{op.description}' {' '.join(fields)}")
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
