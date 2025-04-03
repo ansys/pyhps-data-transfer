@@ -123,12 +123,21 @@ def test_batch_with_wait_parameters(storage_path, client):
     op = sync_copy(storage_path, api, 2)
     assert op.id is not None
 
+    # List to store progress data
+    progress_data = []
     # test progress handler
-    def handler(current_progress):
-        log.info(f"{current_progress * 100.0}% completed")
-
-    op = api.wait_for(op.id, progress_handler=handler)
+    def handler(id, current_progress):
+        progress_data.append(current_progress)
+        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+      
+    # Wait for the operation to complete with progress handler    
+    op = api.wait_for(op.id, progress_handler=handler)    
     assert op[0].state == OperationState.Succeeded, op[0].messages
+    # Check if progress data is collected
+    assert len(progress_data) > 0, "No progress data collected"
+    # Check if the last progress is 100%
+    assert progress_data[-1] == 1.0, "Last progress is not 100%"
+    
 
 
 async def test_async_large_batch(storage_path, async_client):
@@ -146,11 +155,19 @@ async def test_async_batch_with_wait_parameters(storage_path, async_client):
     api = AsyncDataTransferApi(async_client)
     log.info("Copy with progress handler")
     op = await async_copy(storage_path, api, 2)
-    assert op.id is not None
+    assert op.id is not None    
 
+    # List to store progress data
+    progress_data = []
     # test progress handler
-    def handler(current_progress):
-        log.info(f"{current_progress * 100.0}% completed")
-
-    op = await api.wait_for(op.id, progress_handler=handler)
+    def handler(id, current_progress):
+        progress_data.append(current_progress)
+        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+    
+    # Wait for the operation to complete with progress handler
+    op = await api.wait_for(op.id, progress_handler=handler)  
     assert op[0].state == OperationState.Succeeded, op[0].messages
+    # Check if progress data is collected
+    assert len(progress_data) > 0, "No progress data collected"
+    # Check if the last progress is 100%
+    assert progress_data[-1] == 1.0, "Last progress is not 100%"
