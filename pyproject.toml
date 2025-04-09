@@ -45,7 +45,7 @@ tests = [
     "pytest-mock-resources[redis]==2.12.2",
     "pytest-rerunfailures==15.0",
     "pytest-asyncio==0.26.0",
-    "python-keycloak==5.3.1",
+    "python-keycloak==5.4.0",
     "python-slugify>=8.0.4",
     "tox==4.25.0",
 ]
