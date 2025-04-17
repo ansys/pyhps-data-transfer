@@ -29,6 +29,8 @@ from enum import Enum
 
 
 class PathType(Enum):
+    """Path type enum for file, directory, or any."""
+
     FilePath = "file"
     DirPath = "dir"
     AnyPath = "any"

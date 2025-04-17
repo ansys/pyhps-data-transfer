@@ -46,7 +46,7 @@ def write_file(file_name, size):
     log.info(f"Generating file {file_name} with size {size} GB")
     gb1 = 1024 * 1024 * 1024  # 1GB
     with open(file_name, "wb") as fout:
-        for i in range(size):
+        for _i in range(size):
             fout.write(os.urandom(gb1))
     log.info(f"File {file_name} has been generated after {(time.time() - start_time):.2f} seconds")
     return 0
