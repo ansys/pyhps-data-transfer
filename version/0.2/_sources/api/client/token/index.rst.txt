@@ -1,0 +1,40 @@
+client.token
+============
+
+.. py:module:: client.token
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   client.token.prepare_token
+
+
+Module Contents
+---------------
+
+.. py:function:: prepare_token(token)
+
+   
+   Prepares an authentication token by ensuring it is prefixed with "Bearer".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
