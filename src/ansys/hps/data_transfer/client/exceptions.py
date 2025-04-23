@@ -93,9 +93,9 @@ class TimeoutError(ClientError):
 
 
 def raise_for_status(response: httpx.Response):
-    """Automatically checks HTTP errors.
+    """Automatically check for HTTP errors.
 
-    This method mimics the requests.Response.raise_for_status() method.
+    This method mimics the ``requests.Response.raise_for_status()`` method.
     """
     if response.status_code < 400 or response.status_code >= 600:
         return

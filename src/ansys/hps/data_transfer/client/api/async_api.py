@@ -58,7 +58,7 @@ log = logging.getLogger(__name__)
 
 
 class AsyncDataTransferApi:
-    """Wrapper for the Data Transfer Worker REST API, offering an async interface."""
+    """Provides a wrapper for the Data Transfer Worker REST API, offering an async interface."""
 
     def __init__(self, client: AsyncClient):
         """Initialize the async data transfer API with the client object."""
@@ -91,7 +91,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def operations(self, ids: list[str]):
-        """Async interface to get a list of operations by their ids."""
+        """Async interface to get a list of operations by their IDs."""
         return await self._operations(ids)
 
     async def storages(self):
@@ -102,23 +102,23 @@ class AsyncDataTransferApi:
         return StorageConfigResponse(**json).storage
 
     async def copy(self, operations: list[SrcDst]):
-        """Async interface to copy a list of SrcDst objects."""
+        """Async interface to copy a list of ``SrcDst`` objects."""
         return await self._exec_async_operation_req("copy", operations)
 
     async def exists(self, operations: list[StoragePath]):
-        """Async interface to check if a list of StoragePath objects exist."""
+        """Async interface to check if a list of ``StoragePath`` objects exist."""
         return await self._exec_async_operation_req("exists", operations)
 
     async def list(self, operations: list[StoragePath]):
-        """Async interface to list a list of StoragePath objects."""
+        """Async interface to get a list of ``StoragePath`` objects."""
         return await self._exec_async_operation_req("list", operations)
 
     async def mkdir(self, operations: builtins.list[StoragePath]):
-        """Async interface to create a list of directories on remote backend."""
+        """Async interface to create a list of directories on the remote backend."""
         return await self._exec_async_operation_req("mkdir", operations)
 
     async def move(self, operations: builtins.list[SrcDst]):
-        """Async interface to move a list of SrcDst objects in the remote backend."""
+        """Async interface to move a list of ``SrcDst`` objects in the remote backend."""
         return await self._exec_async_operation_req("move", operations)
 
     async def remove(self, operations: builtins.list[StoragePath]):
@@ -147,7 +147,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def check_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Async interface to check permissions of a list of RoleAssignment objects."""
+        """Async interface to check permissions of a list of ``RoleAssignment`` objects."""
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
@@ -156,7 +156,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def get_permissions(self, permissions: builtins.list[RoleQuery]):
-        """Async interface to get permissions of a list of RoleQuery objects."""
+        """Async interface to get permissions of a list of ``RoleQuery`` objects."""
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
@@ -165,21 +165,21 @@ class AsyncDataTransferApi:
 
     @retry()
     async def remove_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Async interface to remove permissions of a list of RoleAssignment objects."""
+        """Async interface to remove permissions of a list of ``RoleAssignment`` objects."""
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         await self.client.session.post(url, json=payload)
 
     @retry()
     async def set_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Async interface to set permissions of a list of RoleAssignment objects."""
+        """Async interface to set permissions of a list of ``RoleAssignment`` objects."""
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         await self.client.session.post(url, json=payload)
 
     @retry()
     async def get_metadata(self, paths: builtins.list[str | StoragePath]):
-        """Async interface to get metadata of a list of StoragePath objects."""
+        """Async interface to get metadata of a list of ``StoragePath`` objects."""
         url = "/metadata:get"
         paths = [p if isinstance(p, str) else p.path for p in paths]
         payload = {"paths": paths}

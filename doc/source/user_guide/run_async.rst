@@ -1,13 +1,12 @@
-Run Async
-=========
+Run operations asynchronously
+=============================
 
-Run data transfer client operations in async
+Run data transfer client operations asynchronously to improve performance and responsiveness.
 
 Connect to a data transfer service
 ----------------------------------
 
-
-Using the access token, connect to the data transfer service client:
+Use the access token to connect to the data transfer service client:
 
 .. code-block:: python
 
@@ -30,7 +29,7 @@ Using the access token, connect to the data transfer service client:
     api = AsyncDataTransferApi(client)
     await api.status(wait=True)
 
-Once connected, you can query storages available:
+Query available storages:
 
 .. code-block:: python
 
@@ -39,7 +38,7 @@ Once connected, you can query storages available:
 Create a directory
 ------------------
 
-To create a directory:
+Create a directory in the storage location:
 
 .. code-block:: python
 
@@ -47,8 +46,10 @@ To create a directory:
     mkdir_op = await api.mkdir([StoragePath(path=f"{base_dir}")])
     await api.wait_for([mkdir_op.id])
 
-Copying files
--------------
+Copy files
+----------
+
+Copy files between storage locations:
 
 .. code-block:: python
 
@@ -61,10 +62,10 @@ Copying files
     op = await api.wait_for([op.id])
     log.info(f"Operation {op[0].state}")
 
-Listing files
--------------
+List files
+----------
 
-To list files in a set path (base_dir in the following code block):
+List files in a specified directory:
 
 .. code-block:: python
 
@@ -73,11 +74,10 @@ To list files in a set path (base_dir in the following code block):
     log.info(f"Operation {op[0].state}")
     log.info(f"Files in {base_dir}: {op[0].result}")
 
+Get metadata
+------------
 
-Getting metadata
-----------------
-
-To get metadata of files:
+Retrieve metadata for a file in a specified directory:
 
 .. code-block:: python
 
@@ -86,10 +86,10 @@ To get metadata of files:
     md = op[0].result[f"{base_dir}/2.txt"]
     log.info(f"Metadata for {base_dir}/2.txt: {md}")
 
-Removing files
---------------
+Remove files
+------------
 
-To get remove files:
+Delete files in a specified directory:
 
 .. code-block:: python
 
@@ -100,7 +100,7 @@ To get remove files:
 Stop client
 -----------
 
-To stop client:
+Stop the client:
 
 .. code-block:: python
 

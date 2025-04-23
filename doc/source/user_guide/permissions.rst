@@ -1,25 +1,23 @@
-Permissions
------------
+Manage permissions
+------------------
 
-The permissions plugin allows system administrator to make sure that the 'root' directory has permissions set such that not every user can read/write to it.
-System user names can be specified either in keycloak or using the user_mapping property.
-In order to get them from keycloak:
+System administrators use the ``permissions`` plugin to manage permissions on the ``root`` directory so that not every user can read or write to it.
 
-* Credentials need to be configured within the keycloak block for a user who has the ability to list other users and their attributes.
+Specify system usernames either in Keycloak or by using the ``user_mapping`` property.
 
-* Every user who has a corresponding system username needs to have a custom attribute added in keycloak.
+To get system usernames from Keycloak:
 
-* The key must match the keycloak.attribute_name property.
+* Configure credentials within the Keycloak block for a user who can list other users and their attributes.
+* Add a custom attribute in Keycloak for every user with a corresponding system username.
+* Ensure that the key matches the ``keycloak.attribute_name`` property.
+* Set the value to the system username or its numerical representation.
 
-* The value is the system username or its numerical representation.
+To use the ``user_mapping`` property:
 
-user_mapping property:
+* Include the users' Keycloak UUIDs as keys.
+* Set the values to the system usernames. Use a numerical value if the username comes from Active Directory.
 
-* Needs to contain users' keycloak UUIDs as keys.
-
-* Values are the system usernames ** if a username comes from Active Directory, a numerical value should be used.
-
-Minimal example:
+Here is a simple example:
 
 .. code-block:: JSON
 
@@ -47,12 +45,10 @@ Minimal example:
             },
     }
 
+Connect to the ``KeycloakAdmin`` API
+-------------------------------------
 
-Connect to the Keycloak Admin API
-----------------------------------
-
-Connecting as a Keycloak administrator (using default credentials) gives you user id field:
-
+Connect as a Keycloak administrator using the default credentials to get the ``user_id`` field:
 
 .. code-block:: python
 
@@ -70,16 +66,18 @@ Connecting as a Keycloak administrator (using default credentials) gives you use
         user_id = admin.get_user_id("repuser")
         return user_id
 
-set_permissions and check_permissions
--------------------------------------
+Set and check permissions
+-------------------------
 
-set_permissions takes a list of RoleAssignment objects with fields resource, role and subject.
+Use the ``set_permissions()`` and ``check_permissions()`` methods to set and check permissions.
 
-* resource: set resource type  with the dir path and ResourceType.
-* role: assign role to the resource. Allowed values are reader, writer and administrator.
-* subject: pass Subject and SubjectType with user id and user/group/any respectively
+The ``set_permissions()`` method takes a list of ``RoleAssignment`` objects with ``resource``, ``role``, and ``subject`` fields:
 
-Example usage of calls set_permissions():
+* ``resource``: Specify the resource type with the directory path and resource type.
+* ``role``: Assign a role to the resource. Options are ``reader``, ``writer``, and ``administrator``.
+* ``subject``: Pass the ``Subject`` and ``SubjectType`` with the user ID and user/group/any respectively.
+
+Here is an example of how to use the ``set_permissions()`` method:
 
 .. code-block:: python
 
@@ -112,8 +110,9 @@ Example usage of calls set_permissions():
     except Exception as ex:
         log.info(ex)
 
-check_permissions takes a list of RoleQuery objects with fields resource, role and subject similar to RoleAssignment.
-Example usage of calls check_permissions():
+Like the ``set_permissions()`` method, the ``check_permissions`` method takes a list of ``RoleQuery`` objects with ``resource``, ``role``, and ``subject`` fields.
+
+This code shows how to use the ``check_permissions()`` method:
 
 .. code-block:: python
 
@@ -129,6 +128,3 @@ Example usage of calls check_permissions():
         )
     except Exception as ex:
         log.info(ex)
-
-
-

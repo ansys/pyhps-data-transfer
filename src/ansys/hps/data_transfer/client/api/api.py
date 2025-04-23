@@ -57,7 +57,7 @@ log = logging.getLogger(__name__)
 
 
 class DataTransferApi:
-    """Class for Data transfer API.
+    """Provides the class for data transfer API.
 
     Parameters
     ----------
@@ -100,7 +100,7 @@ class DataTransferApi:
         Parameters
         ----------
         ids: List[str]
-            List of ids.
+            List of IDs.
         """
         return self._operations(ids)
 
@@ -139,7 +139,7 @@ class DataTransferApi:
         return self._exec_operation_req("list", operations)
 
     def mkdir(self, operations: builtins.list[StoragePath]):
-        """Create a dir.
+        """Create a directory.
 
         Parameters
         ----------
@@ -166,7 +166,7 @@ class DataTransferApi:
         return self._exec_operation_req("remove", operations)
 
     def rmdir(self, operations: builtins.list[StoragePath]):
-        """Delete a dir.
+        """Delete a directory.
 
         Parameters
         ----------
@@ -193,7 +193,7 @@ class DataTransferApi:
 
     @retry()
     def check_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Checks permissions of a path (including parent directory) using a list of RoleAssignment objects.
+        """Checks permissions of a path (including parent directory) using a list of ``RoleAssignment`` objects.
 
         Parameters
         ----------
@@ -207,7 +207,7 @@ class DataTransferApi:
 
     @retry()
     def get_permissions(self, permissions: builtins.list[RoleQuery]):
-        """Return permissions of a file from a list of RoleQuery objects.
+        """Return permissions of a file from a list of ``RoleQuery`` objects.
 
         Parameters
         ----------
@@ -221,7 +221,7 @@ class DataTransferApi:
 
     @retry()
     def remove_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Remove permissions using a list of RoleAssignment objects.
+        """Remove permissions using a list of ``RoleAssignment`` objects.
 
         Parameters
         ----------
@@ -233,7 +233,7 @@ class DataTransferApi:
 
     @retry()
     def set_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Set permissions using a list of RoleAssignment objects.
+        """Set permissions using a list of ``RoleAssignment`` objects.
 
         Parameters
         ----------
@@ -265,7 +265,7 @@ class DataTransferApi:
         Parameters
         ----------
         asgs: Dict[str | StoragePath, DataAssignment]
-            List of paths with key of type string or StoragePath and value of DataAssignment
+            List of paths with key of type string or ``StoragePath`` and value of ``DataAssignment``.
         """
         url = "/metadata:set"
         d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}

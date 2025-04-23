@@ -52,7 +52,7 @@ level_map = {
 
 
 class PrepareSubprocess:
-    """Context manager to disable vfork and posix_spawn in subprocess."""
+    """Provides the context manager to disable vfork and posix_spawn in subprocess."""
 
     def __enter__(self):
         """Disable vfork and posix_spawn in subprocess."""
@@ -68,30 +68,30 @@ class PrepareSubprocess:
 
 
 class BinaryConfig:
-    """Configure worker binary connection to HPS data transfer client.
+    """Provides for configuring the worker binary connection to the HPS data transfer client.
 
     Parameters
     ----------
     data_transfer_url: str
-        data transfer url. Default is https://localhost:8443/hps/dt/api/v1
+        Data transfer URL. The default is https://localhost:8443/hps/dt/api/v1
     log: bool
-        Process related setting to enable logging. Default is True
+        Process-related setting to enable logging. The default is ``True``.
     log_to_file: bool
-        To enable logging to a file. Default is False
+        Whether to enable logging to a file. The default is ``False``.
     monitor_interval: float
-        duration for waiting before the next monitor check on the binary. Default is 0.5
+        Duration for waiting before the next monitor check on the binary. The default is ``0.5``.
     token: str
-        A worker config setting of access token credential.
+        Worker configuration setting of the access token credential.
     host: str
-        Host IP to talk to data tarsnfer service. Default is 127.0.0.1
+        Host IP to talk to the data transfer service. The default is ``127.0.0.1``.
     port: int
         Host port to talk to data tarsnfer service
     verbosity: int
-        Default is 1
+        The default is ``1``.
     insecure: bool
-        Default is False
+        The default is ``False``.
     debug: bool
-        Default is False
+        The default is ``False``.
     """
 
     def __init__(
@@ -171,12 +171,12 @@ class BinaryConfig:
 
     @property
     def url(self):
-        """Return url."""
+        """Return URL."""
         return f"http://{self.host}:{self.port}/api/v1"
 
 
 class Binary:
-    """Start, stop and monitor worker binary.
+    """Provides for starting, stopping, and monitoring the worker binary.
 
     Parameters
     ----------
@@ -207,12 +207,12 @@ class Binary:
 
     @property
     def config(self):
-        """Return config."""
+        """Returns the configuration."""
         return self._config
 
     @property
     def is_started(self):
-        """Return true if binary is up and running."""
+        """Returns ``True`` if binary is up and running."""
         try:
             return self._process is not None and self._process.returncode is None
         except Exception:
@@ -221,7 +221,8 @@ class Binary:
     def start(self):
         """Start the worker binary.
 
-        check for binary in a set path, marks the binary as an executable and then start the executable.
+        This method checks for the binary in a set path, marks the binary as an executable,
+        and then starts the executable.
         """
         if self._process is not None and self._process.returncode is None:
             raise BinaryError("Worker already started.")
@@ -257,7 +258,7 @@ class Binary:
             log.warning("Worker did not prepare in time.")
 
     def stop(self, wait=5.0):
-        """Stop worker binary."""
+        """Stop the worker binary."""
         if self._process is None:
             return
 

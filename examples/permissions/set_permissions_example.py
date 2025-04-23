@@ -27,7 +27,7 @@
 Set and query permissions
 =========================
 
-Example script to set and query permissions on files and
+This example script sets and queries permissions on files and
 directories using the data transfer service.
 
 Example usage:

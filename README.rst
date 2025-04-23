@@ -34,21 +34,20 @@ PyHPS Data Transfer
 Overview
 --------
 
-Python client library for HPS Data Transfer Service
+PyHPS Data Transfer is a Python client library for the Ansys HPC Platform Services (HPS) data transfer service.
 
 .. contribute_start
 
 Installation
 ^^^^^^^^^^^^
 
-You can use `pip <https://pypi.org/project/pip/>`_ to install PyHPS Data Transfer.
-Note: This will be available only after released. For now, please install from git
+You can use `pip <https://pypi.org/project/pip/>`_ to install PyHPS Data Transfer in user mode.
 
 .. code:: bash
 
     pip install ansys-hps-data-transfer-client
 
-To install the latest development version, run these commands:
+To install the latest development version from the GitHub repository, run these commands:
 
 .. code:: bash
 
@@ -56,7 +55,7 @@ To install the latest development version, run these commands:
     cd pyhps-data-transfer
     pip install -e .
 
-For more information, see `Getting Started`_.
+For more information, see `Getting started`_.
 
 Basic usage
 ^^^^^^^^^^^
@@ -87,6 +86,6 @@ To reach the project support team, email `pyansys.core@ansys.com <mailto:pyansys
 
 
 .. LINKS AND REFERENCES
-.. _Getting Started: https://hps.docs.pyansys.com/version/stable/getting_started/index.html
+.. _Getting started: https://hps.docs.pyansys.com/version/stable/getting_started/index.html
 .. _Examples: https://hps.docs.pyansys.com/version/stable/examples.html
 .. _PyHPS Data Transfer documentation: https://hps.docs.pyansys.com/version/stable/index.html

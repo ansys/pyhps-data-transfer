@@ -3,10 +3,9 @@
 User guide
 ==========
 
-This section walks you through the basics of how to interact with the Data transfer client service.
+This section explains how to interact with the data transfer client service.
 
-To reproduce the code samples provided in this section, you must have these
-prerequisites:
+To run the code samples in this section, you must have these prerequisites:
 
 - A running Ansys HPS installation. For more information, see the
   `Ansys HPC Platform Services Guide <https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/prod_page.html?pn=Ansys%20HPC%20Platform%20Services&pid=HpcPlatformServices&lang=en>`_
@@ -14,8 +13,8 @@ prerequisites:
 - A Python shell with PyHPS Data Transfer installed. For more information, see :ref:`getting_started`.
 
 ..
-   This toctreemust be a top level index to get it to show up in
-   pydata_sphinx_theme
+   This toctree must be a top-level index to display in
+   pydata_sphinx_theme.
 
 .. toctree::
    :maxdepth: 1
@@ -28,7 +27,7 @@ prerequisites:
 Connect to a data transfer service
 ----------------------------------
 
-You start by connecting to the data transfer service running on the localhost with the default username and password by first requesting access token:
+Before connecting to the data transfer service running on localhost with the default username and password, request the access token:
 
 .. code-block:: python
 
@@ -40,8 +39,7 @@ You start by connecting to the data transfer service running on the localhost wi
     token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     token = token.get("access_token", None)
 
-
-Using the token, connect to the data transfer service client:
+Use the access token to connect to the data transfer service client:
 
 .. code-block:: python
 
@@ -57,7 +55,7 @@ Using the token, connect to the data transfer service client:
     api = DataTransferApi(client)
     api.status(wait=True)
 
-Once connected, you can query storages available:
+Query available storages:
 
 .. code-block:: python
 
@@ -67,33 +65,36 @@ Once connected, you can query storages available:
 Create a directory
 ------------------
 
-To create a directory:
+Create a directory in a storage location:
 
 .. code-block:: python
 
     base_dir = "basic-example"
-    mkdir_op = api.mkdir([StoragePath(path=f"{base_dir}")])
-    api.wait_for([mkdir_op.id])
+            mkdir_op = api.mkdir([StoragePath(path=f"{base_dir}")])
+        api.wait_for([mkdir_op.id])
 
-Copying files
-----------------
+Copy files
+----------
 
-In the following code block, local_path is path to the files or directory to transfer.
-remote_path is path to the remote directory to transfer files to.
-The paths used by the data transfer components look like
+In the following code block, ``local_path`` is the path to the files or directory to transfer,
+and ``remote_path`` is the path to the remote directory to transfer files to.
 
-[remote or keyword]:/path/to/file.txt
-The [remote or keyword] part can be either the name of a specific remote, "any", or empty. Empty and "any" amount to the same - running the standard logic of the system, working through remotes in priority order. Specifying the name of a remote performs the given command only against it.
+The paths used by the data transfer components follow this format:
 
-If an operation should be performed against a local file or directory, the first part, including the colon, should be removed.
+``[remote or keyword]:/path/to/file.txt``
 
-Examples:
-any:mnt/test/path.txt - a file in any of the available remotes
-:mnt/test/path.txt - shorthand for any:[]
-s3test:some/test/path.txt - a file in storage called "s3test"
-another/test/path.txt - a local path
+The ``[remote or keyword]`` part can be the name of a specific remote, ``any``, or be left empty. Specifying the name of a remote performs the given command only against it. Specifying ``any`` or leaving it empty runs the standard logic of the system and works through remotes in priority order.
 
-To copy files:
+If an operation should be performed against a local file or directory, remove the first part, including the colon.
+
+**Examples**
+
+- ``any:mnt/test/path.txt``: A file in any of the available remotes
+- ``:mnt/test/path.txt``: Shorthand for any:[].
+- ``s3test:some/test/path.txt``: A file in storage named ``s3test``.
+- ``another/test/path.txt``: A local path.
+
+Copy files between storage locations:
 
 .. code-block:: python
 
@@ -106,10 +107,10 @@ To copy files:
     op = api.wait_for([op.id])
     log.info(f"Operation {op[0].state}")
 
-Listing files
-----------------
+List files
+----------
 
-To list files in a set path (base_dir in the following code block):
+List files in a specified directory:
 
 .. code-block:: python
 
@@ -118,11 +119,10 @@ To list files in a set path (base_dir in the following code block):
     log.info(f"Operation {op[0].state}")
     log.info(f"Files in {base_dir}: {op[0].result}")
 
+Get metadata
+------------
 
-Getting metadata
-----------------
-
-To get metadata of files:
+Get the metadata of a file in a specified directory:
 
 .. code-block:: python
 
@@ -131,10 +131,10 @@ To get metadata of files:
     md = op[0].result[f"{base_dir}/2.txt"]
     log.info(f"Metadata for {base_dir}/2.txt: {md}")
 
-Removing files
-----------------
+Remove files
+------------
 
-To get remove files:
+Remove files in a specified directory:
 
 .. code-block:: python
 
@@ -142,12 +142,10 @@ To get remove files:
     op = api.wait_for([op.id])
 
 Stop client
-----------------
+-----------
 
-To stop client:
+Stop the client:
 
 .. code-block:: python
 
     client.stop()
-
-

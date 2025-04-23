@@ -83,7 +83,7 @@ Raw testing
 ^^^^^^^^^^^
 
 If required, from the command line, you can call style commands like
-`ruff`_. You can also call unit testing commands like `pytest`_.
+`Ruff`_. You can also call unit testing commands like `pytest`_.
 However, running these commands do not guarantee that your project is being tested
 in an isolated environment, which is the reason why tools like ``tox`` exist.
 
@@ -145,7 +145,7 @@ the building requirements and then executing the build module:
 
 
 .. LINKS AND REFERENCES
-.. _ruff: https://docs.astral.sh/ruff/
+.. _Ruff: https://docs.astral.sh/ruff/
 .. _pytest: https://docs.pytest.org/en/stable/
 .. _pip: https://pypi.org/project/pip/
 .. _pre-commit: https://pre-commit.com/

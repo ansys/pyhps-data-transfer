@@ -23,12 +23,12 @@
 """
 .. _ref_file:
 
-===============
-File Operations
-===============
+===================
+Run file operations
+===================
 
-Example script intended to be run from the command line,
-where it will perform the specified file operations based on the provided arguments.
+This example script is intended to be run from the command line,
+where it runs the specified file operations based on the provided arguments.
 
 Example usage:
 ``python examples/file_operations_client.py --local-path=examples/basic/files/* --remote-path=hello --debug``
