@@ -81,7 +81,7 @@ class MonitorState:
 
     @property
     def sleep_for(self):
-        """Return sleep time based on worker state."""
+        """Sleep time based on the worker state."""
         return self._sleep_while_running if self._was_ready else self._sleep_not_started
 
     def reset(self):
@@ -134,7 +134,7 @@ class ClientBase:
     Parameters
     ----------
     bin_config: BinaryConfig, default: None
-        Binary configuration. If not provided, a default ``BinaryConfig`` object is created.
+        Binary configuration. If no configuration is provided, a default ``BinaryConfig`` object is created.
     download_dir: str, default: "dt_download"
         Download directory path.
     clean: bool, default: False
@@ -222,7 +222,7 @@ class ClientBase:
 
     @property
     def session(self):
-        """Session object. Create a new one if one does not already exist."""
+        """Session object. If one does not exist, a new one is created."""
         if self._session is None:
             self._session = self._create_session(self.base_api_url, sync=not self.Meta.is_async)
         return self._session
@@ -453,7 +453,7 @@ class ClientBase:
 
 
 class AsyncClient(ClientBase):
-    """Provides an asynch interface to the Python client to the HPS data transfer APIs."""
+    """Provides an async interface to the Python client to the HPS data transfer APIs."""
 
     class Meta(ClientBase.Meta):
         """Meta class for AsyncClient class."""

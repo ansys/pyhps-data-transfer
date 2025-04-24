@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""Provides the ``ErrorResponse`` schema."""
+"""Provides the error response schema."""
 
 from __future__ import annotations
 
@@ -27,6 +27,6 @@ from pydantic import BaseModel
 
 
 class ErrorResponse(BaseModel):
-    """Error response."""
+    """Provides the error response schema."""
 
     error: str | None = "something bad happened"

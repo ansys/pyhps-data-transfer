@@ -22,7 +22,7 @@
 
 """Provides utilities for managing binary files.
 
-It also handles processes related to the Ansys HPS Data Transfer Client.
+It also handles processes related to the Ansys HPS data transfer client.
 """
 
 import json
@@ -52,10 +52,10 @@ level_map = {
 
 
 class PrepareSubprocess:
-    """Provides the context manager to disable ``vfork`` and ``posix_spawn`` in subprocess."""
+    """Lets the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
 
     def __enter__(self):
-        """Disable vfork and posix_spawn in subprocess."""
+        """Disable vfork and posix_spawn in the subprocess."""
         self._orig_use_vfork = subprocess._USE_VFORK
         self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
         subprocess._USE_VFORK = False
@@ -72,7 +72,7 @@ class BinaryConfig:
 
     Parameters
     ----------
-    data_transfer_url: str, default: "https://localhost:8443/hps/dt/api/v1"
+    data_transfer_url: str, default: `https://localhost:8443/hps/dt/api/v1`
         Data transfer URL.
     log: bool, default: True
         Whether to enable logging.
@@ -182,7 +182,7 @@ class Binary:
     Parameters
     ----------
     config: BinaryConfig
-        BinaryConfig object.
+        Binary configuration.
     """
 
     def __init__(
