@@ -149,7 +149,7 @@ class SrcDst(BaseModel):
 
 
 class SrcDstOperations(BaseModel):
-    """Provides the schema for source destination operations for a list of source and destination Provides the schema for source destination operations for a list of source and destination storage path pairs."""
+    """Provides the schema for source destination operations for a list of source and destination storage path pairs."""
 
     operations: list[SrcDst]
 
