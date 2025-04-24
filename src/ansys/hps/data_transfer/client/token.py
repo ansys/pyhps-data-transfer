@@ -20,11 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Module to define a utility function for handling authentication tokens."""
+"""Provides a utility function for handling authentication tokens."""
 
 
 def prepare_token(token):
-    """Prepares an authentication token by ensuring it is prefixed with "Bearer"."""
+    """Prepares an authentication token by ensuring it is prefixed with ``Bearer``."""
     if token is None:
         return None
     tkn = token

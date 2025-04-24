@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Pyhps data transfer models subpackage."""
+"""PyHPS data transfer models subpackage."""
 
 from __future__ import annotations
 

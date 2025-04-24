@@ -18,8 +18,8 @@ You must have pip_ and Python 3.9, 3.10, 3.11, or 3.12 installed.
 
        python --version
 
-#. If you do not have a Python 3.x version installed, install the latest 3.x version from the
-   Python organization's `Downloads https://www.python.org/downloads/>`_ page.
+#. If a Python 3.x version is not available, install the latest 3.x version from the
+   Python organization's `Downloads <https://www.python.org/downloads/>`_ page.
 
 #. To see if you have ``pip`` installed, run this command:
 

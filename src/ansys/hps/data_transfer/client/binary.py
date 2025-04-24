@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides utilities for managing binary files.
+"""Provides utilities for managing binary files.
 
 It also handles processes related to the Ansys HPS Data Transfer Client.
 """
@@ -52,7 +52,7 @@ level_map = {
 
 
 class PrepareSubprocess:
-    """Provides the context manager to disable vfork and posix_spawn in subprocess."""
+    """Provides the context manager to disable ``vfork`` and ``posix_spawn`` in subprocess."""
 
     def __enter__(self):
         """Disable vfork and posix_spawn in subprocess."""
@@ -72,26 +72,26 @@ class BinaryConfig:
 
     Parameters
     ----------
-    data_transfer_url: str
-        Data transfer URL. The default is https://localhost:8443/hps/dt/api/v1
-    log: bool
-        Process-related setting to enable logging. The default is ``True``.
-    log_to_file: bool
-        Whether to enable logging to a file. The default is ``False``.
-    monitor_interval: float
-        Duration for waiting before the next monitor check on the binary. The default is ``0.5``.
+    data_transfer_url: str, default: "https://localhost:8443/hps/dt/api/v1"
+        Data transfer URL.
+    log: bool, default: True
+        Whether to enable logging.
+    log_to_file: bool, default: False
+        Whether to enable logging to a file.
+    monitor_interval: float, default: 0.5
+        Duration for waiting before the next monitor check on the binary.
     token: str
         Worker configuration setting of the access token credential.
-    host: str
-        Host IP to talk to the data transfer service. The default is ``127.0.0.1``.
+    host: str, default: `127.0.0.1`
+        Host IP to talk to the data transfer service.
     port: int
-        Host port to talk to data tarsnfer service
-    verbosity: int
-        The default is ``1``.
-    insecure: bool
-        The default is ``False``.
-    debug: bool
-        The default is ``False``.
+        Host port to talk to the data transfer service.
+    verbosity: int, default: 1
+        Verbosity level of the worker. The higher the number, the more verbose the logging.
+    insecure: bool, default: False
+        Whether to ignore SSL certificate verification.
+    debug: bool, default: False
+        Whether to enable debug logging.
     """
 
     def __init__(
@@ -136,7 +136,7 @@ class BinaryConfig:
         self._on_port_changed = None
 
     def update(self, **kwargs):
-        """Update worker config settings."""
+        """Update worker configuration settings."""
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
@@ -145,7 +145,7 @@ class BinaryConfig:
 
     @property
     def port(self):
-        """Return port."""
+        """Port."""
         return self._selected_port or self._detected_port
 
     @port.setter
@@ -155,7 +155,8 @@ class BinaryConfig:
 
     @property
     def token(self):
-        """Return token."""
+        """Token."""
+        return self._token
         return self._token
 
     @token.setter
@@ -171,7 +172,7 @@ class BinaryConfig:
 
     @property
     def url(self):
-        """Return URL."""
+        """URL."""
         return f"http://{self.host}:{self.port}/api/v1"
 
 
@@ -207,12 +208,12 @@ class Binary:
 
     @property
     def config(self):
-        """Returns the configuration."""
+        """Configuration."""
         return self._config
 
     @property
     def is_started(self):
-        """Returns ``True`` if binary is up and running."""
+        """Flag indicating if the binary is up and running."""
         try:
             return self._process is not None and self._process.returncode is None
         except Exception:

@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides the core API functionality for interacting with the Ansys HPS Data Transfer Client.
+"""Provides the core API functionality for interacting with the Ansys HPS data transfer client.
 
 It includes methods and utilities for performing
 data transfer operations, managing resources, and handling client interactions.
@@ -57,7 +57,7 @@ log = logging.getLogger(__name__)
 
 
 class DataTransferApi:
-    """Provides the class for data transfer API.
+    """Provides the class for the data transfer API.
 
     Parameters
     ----------
@@ -72,7 +72,7 @@ class DataTransferApi:
 
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
-        """Status of worker binary."""
+        """Get the status of the worker binary."""
 
         def _sleep():
             log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
@@ -112,7 +112,7 @@ class DataTransferApi:
         return StorageConfigResponse(**json).storage
 
     def copy(self, operations: list[SrcDst]):
-        """Get API response for copying a list of files.
+        """Get the API response for copying a list of files.
 
         Parameters
         ----------
@@ -193,7 +193,7 @@ class DataTransferApi:
 
     @retry()
     def check_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Checks permissions of a path (including parent directory) using a list of ``RoleAssignment`` objects.
+        """Check permissions of a path (including parent directory) using a list of ``RoleAssignment`` objects.
 
         Parameters
         ----------
@@ -207,7 +207,7 @@ class DataTransferApi:
 
     @retry()
     def get_permissions(self, permissions: builtins.list[RoleQuery]):
-        """Return permissions of a file from a list of ``RoleQuery`` objects.
+        """Get permissions of a file from a list of ``RoleQuery`` objects.
 
         Parameters
         ----------
@@ -260,7 +260,7 @@ class DataTransferApi:
 
     @retry()
     def set_metadata(self, asgs: dict[str | StoragePath, DataAssignment]):
-        """Setting metadata for a path on backend storage.
+        """Set metadata for a path on backend storage.
 
         Parameters
         ----------

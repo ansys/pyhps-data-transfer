@@ -109,12 +109,12 @@ def permissions(api: DataTransferApi, url: str):
         )
         for f in files
     ]
-    log.info("### Operations to be executed: ")
+    log.info("### Operations to execute: ")
     for sd in src_dst:
         log.info(f"- {sd.src.remote}:{sd.src.path} -> {sd.dst.remote}:{sd.dst.path}")
 
     try:
-        # The operation will fail because 'repuser' does not have the necessary permissions
+        # The operation fails because 'repuser' does not have the necessary permissions
         resp = api.copy(src_dst)
     except Exception as ex:
         log.error(f"Encountered error: {ex}")

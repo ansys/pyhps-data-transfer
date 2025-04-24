@@ -27,7 +27,7 @@
 Transfer files
 ==============
 
-This basic script transfers files to remote backends and back using the data transfer service.
+This example script transfers files to remote backends and back using the data transfer service.
 The ``local-path`` argument is the path to the files or directory to transfer. Wildcards are supported.
 
 Example usage: ``python examples/transfer_files.py --local_path=examples/basic/files/* --remote-path=hello --debug``

@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""This module provides the base class for all client and server HPS-related errors."""
+"""Provides the base class for all client and server HPS-related errors."""
 
 import httpx
 from requests.exceptions import RequestException
@@ -143,5 +143,5 @@ def raise_for_status(response: httpx.Response):
 
 
 async def async_raise_for_status(response: httpx.Response):
-    """Method for httpx.Response objects that checks HTTP errors."""
+    """Method for ``httpx.Response`` objects that checks HTTP errors."""
     return raise_for_status(response)

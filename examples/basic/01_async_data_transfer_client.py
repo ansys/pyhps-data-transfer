@@ -27,7 +27,7 @@
 Run file operations asynchronously
 ==================================
 
-This script is intended to be run from the command line, where it
+This example script is intended to be run from the command line. It
 authenticates with the specified HPS service and sets up an asynchronous
 client for data transfer operations. It then transfers files to and from remote backends
 using the data transfer service.
@@ -87,7 +87,7 @@ async def main(
     api = AsyncDataTransferApi(client)
     await api.status(wait=True)
 
-    log.info("Query storages ...")
+    log.info("Querying storages ...")
     storages = await api.storages()
     storage_names = [f"{storage['name']}({storage['type']})" for storage in storages]
     log.info(f"Available storages: {storage_names}")

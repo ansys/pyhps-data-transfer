@@ -8,7 +8,7 @@ This section explains how to interact with the data transfer client service.
 To run the code samples in this section, you must have these prerequisites:
 
 - A running Ansys HPS installation. For more information, see the
-  `Ansys HPC Platform Services Guide <https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/prod_page.html?pn=Ansys%20HPC%20Platform%20Services&pid=HpcPlatformServices&lang=en>`_
+  `Ansys HPC Platform Services Deployment Guide <https://ansyshelp.ansys.com/account/secured?returnurl=/Views/Secured/prod_page.html?pn=Ansys%20HPC%20Platform%20Services&pid=HpcPlatformServices&lang=en>`_
   in the Ansys Help.
 - A Python shell with PyHPS Data Transfer installed. For more information, see :ref:`getting_started`.
 
@@ -27,7 +27,7 @@ To run the code samples in this section, you must have these prerequisites:
 Connect to a data transfer service
 ----------------------------------
 
-Before connecting to the data transfer service running on localhost with the default username and password, request the access token:
+Before connecting to the data transfer service, which runs on the localhost with the default username and password, request the access token:
 
 .. code-block:: python
 
@@ -76,8 +76,9 @@ Create a directory in a storage location:
 Copy files
 ----------
 
-In the following code block, ``local_path`` is the path to the files or directory to transfer,
-and ``remote_path`` is the path to the remote directory to transfer files to.
+In the following code block, the ``local_path`` attribute is the path to the
+files or directory to transfer. The ``remote_path`` attribute is the path to
+the remote directory to transfer files to.
 
 The paths used by the data transfer components follow this format:
 
@@ -87,11 +88,11 @@ The ``[remote or keyword]`` part can be the name of a specific remote, ``any``, 
 
 If an operation should be performed against a local file or directory, remove the first part, including the colon.
 
-**Examples**
+**Examples:**
 
-- ``any:mnt/test/path.txt``: A file in any of the available remotes
-- ``:mnt/test/path.txt``: Shorthand for any:[].
-- ``s3test:some/test/path.txt``: A file in storage named ``s3test``.
+- ``any:mnt/test/path.txt``: A file in any of the available remotes.
+- ``:mnt/test/path.txt``: Shorthand for any (``[]``).
+- ``s3test:some/test/path.txt``: A file named ``s3test`` in a storage location.
 - ``another/test/path.txt``: A local path.
 
 Copy files between storage locations:

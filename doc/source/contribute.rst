@@ -60,13 +60,13 @@ Installing PyHPS Data Transfer in developer mode allows you to modify and enhanc
       tox
 
 Test PyPyHPS Data Transfer
----------------------------------
+--------------------------
 
 PyHPS Data Transfer takes advantage of `tox`_. This tool allows you to automate common development
 tasks (similar to ``Makefile``), but it is oriented towards Python development.
 
-Using ``tox``
-^^^^^^^^^^^^^
+Use ``tox``
+^^^^^^^^^^^
 
 While ``Makefile`` has rules, ``tox`` has environments. In fact, ``tox``
 creates its own virtual environment so that anything being tested is isolated
@@ -79,16 +79,16 @@ The following environment commands are provided:
 - ``tox -e py-coverage``: Checks for unit testing and code coverage.
 - ``tox -e doc``: Checks for documentation building.
 
-Raw testing
-^^^^^^^^^^^
+Perform raw testing
+^^^^^^^^^^^^^^^^^^^
 
 If required, from the command line, you can call style commands like
 `Ruff`_. You can also call unit testing commands like `pytest`_.
 However, running these commands do not guarantee that your project is being tested
 in an isolated environment, which is the reason why tools like ``tox`` exist.
 
-Code style
-----------
+Adhere to code style
+--------------------
 
 As indicated in `Coding style <https://dev.docs.pyansys.com/coding-style/index.html>`_
 in the *PyAnsys developer's guide*, PyHPS Data Transfer follows PEP8 guidelines. PyHPS Data Transfer
@@ -114,10 +114,10 @@ This way, it's not possible for you to push code that fails the style checks::
   Validate GitHub Workflows................................................Passed
   Add License Headers......................................................Passed
 
-Documentation
--------------
+Build documentation
+-------------------
 
-For building documentation, you can manually run these commands:
+To build documentation manually, run these commands:
 
 .. code:: bash
 
@@ -131,8 +131,8 @@ However, the recommended way of checking documentation integrity is to use
 
     tox -e doc && your_browser_name .tox/doc_out/index.html
 
-Distributing
-------------
+Distribute
+----------
 
 If you would like to create either source or wheel files, start by installing
 the building requirements and then executing the build module:

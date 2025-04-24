@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides asynchronous API functionality for interacting with the Ansys HPS Data Transfer Client.
+"""Provides asynchronous API functionality for interacting with the Ansys HPS data transfer client.
 
 It includes methods and utilities for performing
 data transfer operations asynchronously, managing resources, and handling client interactions.
@@ -114,7 +114,7 @@ class AsyncDataTransferApi:
         return await self._exec_async_operation_req("list", operations)
 
     async def mkdir(self, operations: builtins.list[StoragePath]):
-        """Async interface to create a list of directories on the remote backend."""
+        """Async interface to create a list of directories in the remote backend."""
         return await self._exec_async_operation_req("mkdir", operations)
 
     async def move(self, operations: builtins.list[SrcDst]):
@@ -189,7 +189,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def set_metadata(self, asgs: dict[str | StoragePath, DataAssignment]):
-        """Async interface to set metadata of a list of DataAssignment objects."""
+        """Async interface to set metadata of a list of ``DataAssignment`` objects."""
         url = "/metadata:set"
         d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}
         req = SetMetadataRequest(metadata=d)

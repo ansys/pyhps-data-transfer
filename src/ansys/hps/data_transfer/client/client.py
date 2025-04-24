@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides the Python client to the HPS data transfer APIs."""
+"""Provides the Python client to the HPS data transfer APIs."""
 
 import asyncio
 import atexit
@@ -85,14 +85,14 @@ class MonitorState:
         return self._sleep_while_running if self._was_ready else self._sleep_not_started
 
     def reset(self):
-        """Reset monitor state to initial values."""
+        """Reset the monitor state to the initial values."""
         self._ok_reported = False
         self._was_ready = False
         self._failed = False
         self._last_exc = None
 
     def mark_ready(self, ready):
-        """Mark worker as ready or not ready."""
+        """Mark the worker as ready or not ready."""
         self._was_ready = True
         msg = f"Worker is running, reporting {'' if ready else 'not '}ready"
         if ready:
@@ -104,7 +104,7 @@ class MonitorState:
             log.warning(msg)
 
     def mark_failed(self, exc=None, binary=None):
-        """Mark worker as failed."""
+        """Mark the worker as failed."""
         exc_str = "" if exc is None else f": {exc}"
         if binary:
             bin_str = f", binary is {'' if binary.is_started else 'not '}running"
@@ -117,7 +117,7 @@ class MonitorState:
         self._last_exc = exc
 
     def report(self, binary):
-        """Report worker status."""
+        """Report the worker status."""
         if self._failed and self._was_ready:
             descr = "running" if binary.is_started else "not running"
             if self._last_exc is not None:
@@ -133,20 +133,20 @@ class ClientBase:
 
     Parameters
     ----------
-    bin_config: BinaryConfig
-        BinaryConfig object. The default is ``None``.
-    download_dir: str
-        Download directory path. The default is ``None``.
-    clean: bool
-        If True, cleans download_dir path. The default is ``False``..
-    clean_dev: bool
-        Whether to download the binary from development branch. The default is ``True``.
-    check_in_use: bool
-        Whether to check if the binary is in use and skip downloading a new binary. The default is ``True``.
-    timeout: float
-        The default is ``60.0``.
-    retries: int
-        The default is ``1``.0
+    bin_config: BinaryConfig, default: None
+        Binary configuration. If not provided, a default ``BinaryConfig`` object is created.
+    download_dir: str, default: "dt_download"
+        Download directory path.
+    clean: bool, default: False
+        Whether to clean the download directory path.
+    clean_dev: bool, default: True
+        Whether to clean the download directory path if the binary is from the development branch.
+    check_in_use: bool, default: True
+        Whether to check if the binary is in use and skip downloading a new binary.
+    timeout: float, default: 60.0
+        Timeout for the session. This is the maximum time to wait for a response from the server.
+    retries: int, default: 1
+        Number of times to retry the operation.
 
     Examples:
     --------
@@ -217,7 +217,7 @@ class ClientBase:
 
     @property
     def base_api_url(self):
-        """API URL from configuration."""
+        """API URL from the configuration."""
         return self._bin_config.url
 
     @property
@@ -253,7 +253,7 @@ class ClientBase:
         self._retries = value
 
     def start(self):
-        """Start client session using binary configuration credentials."""
+        """Start the client session using the binary configuration credentials."""
         if self.binary is not None:
             return
 
@@ -453,7 +453,7 @@ class ClientBase:
 
 
 class AsyncClient(ClientBase):
-    """Provides an asynchronous interface to the Python client to the HPS data transfer APIs."""
+    """Provides an asynch interface to the Python client to the HPS data transfer APIs."""
 
     class Meta(ClientBase.Meta):
         """Meta class for AsyncClient class."""
@@ -466,12 +466,12 @@ class AsyncClient(ClientBase):
         self._bin_config._on_token_update = self._update_token
 
     async def start(self):
-        """Start async binary worker."""
+        """Start the async binary worker."""
         super().start()
         asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
-        """Stop async binary worker."""
+        """Stop the async binary worker."""
         if self._session is not None:
             try:
                 await self._session.post(self.base_api_url + "/shutdown")
@@ -482,7 +482,7 @@ class AsyncClient(ClientBase):
         # asyncio_atexit.register(self.stop)
 
     async def wait(self, timeout: float = 60.0, sleep=0.5):
-        """Wait on async binary worker."""
+        """Wait on the async binary worker."""
         start = time.time()
         while time.time() - start < timeout:
             try:
@@ -565,7 +565,7 @@ class Client(ClientBase):
         self._monitor_thread = None
 
     def start(self):
-        """Start client session using binary configuration credentials."""
+        """Start the client session using the binary configuration credentials."""
         super().start()
         atexit.register(self.stop)
         self._monitor_thread = threading.Thread(
