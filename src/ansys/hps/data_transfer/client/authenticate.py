@@ -81,7 +81,7 @@ def authenticate(
         path to the CA bundle to use. For more information, see the :class:`requests.Session`
         documentation.
 
-    Returns
+    Returns:
     -------
     dict
         JSON-encoded content of a :class:`requests.Response` object.
