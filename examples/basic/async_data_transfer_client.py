@@ -98,9 +98,9 @@ async def main(
     storage_names = [f"{storage['name']}({storage['type']})" for storage in storages]
     log.info(f"Available storages: {storage_names}")
 
-########################################################################
-# Create a directory, copy files, list files, get metadata, remove files
-# ======================================================================
+#################
+# File operations
+# ===============
     base_dir = "basic-example"
     mkdir_op = await api.mkdir([StoragePath(path=f"{base_dir}")])
     await api.wait_for([mkdir_op.id])

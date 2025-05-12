@@ -50,7 +50,7 @@ from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 log = logging.getLogger(__name__)
 
 ####################################
-# File operations function
+# Perform file operations
 # ========================
 def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
     if not remote_path:
@@ -93,16 +93,16 @@ def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional
     log.info(f"Operation {op[0].state}")
 
 ####################################
-# Main function
-# =============
+# Define the main function
+# ========================
 def main(
-    local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards")],
-    remote_path: Annotated[str, typer.Option(help="Optional path to the remote directory to transfer files to")] = None,
-    debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
-    url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
-    username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
+    local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards.")],
+    remote_path: Annotated[str, typer.Option(help="Optional path to the remote directory to transfer files to.")] = None,
+    debug: Annotated[bool, typer.Option(help="Enable debug logging.")] = False,
+    url: Annotated[str, typer.Option(help="HPS URL to connect to.")] = "https://localhost:8443/hps",
+    username: Annotated[str, typer.Option(help="Username to authenticate with.")] = "repadmin",
     password: Annotated[
-        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
+        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with.")
     ] = "repadmin",
 ):
 
