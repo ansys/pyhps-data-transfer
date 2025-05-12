@@ -76,7 +76,7 @@ The client library requires an access token to connect to the HPS Data Transfer 
     token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     token = token.get("access_token", None)
 
-Connect to data transfer service client 
+Connect to data transfer service client
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 After obtaining the access token, you can connect to the data transfer service client:
