@@ -37,8 +37,8 @@ Example usage:
 """
 
 ###################################################
-# Necessary imports
-# =================
+# Perform necessary imports
+# =========================
 import filecmp
 import glob
 import logging

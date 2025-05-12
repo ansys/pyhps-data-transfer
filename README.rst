@@ -60,10 +60,10 @@ For more information, see `Getting Started`_.
 Basic usage
 ^^^^^^^^^^^
 
-The following sections show how to import PyHPS Data Transfer and use some basic capabilities:
+The following sections show how to import PyHPS Data Transfer and use some basic capabilities.
 
-Requesting access token
-~~~~~~~~~~~~~~~~~~~~~~~
+Request access token
+~~~~~~~~~~~~~~~~~~~~
 
 The client library requires an access token to connect to the HPS Data Transfer service.
 

@@ -69,8 +69,9 @@ async def main(
     assert token is not None
 
 ########################################
-# Create a AsyncClient instance
-# =============================
+# Create an ``AsyncClient`` instance
+# ==================================
+
     client = AsyncClient(clean=True)
 
     client.binary_config.update(
@@ -83,8 +84,9 @@ async def main(
     await client.start()
 
 ########################################
-# Create a AsyncDataTransferApi instance
-# ======================================
+# Create an ``AsyncDataTransferApi`` instance
+# ===========================================
+
 
     api = AsyncDataTransferApi(client)
     await api.status(wait=True)

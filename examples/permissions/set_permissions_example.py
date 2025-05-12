@@ -65,8 +65,8 @@ log.addHandler(stream_handler)
 log.setLevel(logging.DEBUG)
 
 ######################################################################
-# Define a method to get the user id of 'repuser' from Keycloak
-# =============================================================
+# Define a method to get the user ID of `'repuser`' from Keycloak
+# ===============================================================
 def get_user_id_from_keycloak(keycloak_url):
     """Get the user id of 'repuser' from Keycloak."""
     admin = KeycloakAdmin(
@@ -103,7 +103,7 @@ def permissions(api: DataTransferApi, url: str):
         log.info(f"- {file}")
 
 ##############################################################
-# Copy files as 'repuser'
+# Copy files as ``repuser``
 # =======================
     log.info("### Trying to copy files as 'repuser'...")
     target_dir = "permissions_demo"
@@ -133,8 +133,8 @@ def permissions(api: DataTransferApi, url: str):
     admin_token = admin_token.get("access_token", None)
 
 ##############################################################
-# Create a data transfer client for 'repadmin'
-# ============================================
+# Create a data transfer client for ``repadmin``
+# ==============================================
     log.info("### Preparing data transfer client for 'repadmin' ...")
     admin_client = Client()
     admin_client.binary_config.update(
@@ -150,8 +150,8 @@ def permissions(api: DataTransferApi, url: str):
     admin.status(wait=True)
 
 ##############################################################
-# Grant 'repuser' the necessary permissions
-# =========================================
+# Grant ``repuser`` the necessary permissions
+# ===========================================
     log.info("### Granting 'repuser' the necessary permissions ...")
     user_id = get_user_id_from_keycloak(keycloak_url)
 
@@ -169,8 +169,8 @@ def permissions(api: DataTransferApi, url: str):
         log.info(ex)
 
 ##############################################################
-# Verify permissions for 'repuser'
-# ================================
+# Verify permissions for ``repuser``
+# ==================================
     try:
         log.info("### Verifying permissions for 'repuser' ...")
         resp = admin.check_permissions(
@@ -191,16 +191,16 @@ def permissions(api: DataTransferApi, url: str):
         log.info(f"### Copy operation state: {op.state}")
 
 ##############################################################
-# List files in the target directory as 'repadmin'
-# ================================================
+# List files in the target directory as ``repadmin``
+# ==================================================
         log.info("### Listing files in the target directory as 'repadmin' ...")
         resp = admin.list([StoragePath(path=target_dir, remote="any")])
         op = admin.wait_for([resp.id], timeout=10)[0]
         log.info(f"### Result: {op.result}")
 
 ##############################################################
-# Download files to 'downloaded' directory
-# ========================================
+# Download files to ``downloaded`` directory
+# ==========================================
         target_dir = os.path.join(os.path.dirname(__file__), "downloaded")
         log.info(f"### Downloading files to {target_dir}...")
         src_dst = [
