@@ -40,7 +40,7 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
     "pytest==8.3.5",
-    "pytest-cov==6.0.0",
+    "pytest-cov==6.1.1",
     "pytest-timeout==2.3.1",
     "pytest-mock-resources[redis]==2.12.2",
     "pytest-rerunfailures==15.0",
@@ -50,13 +50,12 @@ tests = [
     "tox==4.25.0",
 ]
 doc = [
-    "ansys-sphinx-theme==1.3.2",
+    "ansys-sphinx-theme==1.4.2",
     "autodoc_pydantic==2.2.0",
     "jupyter_sphinx==0.5.3",
-    "nbsphinx==0.9.6",
+    "nbsphinx==0.9.7",
     "numpydoc==1.8.0",
-    "myst-parser==4.0.0",
-    "Sphinx==8.2.3",
+    "Sphinx==8.1.3",
     "sphinx-autoapi==3.6.0",
     "sphinx-autodoc-typehints==3.0.1",
     "sphinxcontrib-globalsubs==0.1.2",
