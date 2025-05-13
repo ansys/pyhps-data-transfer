@@ -80,11 +80,6 @@ def authenticate(
         If a Boolean, whether to verify the server's TLS certificate. If a string, the
         path to the CA bundle to use. For more information, see the :class:`requests.Session`
         documentation.
-
-    Returns:
-    -------
-    dict
-        JSON-encoded content of a :class:`requests.Response` object.
     """
     auth_postfix = f"auth/realms/{realm}"
     if url.endswith(f"/{auth_postfix}") or url.endswith(f"/{auth_postfix}/"):
