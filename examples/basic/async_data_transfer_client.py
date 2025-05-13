@@ -68,7 +68,10 @@ async def main(
     token = token.get("access_token", None)
     assert token is not None
 
-    log.info("Connecting to the data transfer service client..")
+########################################
+# Create an ``AsyncClient`` instance
+# ==================================
+
     client = AsyncClient(clean=True)
 
     client.binary_config.update(
@@ -80,19 +83,25 @@ async def main(
     )
     await client.start()
 
-    ########################################
-    # Create a AsyncDataTransferApi instance
-    # ======================================
+########################################
+# Create an ``AsyncDataTransferApi`` instance
+# ===========================================
+
 
     api = AsyncDataTransferApi(client)
     await api.status(wait=True)
 
-    log.info("Query storages ...")
+########################################
+# Get available storages
+# ======================
     storages = await api.storages()
     storage_names = [f"{storage['name']}({storage['type']})" for storage in storages]
     log.info(f"Available storages: {storage_names}")
 
-    log.info("Creating a directory ...")
+#################
+# Perform file operations
+# =======================
+
     base_dir = "basic-example"
     mkdir_op = await api.mkdir([StoragePath(path=f"{base_dir}")])
     await api.wait_for([mkdir_op.id])

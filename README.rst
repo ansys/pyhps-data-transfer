@@ -42,7 +42,6 @@ Installation
 ^^^^^^^^^^^^
 
 You can use `pip <https://pypi.org/project/pip/>`_ to install PyHPS Data Transfer.
-Note: This will be available only after released. For now, please install from git
 
 .. code:: bash
 
@@ -61,14 +60,40 @@ For more information, see `Getting Started`_.
 Basic usage
 ^^^^^^^^^^^
 
-This code shows how to import PyHPS Data Transfer and use some basic capabilities:
+The following sections show how to import PyHPS Data Transfer and use some basic capabilities.
+
+Request access token
+~~~~~~~~~~~~~~~~~~~~
+
+The client library requires an access token to connect to the HPS Data Transfer service.
+
+.. code:: python
+
+    from ansys.hps.data_transfer.client.authenticate import authenticate
+
+    auth_url = "https://localhost:8443/hps/auth/realms/rep"
+
+    token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
+    token = token.get("access_token", None)
+
+Connect to data transfer service client
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After obtaining the access token, you can connect to the data transfer service client:
 
 .. code:: python
 
     from ansys.hps.data_transfer.client import Client    # Import the Client class
+    dt_url = f"https://localhost:8443/hps/dt/api/v1"
     client = Client()   # Create a client object
+    client.binary_config.update(verbosity=3, debug=True, insecure=True, token=token, data_transfer_url=dt_url, log=True)
+    client.start()
 
-For comprehensive usage information, see `Examples`_ in the `PyHPS Data Transfer documentation`_.
+    api = DataTransferApi(client)
+    api.status(wait=True)
+
+
+For comprehensive usage information, see `Examples`_.
 
 Documentation and issues
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -87,6 +112,6 @@ To reach the project support team, email `pyansys.core@ansys.com <mailto:pyansys
 
 
 .. LINKS AND REFERENCES
-.. _Getting Started: https://hps.docs.pyansys.com/version/stable/getting_started/index.html
-.. _Examples: https://hps.docs.pyansys.com/version/stable/examples.html
-.. _PyHPS Data Transfer documentation: https://hps.docs.pyansys.com/version/stable/index.html
+.. _Getting Started: https://data-transfer.hps.docs.pyansys.com/version/stable/getting_started/index.html
+.. _Examples: https://data-transfer.hps.docs.pyansys.com/version/stable/examples/index.html
+.. _PyHPS Data Transfer documentation: https://data-transfer.hps.docs.pyansys.com/
