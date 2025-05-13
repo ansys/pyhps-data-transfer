@@ -237,7 +237,7 @@ class AsyncDataTransferApi:
             try:
                 ops = await self._operations(operation_ids)
                 so_far = hf.format_timespan(time.time() - start)
-                log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")                
+                log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
                 if self.client.binary_config.debug:
                     for op in ops:
                         fields = [

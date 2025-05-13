@@ -60,7 +60,7 @@ class TempFileManager:
             os.remove(self.file_name)
             log.info(f"Temporary file {self.file_name} has been deleted.")
         except Exception as ex:
-            log.warning(f"Failed to delete file {self.file_name}: {ex}")       
+            log.warning(f"Failed to delete file {self.file_name}: {ex}")
         return 0
 
 
@@ -74,7 +74,7 @@ def sync_copy(storage_path, api, file_size=5, num_files=2):
         The DataTransferApi object.
     file_size: int
         The size of the file to be copied in GB.
-    """        
+    """
     api.status(wait=True)
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
         manager = TempFileManager(temp_file.name, file_size)
