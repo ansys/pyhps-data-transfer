@@ -61,10 +61,6 @@ def main(
     user_token = user_token.get("access_token", None)
     assert user_token is not None
 
-    ##########################
-    # Create a client instance
-    # ========================
-
     client = Client()
     client.binary_config.update(
         verbosity=3,
