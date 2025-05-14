@@ -73,7 +73,7 @@ Use the ``set_permissions()`` and ``check_permissions()`` methods to set and che
 
 The ``set_permissions()`` method takes a list of ``RoleAssignment`` objects with ``resource``, ``role``, and ``subject`` fields:
 
-* ``resource``: Specifiesthe resource type with the directory path and resource type.
+* ``resource``: Specifies the resource type with the directory path and resource type.
 * ``role``: Assigns a role to the resource. Options are ``reader``, ``writer``, and ``administrator``.
 * ``subject``: Passes the ``Subject`` and ``SubjectType`` with the user ID and user/group/any respectively.
 
