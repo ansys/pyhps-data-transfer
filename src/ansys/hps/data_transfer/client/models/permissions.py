@@ -56,14 +56,14 @@ class SubjectType(Enum):
 
 
 class Resource(BaseModel):
-    """provides the schema for the resource type."""
+    """Provides the schema for the resource type."""
 
     path: str | None = "my/path/to/data/file.txt"
     type: ResourceType | None = None
 
 
 class Subject(BaseModel):
-    """provides the schema for the subject type."""
+    """Provides the schema for the subject type."""
 
     id: str | None = "946991ec-828c-4de4-acbe-962ada8bc441"
     type: SubjectType | None = None

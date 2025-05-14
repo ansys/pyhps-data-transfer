@@ -69,7 +69,7 @@ class ClientError(HPSError):
 
 
 class BinaryError(HPSError):
-    """Provides Binary related errors."""
+    """Provides binary-related errors."""
 
     def __init__(self, *args, **kwargs):
         """Initializes the BinaryError class object."""
@@ -85,7 +85,7 @@ class NotReadyError(ClientError):
 
 
 class TimeoutError(ClientError):
-    """Provides Timeout related errors."""
+    """Provides timeout-related errors."""
 
     def __init__(self, *args, **kwargs):
         """Initializes the TimeoutError class object."""

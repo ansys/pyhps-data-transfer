@@ -77,7 +77,7 @@ List files in a specified directory:
 Get metadata
 ------------
 
-Retrieve metadata for a file in a specified directory:
+Get metadata for a file in a specified directory:
 
 .. code-block:: python
 
