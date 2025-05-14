@@ -136,11 +136,11 @@ class ClientBase:
     bin_config: BinaryConfig, default: None
         Binary configuration. If no configuration is provided, a default ``BinaryConfig`` object is created.
     download_dir: str, default: "dt_download"
-        Download directory path.
+        Path to the download directory.
     clean: bool, default: False
-        Whether to clean the download directory path.
+        Whether to clean the path to the download directory.
     clean_dev: bool, default: True
-        Whether to clean the download directory path if the binary is from the development branch.
+        Whether to clean the path to the download directory if the binary is from the development branch.
     check_in_use: bool, default: True
         Whether to check if the binary is in use and skip downloading a new binary.
     timeout: float, default: 60.0
@@ -168,7 +168,7 @@ class ClientBase:
     """
 
     class Meta:
-        """Meta class for ClientBase class."""
+        """Meta class for the ``ClientBase`` class."""
 
         is_async = False
 

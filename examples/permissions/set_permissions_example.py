@@ -65,8 +65,8 @@ log.addHandler(stream_handler)
 log.setLevel(logging.DEBUG)
 
 ######################################################################
-# Define a method to get the user ID of `'repuser`' from Keycloak
-# ===============================================================
+# Define a method to get the user ID of ``repuser``` from Keycloak
+# ================================================================
 def get_user_id_from_keycloak(keycloak_url):
     """Get the user id of 'repuser' from Keycloak."""
     admin = KeycloakAdmin(

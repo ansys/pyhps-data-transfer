@@ -5,17 +5,17 @@ System administrators use the ``permissions`` plugin to manage permissions on th
 
 Specify system usernames either in Keycloak or by using the ``user_mapping`` property.
 
-To get system usernames from Keycloak:
+- To get system usernames from Keycloak:
 
-* Configure credentials within the Keycloak block for a user who can list other users and their attributes.
-* Add a custom attribute in Keycloak for every user with a corresponding system username.
-* Ensure that the key matches the ``keycloak.attribute_name`` property.
-* Set the value to the system username or its numerical representation.
+  #. Configure credentials within the Keycloak block for a user who can list other users and their attributes.
+  #. Add a custom attribute in Keycloak for every user with a corresponding system username.
+  #. Ensure that the key matches the ``keycloak.attribute_name`` property.
+  #. Set the value to the system username or its numerical representation.
 
-To use the ``user_mapping`` property:
+- To use the ``user_mapping`` property:
 
-* Include the users' Keycloak UUIDs as keys.
-* Set the values to the system usernames. Use a numerical value if the username comes from Active Directory.
+  #. Include the users' Keycloak UUIDs as keys.
+  #. Set the values to the system usernames. Use a numerical value if the username comes from Active Directory.
 
 Here is a simple example:
 
@@ -73,9 +73,9 @@ Use the ``set_permissions()`` and ``check_permissions()`` methods to set and che
 
 The ``set_permissions()`` method takes a list of ``RoleAssignment`` objects with ``resource``, ``role``, and ``subject`` fields:
 
-* ``resource``: Specify the resource type with the directory path and resource type.
-* ``role``: Assign a role to the resource. Options are ``reader``, ``writer``, and ``administrator``.
-* ``subject``: Pass the ``Subject`` and ``SubjectType`` with the user ID and user/group/any respectively.
+* ``resource``: Specifiesthe resource type with the directory path and resource type.
+* ``role``: Assigns a role to the resource. Options are ``reader``, ``writer``, and ``administrator``.
+* ``subject``: Passes the ``Subject`` and ``SubjectType`` with the user ID and user/group/any respectively.
 
 Here is an example of how to use the ``set_permissions()`` method:
 
@@ -110,7 +110,7 @@ Here is an example of how to use the ``set_permissions()`` method:
     except Exception as ex:
         log.info(ex)
 
-Like the ``set_permissions()`` method, the ``check_permissions`` method takes a list of ``RoleQuery`` objects with ``resource``, ``role``, and ``subject`` fields.
+Similar to the ``set_permissions()`` method, the ``check_permissions`` method takes a list of ``RoleQuery`` objects with ``resource``, ``role``, and ``subject`` fields.
 
 This code shows how to use the ``check_permissions()`` method:
 

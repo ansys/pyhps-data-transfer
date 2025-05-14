@@ -23,12 +23,12 @@
 """
 .. _ref_file:
 
-===================
-Run file operations
-===================
+=================================
+Run file operations synchronously
+=================================
 
 This example script is intended to be run from the command line.
-It runs the specified file operations based on the provided arguments.
+It runs the specified file operations synchronously based on the provided arguments.
 
 Example usage:
 ``python examples/file_operations_client.py --local-path=examples/basic/files/* --remote-path=hello --debug``
@@ -50,8 +50,8 @@ from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 log = logging.getLogger(__name__)
 
 ####################################
-# Perform file operations
-# ========================
+# Run file operations
+# ===================
 def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
     if not remote_path:
         remote_path = Path(local_path).parent.name

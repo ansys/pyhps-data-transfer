@@ -27,7 +27,7 @@ You must have pip_ and Python 3.9, 3.10, 3.11, or 3.12 installed.
 
        pip --version
 
-#. If you do not have ``pip`` installed, see `Installing Packages <https://packaging.python.org/tutorials/installing-packages/>`_
+#. If ``pip`` is not installed, see `Installing Packages <https://packaging.python.org/tutorials/installing-packages/>`_
    in the *Python Packaging User Guide*.
 
 #. To ensure that you have the latest version of ``pip``, run this command:

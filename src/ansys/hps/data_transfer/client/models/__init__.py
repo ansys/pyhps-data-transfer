@@ -28,6 +28,6 @@ from pydantic import BaseModel, Field
 
 
 class FieldCompatBucketNameFileNamePostRequest(BaseModel):
-    """FieldCompatBucketNameFileNamePostRequest schema for the post operation."""
+    """Provides the post operation request schema for field compatibility of the bucket name and file name."""
 
     file: bytes = Field(..., description="File")

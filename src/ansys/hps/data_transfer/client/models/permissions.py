@@ -40,7 +40,7 @@ class ResourceType(Enum):
 
 
 class RoleType(Enum):
-    """Role type schema for the role of the user."""
+    """Provides the role type schema for the role of the user."""
 
     Reader = "reader"
     Writer = "writer"
@@ -48,7 +48,7 @@ class RoleType(Enum):
 
 
 class SubjectType(Enum):
-    """Subject type schema for the user or group."""
+    """Provides the subject type schema for the user or group."""
 
     User = "user"
     Group = "group"

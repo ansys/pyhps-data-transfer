@@ -22,7 +22,7 @@
 
 """Provides the core API functionality for interacting with the Ansys HPS data transfer client.
 
-It includes methods and utilities for performing
+This module includes methods and utilities for performing
 data transfer operations, managing resources, and handling client interactions.
 """
 
@@ -57,7 +57,7 @@ log = logging.getLogger(__name__)
 
 
 class DataTransferApi:
-    """Provides the class for the data transfer API.
+    """Provides the data transfer API.
 
     Parameters
     ----------
@@ -245,7 +245,7 @@ class DataTransferApi:
 
     @retry()
     def get_metadata(self, paths: builtins.list[str | StoragePath]):
-        """Get metadata of a path on backend storage.
+        """Get metadata of a path on the backend storage.
 
         Parameters
         ----------
@@ -260,7 +260,7 @@ class DataTransferApi:
 
     @retry()
     def set_metadata(self, asgs: dict[str | StoragePath, DataAssignment]):
-        """Set metadata for a path on backend storage.
+        """Set metadata for a path on the backend storage.
 
         Parameters
         ----------

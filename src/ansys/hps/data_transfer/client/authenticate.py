@@ -22,7 +22,7 @@
 
 """Provides authentication for the user with a password or refresh token.
 
-It interacts with the HPS authentication service.
+This module interacts with the HPS authentication service.
 """
 
 import logging

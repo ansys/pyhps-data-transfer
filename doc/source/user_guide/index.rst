@@ -3,7 +3,7 @@
 User guide
 ==========
 
-This section explains how to interact with the data transfer client service.
+This section explains how to interact with PyHPS Data Transfer.
 
 To run the code samples in this section, you must have these prerequisites:
 
@@ -24,10 +24,11 @@ To run the code samples in this section, you must have these prerequisites:
    run_async
 
 
-Connect to a data transfer service
-----------------------------------
+Connect to a data transfer service client
+-----------------------------------------
 
-Before connecting to the data transfer service, which runs on the localhost with the default username and password, request the access token:
+The data transfer service runs on the localhost with the default username and password. Before you can connect to
+a data transfer service client, you must request the access token:
 
 .. code-block:: python
 
@@ -39,7 +40,7 @@ Before connecting to the data transfer service, which runs on the localhost with
     token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     token = token.get("access_token", None)
 
-Use the access token to connect to the data transfer service client:
+You can now use this access token to make a connection:
 
 .. code-block:: python
 
@@ -55,7 +56,7 @@ Use the access token to connect to the data transfer service client:
     api = DataTransferApi(client)
     api.status(wait=True)
 
-Query available storages:
+Use this code to query available storages:
 
 .. code-block:: python
 
@@ -76,9 +77,9 @@ Create a directory in a storage location:
 Copy files
 ----------
 
-In the following code block, the ``local_path`` attribute is the path to the
-files or directory to transfer. The ``remote_path`` attribute is the path to
-the remote directory to transfer files to.
+When copying files, the ``local_path`` attribute is the path to the
+files or directory to copy. The ``remote_path`` attribute is the path to
+the remote directory to copy files to.
 
 The paths used by the data transfer components follow this format:
 

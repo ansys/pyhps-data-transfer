@@ -23,13 +23,13 @@
 """
 .. _ref_async:
 
-=========
-Run Async
-=========
+==================================
+Run file operations asynchronously
+==================================
 
-This script is intended to be run from the command line, where it will
-authenticate with the specified HPS service and set up an asynchronous
-client for data transfer operations, transfer files to and from remote backends
+This exammple script is intended to be run from the command line. It
+authenticates with the specified HPS service and sets up an asynchronous
+client for data transfer operations. It then transfers files to and from remote backends
 using the data transfer service.
 
 Example usage:
@@ -83,10 +83,9 @@ async def main(
     )
     await client.start()
 
-########################################
+#############################################
 # Create an ``AsyncDataTransferApi`` instance
 # ===========================================
-
 
     api = AsyncDataTransferApi(client)
     await api.status(wait=True)
@@ -94,13 +93,14 @@ async def main(
 ########################################
 # Get available storages
 # ======================
+
     storages = await api.storages()
     storage_names = [f"{storage['name']}({storage['type']})" for storage in storages]
     log.info(f"Available storages: {storage_names}")
 
-#################
-# Perform file operations
-# =======================
+########################################
+# Run file operations
+# ===================
 
     base_dir = "basic-example"
     mkdir_op = await api.mkdir([StoragePath(path=f"{base_dir}")])

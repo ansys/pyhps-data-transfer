@@ -77,7 +77,7 @@ class BinaryError(HPSError):
 
 
 class NotReadyError(ClientError):
-    """Provides NotReady related errors."""
+    """Provides not ready-related errors."""
 
     def __init__(self, *args, **kwargs):
         """Initializes the NotReadyError class object."""

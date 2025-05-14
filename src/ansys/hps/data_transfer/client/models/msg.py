@@ -45,7 +45,7 @@ class BuildInfo(BaseModel):
 
 
 class CheckPermissionsResponse(BaseModel):
-    """Check permissions response schema for the current user."""
+    """Check the permissions response schema for the current user."""
 
     allowed: bool | None = None
 
@@ -58,7 +58,7 @@ class CopyMetadataRequest(BaseModel):
 
 
 class FileDownloadTokenResponse(BaseModel):
-    """Provides the token response schema for download token response schema for downloading a file."""
+    """Provides the token response schema for for downloading a file."""
 
     token: str | None = None
 
@@ -115,7 +115,7 @@ class SetMetadataRequest(BaseModel):
 
 
 class Status(BaseModel):
-    """Provides the request schema for setting the metadata."""
+    """Provides the request schema for getting the build status."""
 
     build_info: BuildInfo | None = None
     ready: bool | None = None

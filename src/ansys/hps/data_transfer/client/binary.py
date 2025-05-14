@@ -22,7 +22,7 @@
 
 """Provides utilities for managing binary files.
 
-It also handles processes related to the Ansys HPS data transfer client.
+This module also handles processes related to the Ansys HPS data transfer client.
 """
 
 import json
@@ -52,7 +52,7 @@ level_map = {
 
 
 class PrepareSubprocess:
-    """Lets the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
+    """Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
 
     def __enter__(self):
         """Disable vfork and posix_spawn in the subprocess."""

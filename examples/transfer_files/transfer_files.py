@@ -169,7 +169,7 @@ def main(
     assert token is not None
 
 ###################################################
-# Create a ``client`` instance
+# Create a ``Client`` instance
 # ============================
     client = Client(clean=True)
 

@@ -21,7 +21,7 @@
 # SOFTWARE.
 """Provides utilities for implementing exponential backoff with optional jitter.
 
-It is commonly used in retry mechanisms to handle transient errors in distributed systems.
+This module is commonly used in retry mechanisms to handle transient errors in distributed systems.
 """
 
 from random import uniform

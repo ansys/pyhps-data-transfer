@@ -24,7 +24,7 @@
 
 
 def prepare_token(token):
-    """Prepares an authentication token by ensuring it is prefixed with ``Bearer``."""
+    """Prepare an authentication token by ensuring it is prefixed with ``Bearer``."""
     if token is None:
         return None
     tkn = token

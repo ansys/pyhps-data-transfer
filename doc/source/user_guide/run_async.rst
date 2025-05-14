@@ -3,8 +3,8 @@ Run operations asynchronously
 
 Run data transfer client operations asynchronously to improve performance and responsiveness.
 
-Connect to a data transfer service
-----------------------------------
+Connect to a data transfer service client
+-----------------------------------------
 
 Use the access token to connect to the data transfer service client:
 
@@ -29,7 +29,7 @@ Use the access token to connect to the data transfer service client:
     api = AsyncDataTransferApi(client)
     await api.status(wait=True)
 
-Query available storages:
+Run this command to query available storages:
 
 .. code-block:: python
 
