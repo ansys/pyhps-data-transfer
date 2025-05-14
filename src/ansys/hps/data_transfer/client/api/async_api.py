@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides asynchronous API functionality for interacting with the Ansys HPS Data Transfer Client.
+"""Provides asynchronous API functionality for interacting with the Ansys HPS data transfer client.
 
-It includes methods and utilities for performing
+This module includes methods and utilities for performing
 data transfer operations asynchronously, managing resources, and handling client interactions.
 """
 
@@ -58,7 +58,7 @@ log = logging.getLogger(__name__)
 
 
 class AsyncDataTransferApi:
-    """Wrapper for the Data Transfer Worker REST API, offering an async interface."""
+    """Provides a wrapper for the Data Transfer Worker REST API, offering an async interface."""
 
     def __init__(self, client: AsyncClient):
         """Initialize the async data transfer API with the client object."""
@@ -67,7 +67,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
-        """Async interface to get the status of the worker."""
+        """Provides an async interface to get the status of the worker."""
 
         async def _sleep():
             log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
@@ -91,42 +91,42 @@ class AsyncDataTransferApi:
 
     @retry()
     async def operations(self, ids: list[str]):
-        """Async interface to get a list of operations by their ids."""
+        """Provides an async interface to get a list of operations by their IDs."""
         return await self._operations(ids)
 
     async def storages(self):
-        """Async interface to get the list of storage configurations."""
+        """Provides an async interface to get the list of storage configurations."""
         url = "/storage"
         resp = await self.client.session.get(url)
         json = resp.json()
         return StorageConfigResponse(**json).storage
 
     async def copy(self, operations: list[SrcDst]):
-        """Async interface to copy a list of SrcDst objects."""
+        """Provides an async interface to copy a list of ``SrcDst`` objects."""
         return await self._exec_async_operation_req("copy", operations)
 
     async def exists(self, operations: list[StoragePath]):
-        """Async interface to check if a list of StoragePath objects exist."""
+        """Provides an async interface to check if a list of ``StoragePath`` objects exist."""
         return await self._exec_async_operation_req("exists", operations)
 
     async def list(self, operations: list[StoragePath]):
-        """Async interface to list a list of StoragePath objects."""
+        """Provides an async interface to get a list of ``StoragePath`` objects."""
         return await self._exec_async_operation_req("list", operations)
 
     async def mkdir(self, operations: builtins.list[StoragePath]):
-        """Async interface to create a list of directories on remote backend."""
+        """Provides an async interface to create a list of directories in the remote backend."""
         return await self._exec_async_operation_req("mkdir", operations)
 
     async def move(self, operations: builtins.list[SrcDst]):
-        """Async interface to move a list of SrcDst objects in the remote backend."""
+        """Provides an async interface to move a list of ``SrcDst`` objects in the remote backend."""
         return await self._exec_async_operation_req("move", operations)
 
     async def remove(self, operations: builtins.list[StoragePath]):
-        """Async interface to remove files in the remote backend."""
+        """Provides an async interface to remove files in the remote backend."""
         return await self._exec_async_operation_req("remove", operations)
 
     async def rmdir(self, operations: builtins.list[StoragePath]):
-        """Async interface to remove directories in the remote backend."""
+        """Provides an async interface to remove directories in the remote backend."""
         return await self._exec_async_operation_req("rmdir", operations)
 
     @retry()
@@ -147,7 +147,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def check_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Async interface to check permissions of a list of RoleAssignment objects."""
+        """Provides an async interface to check permissions of a list of ``RoleAssignment`` objects."""
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
@@ -156,7 +156,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def get_permissions(self, permissions: builtins.list[RoleQuery]):
-        """Async interface to get permissions of a list of RoleQuery objects."""
+        """Provides an async interface to get permissions of a list of ``RoleQuery`` objects."""
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         resp = await self.client.session.post(url, json=payload)
@@ -165,21 +165,21 @@ class AsyncDataTransferApi:
 
     @retry()
     async def remove_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Async interface to remove permissions of a list of RoleAssignment objects."""
+        """Provides an async interface to remove permissions of a list of ``RoleAssignment`` objects."""
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         await self.client.session.post(url, json=payload)
 
     @retry()
     async def set_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Async interface to set permissions of a list of RoleAssignment objects."""
+        """Provides an async interface to set permissions of a list of ``RoleAssignment`` objects."""
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
         await self.client.session.post(url, json=payload)
 
     @retry()
     async def get_metadata(self, paths: builtins.list[str | StoragePath]):
-        """Async interface to get metadata of a list of StoragePath objects."""
+        """Provides an async interface to get metadata of a list of ``StoragePath`` objects."""
         url = "/metadata:get"
         paths = [p if isinstance(p, str) else p.path for p in paths]
         payload = {"paths": paths}
@@ -189,7 +189,7 @@ class AsyncDataTransferApi:
 
     @retry()
     async def set_metadata(self, asgs: dict[str | StoragePath, DataAssignment]):
-        """Async interface to set metadata of a list of DataAssignment objects."""
+        """Provides an async interface to set metadata of a list of ``DataAssignment`` objects."""
         url = "/metadata:set"
         d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}
         req = SetMetadataRequest(metadata=d)
@@ -205,7 +205,7 @@ class AsyncDataTransferApi:
         cap: float = 2.0,
         raise_on_error: bool = False,
     ):
-        """Async interface to wait for a list of operations to complete."""
+        """Provides an async interface to wait for a list of operations to complete."""
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
         operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]

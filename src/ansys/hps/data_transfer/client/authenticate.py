@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides authentication for the user with a password or refresh token.
+"""Provides authentication for the user with a password or refresh token.
 
-It interacts with the HPS authentication service.
+This module interacts with the HPS authentication service.
 """
 
 import logging
@@ -49,42 +49,37 @@ def authenticate(
     verify: bool | str = True,
     **kwargs,
 ):
-    """Authenticates the user with a password or refresh token against the HPS authentication service.
+    """Authenticate the user with a password or refresh token against the HPS authentication service.
 
     If this method is successful, the response includes access and refresh tokens.
 
     Parameters
     ----------
 
-    url : str, optional
-        Base path for the server to call. The default is ``'https://localhost:8443/rep'``.
-    realm : str, optional
-        Keycloak realm. The default is ``'rep'``.
-    grant_type: str, optional
-        Authentication method. The default is ``'password'``.
-    scope : str, optional
-        String containing one or more requested scopes. The default is ``'openid'``.
-    client_id : str, optional
-        Client type. The default is ``'rep-cli'``.
-    client_secret : str, optional
-        Client secret. The default is ``None``.
-    username : str, optional
+    url : str, default: 'https://localhost:8443/hps'
+        Base path for the server to call.
+    realm : str, default: 'rep'
+        Name of the Keycloak realm.
+    grant_type: str, default: 'password'
+        Authentication method.
+    scope : str, default: 'openid'
+        String containing one or more requested scopes.
+    client_id : str, default: 'rep-cli'
+        Client type.
+    client_secret : str, default: None
+        Client secret.
+    username : str
         Username.
-    password : str, optional.
+    password : str
         Password.
-    refresh_token : str, optional
+    refresh_token : str
         Refresh token.
-    timeout : float, optional
-        Timeout in seconds. The default is ``10.0``.
-    verify: Union[bool, str], optional
+    timeout : float, default: 10.0
+        Timeout in seconds.
+    verify: Union[bool, str]
         If a Boolean, whether to verify the server's TLS certificate. If a string, the
         path to the CA bundle to use. For more information, see the :class:`requests.Session`
         documentation.
-
-    Returns:
-    -------
-    dict
-        JSON-encoded content of a :class:`requests.Response` object.
     """
     auth_postfix = f"auth/realms/{realm}"
     if url.endswith(f"/{auth_postfix}") or url.endswith(f"/{auth_postfix}/"):

@@ -27,7 +27,7 @@
 Set and query permissions
 =========================
 
-Example script to set and query permissions on files and
+This example script sets and queries permissions on files and
 directories using the data transfer service.
 
 Example usage:
@@ -65,8 +65,8 @@ log.addHandler(stream_handler)
 log.setLevel(logging.DEBUG)
 
 ######################################################################
-# Define a method to get the user ID of `'repuser`' from Keycloak
-# ===============================================================
+# Define a method to get the user ID of ``repuser``` from Keycloak
+# ================================================================
 def get_user_id_from_keycloak(keycloak_url):
     """Get the user id of 'repuser' from Keycloak."""
     admin = KeycloakAdmin(
@@ -119,12 +119,12 @@ def permissions(api: DataTransferApi, url: str):
         )
         for f in files
     ]
-    log.info("### Operations to be executed: ")
+    log.info("### Operations to execute: ")
     for sd in src_dst:
         log.info(f"- {sd.src.remote}:{sd.src.path} -> {sd.dst.remote}:{sd.dst.path}")
 
     try:
-        # The operation will fail because 'repuser' does not have the necessary permissions
+        # The operation fails because 'repuser' does not have the necessary permissions
         resp = api.copy(src_dst)
     except Exception as ex:
         log.error(f"Encountered error: {ex}")
