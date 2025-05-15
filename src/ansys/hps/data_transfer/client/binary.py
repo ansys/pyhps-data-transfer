@@ -55,12 +55,14 @@ level_map = {
 class PrepareSubprocess:
     """Context manager to disable vfork and posix_spawn in subprocess."""
 
-    enable_vfork = os.name != "nt" and platform.system() != "Windows"
+    def __init__(self):
+        """Initialize the PrepareSubprocess class object."""
+        # Check if not Windows
+        self.disable_vfork = os.name != "nt" and platform.system() != "Windows"
 
     def __enter__(self):
         """Disable vfork and posix_spawn in subprocess."""
-        # Check if not Windows
-        if self.enable_vfork:
+        if self.disable_vfork:
             self._orig_use_vfork = subprocess._USE_VFORK
             self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
             subprocess._USE_VFORK = False
@@ -68,8 +70,7 @@ class PrepareSubprocess:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Restore original values of _USE_VFORK and _USE_POSIX_SPAWN."""
-        # Check if not Windows
-        if self.enable_vfork:
+        if self.disable_vfork:
             subprocess._USE_VFORK = self._orig_use_vfork
             subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
 
