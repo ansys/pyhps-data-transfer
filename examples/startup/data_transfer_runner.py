@@ -23,11 +23,11 @@
 """
 .. _ref_runner:
 
-===========================
-Startup PyHPS Data Transfer
-===========================
+=========================
+Start PyHPS Data Transfer
+=========================
 
-Example script to start data transfer service client and query available storage.
+This example script starts a data transfer service client and queries available storage.
 
 Example usage:
 ``python examples/data_transfer_runner.py --debug``

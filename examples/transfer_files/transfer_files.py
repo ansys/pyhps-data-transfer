@@ -23,16 +23,14 @@
 """
 .. _ref_transfer:
 
-==============================
-Basic script to transfer files
-==============================
+==============
+Transfer files
+==============
 
-Basic script to transfer files to remote backends and back using the data transfer service.
-'local-path' is the path to the files or directory to transfer. Supports wildcards.
+This example script transfers files to remote backends and back using the data transfer service.
+The ``local-path`` argument is the path to the files or directory to transfer. Wildcards are supported.
 
-Example usage:
-
-    ``python examples/transfer_files.py --local_path=examples/basic/files/* --remote-path=hello --debug``
+Example usage: ``python examples/transfer_files.py --local_path=examples/basic/files/* --remote-path=hello --debug``
 
 """
 
@@ -74,7 +72,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     op = api.wait_for([op.id])
     log.debug(f"Operation {op[0].state}")
 
-    log.info("== Create remote directory ...")
+    log.info("== Creating remote directory ...")
     mkdir_op = api.mkdir([StoragePath(path=remote_path)])
     api.wait_for([mkdir_op.id])
     log.info(f"Directory {remote_path} created")
@@ -96,7 +94,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     t1 = perf_counter()
     log.debug(f"Operation {op[0].state}")
 
-    log.info(f"== Query files and metadata in {remote_path} ...")
+    log.info(f"== Querying files and metadata in {remote_path} ...")
     op = api.list([StoragePath(path=remote_path)])
     op = api.wait_for([op.id])
     log.debug(f"Operation {op[0].state}")
@@ -171,7 +169,7 @@ def main(
     assert token is not None
 
 ###################################################
-# Create a ``client`` instance
+# Create a ``Client`` instance
 # ============================
     client = Client(clean=True)
 

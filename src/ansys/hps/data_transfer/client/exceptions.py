@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""This module provides the base class for all client and server HPS-related errors."""
+"""Provides the base class for all client and server HPS-related errors."""
 
 import httpx
 from requests.exceptions import RequestException
@@ -69,7 +69,7 @@ class ClientError(HPSError):
 
 
 class BinaryError(HPSError):
-    """Provides client-side related errors."""
+    """Provides binary-related errors."""
 
     def __init__(self, *args, **kwargs):
         """Initializes the BinaryError class object."""
@@ -77,7 +77,7 @@ class BinaryError(HPSError):
 
 
 class NotReadyError(ClientError):
-    """Provides client-side related errors."""
+    """Provides not ready-related errors."""
 
     def __init__(self, *args, **kwargs):
         """Initializes the NotReadyError class object."""
@@ -85,7 +85,7 @@ class NotReadyError(ClientError):
 
 
 class TimeoutError(ClientError):
-    """Provides client-side related errors."""
+    """Provides timeout-related errors."""
 
     def __init__(self, *args, **kwargs):
         """Initializes the TimeoutError class object."""
@@ -93,9 +93,9 @@ class TimeoutError(ClientError):
 
 
 def raise_for_status(response: httpx.Response):
-    """Automatically checks HTTP errors.
+    """Automatically check for HTTP errors.
 
-    This method mimics the requests.Response.raise_for_status() method.
+    This method mimics the ``requests.Response.raise_for_status()`` method.
     """
     if response.status_code < 400 or response.status_code >= 600:
         return
@@ -143,5 +143,5 @@ def raise_for_status(response: httpx.Response):
 
 
 async def async_raise_for_status(response: httpx.Response):
-    """Method for httpx.Response objects that checks HTTP errors."""
+    """Method for ``httpx.Response`` objects that checks HTTP errors."""
     return raise_for_status(response)
