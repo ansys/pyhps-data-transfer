@@ -1,0 +1,1420 @@
+client
+======
+
+.. py:module:: client
+
+.. autoapi-nested-parse::
+
+   
+   PyHPS Data Transfer is a Python client for Ansys HPC Platform Services (HPS) data transfer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api/client/__version__/index
+   /api/client/api/index
+   /api/client/authenticate/index
+   /api/client/binary/index
+   /api/client/client/index
+   /api/client/exceptions/index
+   /api/client/models/index
+   /api/client/token/index
+   /api/client/utils/index
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   client.__version__
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   client.APIError
+   client.ClientError
+   client.HPSError
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   client.AsyncDataTransferApi
+   client.DataTransferApi
+   client.AsyncClient
+   client.Client
+
+
+Package Contents
+----------------
+
+.. py:data:: __version__
+
+.. py:class:: AsyncDataTransferApi(client: client.client.AsyncClient)
+
+   
+   Wrapper for the Data Transfer Worker REST API, offering an async interface.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:attribute:: dump_mode
+      :value: 'json'
+
+
+
+   .. py:attribute:: client
+
+
+   .. py:method:: status(wait=False, sleep=5, jitter=True, timeout: float | None = 20.0)
+      :async:
+
+
+      
+      Async interface to get the status of the worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: operations(ids: List[str])
+      :async:
+
+
+      
+      Async interface to get a list of operations by their ids.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: storages()
+      :async:
+
+
+      
+      Async interface to get the list of storage configurations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: copy(operations: List[client.models.msg.SrcDst])
+      :async:
+
+
+      
+      Async interface to copy a list of SrcDst objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: exists(operations: List[client.models.msg.StoragePath])
+      :async:
+
+
+      
+      Async interface to check if a list of StoragePath objects exist.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: list(operations: List[client.models.msg.StoragePath])
+      :async:
+
+
+      
+      Async interface to list a list of StoragePath objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: mkdir(operations: List[client.models.msg.StoragePath])
+      :async:
+
+
+      
+      Async interface to create a list of directories on remote backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: move(operations: List[client.models.msg.SrcDst])
+      :async:
+
+
+      
+      Async interface to move a list of SrcDst objects in the remote backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: remove(operations: List[client.models.msg.StoragePath])
+      :async:
+
+
+      
+      Async interface to remove files in the remote backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: rmdir(operations: List[client.models.msg.StoragePath])
+      :async:
+
+
+      
+      Async interface to remove directories in the remote backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _exec_async_operation_req(storage_operation: str, operations: List[client.models.msg.StoragePath] | List[client.models.msg.SrcDst])
+      :async:
+
+
+
+   .. py:method:: _operations(ids: List[str])
+      :async:
+
+
+
+   .. py:method:: check_permissions(permissions: List[client.models.permissions.RoleAssignment])
+      :async:
+
+
+      
+      Async interface to check permissions of a list of RoleAssignment objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: get_permissions(permissions: List[client.models.permissions.RoleQuery])
+      :async:
+
+
+      
+      Async interface to get permissions of a list of RoleQuery objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: remove_permissions(permissions: List[client.models.permissions.RoleAssignment])
+      :async:
+
+
+      
+      Async interface to remove permissions of a list of RoleAssignment objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: set_permissions(permissions: List[client.models.permissions.RoleAssignment])
+      :async:
+
+
+      
+      Async interface to set permissions of a list of RoleAssignment objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: get_metadata(paths: List[str | client.models.msg.StoragePath])
+      :async:
+
+
+      
+      Async interface to get metadata of a list of StoragePath objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: set_metadata(asgs: Dict[str | client.models.msg.StoragePath, client.models.metadata.DataAssignment])
+      :async:
+
+
+      
+      Async interface to set metadata of a list of DataAssignment objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: wait_for(operation_ids: List[str | client.models.ops.Operation], timeout: float | None = None, interval: float = 0.1, cap: float = 2.0, raise_on_error: bool = False)
+      :async:
+
+
+      
+      Async interface to wait for a list of operations to complete.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+.. py:class:: DataTransferApi(client: client.client.Client)
+
+   
+   Class for Data transfer API.
+
+
+   :Parameters:
+
+       **client: Client**
+           Client object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:attribute:: dump_mode
+      :value: 'json'
+
+
+
+   .. py:attribute:: client
+
+
+   .. py:method:: status(wait=False, sleep=5, jitter=True, timeout: float | None = 20.0)
+
+      
+      Status of worker binary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: operations(ids: List[str])
+
+      
+      Get a list of operations.
+
+
+      :Parameters:
+
+          **ids: List[str]**
+              List of ids.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: storages()
+
+      
+      Get types of storages available on the storage backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: copy(operations: List[client.models.msg.SrcDst])
+
+      
+      Get API response for copying a list of files.
+
+
+      :Parameters:
+
+          **operations: List[SrcDst]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: exists(operations: List[client.models.msg.StoragePath])
+
+      
+      Check if a path exists.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: list(operations: List[client.models.msg.StoragePath])
+
+      
+      List files in a path.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: mkdir(operations: List[client.models.msg.StoragePath])
+
+      
+      Create a dir.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: move(operations: List[client.models.msg.SrcDst])
+
+      
+      Move a file on the backend storage.
+
+
+      :Parameters:
+
+          **operations: List[SrcDst]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: remove(operations: List[client.models.msg.StoragePath])
+
+      
+      Delete a file.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: rmdir(operations: List[client.models.msg.StoragePath])
+
+      
+      Delete a dir.
+
+
+      :Parameters:
+
+          **operations: List[StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _exec_operation_req(storage_operation: str, operations: List[client.models.msg.StoragePath] | List[client.models.msg.SrcDst])
+
+
+   .. py:method:: _operations(ids: List[str])
+
+
+   .. py:method:: check_permissions(permissions: List[client.models.permissions.RoleAssignment])
+
+      
+      Checks permissions of a path (including parent directory) using a list of RoleAssignment objects.
+
+
+      :Parameters:
+
+          **permissions: List[RoleAssignment]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: get_permissions(permissions: List[client.models.permissions.RoleQuery])
+
+      
+      Return permissions of a file from a list of RoleQuery objects.
+
+
+      :Parameters:
+
+          **permissions: List[RoleQuery]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: remove_permissions(permissions: List[client.models.permissions.RoleAssignment])
+
+      
+      Remove permissions using a list of RoleAssignment objects.
+
+
+      :Parameters:
+
+          **permissions: List[RoleAssignment]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: set_permissions(permissions: List[client.models.permissions.RoleAssignment])
+
+      
+      Set permissions using a list of RoleAssignment objects.
+
+
+      :Parameters:
+
+          **permissions: List[RoleAssignment]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: get_metadata(paths: List[str | client.models.msg.StoragePath])
+
+      
+      Get metadata of a path on backend storage.
+
+
+      :Parameters:
+
+          **paths: List[str | StoragePath]**
+              ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: set_metadata(asgs: Dict[str | client.models.msg.StoragePath, client.models.metadata.DataAssignment])
+
+      
+      Setting metadata for a path on backend storage.
+
+
+      :Parameters:
+
+          **asgs: Dict[str | StoragePath, DataAssignment]**
+              List of paths with key of type string or StoragePath and value of DataAssignment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: wait_for(operation_ids: List[str | client.models.ops.Operation | client.models.msg.OpIdResponse], timeout: float | None = None, interval: float = 0.1, cap: float = 2.0, raise_on_error: bool = False)
+
+      
+      Wait for operations to complete.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+.. py:class:: AsyncClient(*args, **kwargs)
+
+   Bases: :py:obj:`ClientBase`
+
+
+   
+   An async interface to the Python client to the HPS data transfer APIs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:class:: Meta
+
+      Bases: :py:obj:`ClientBase`
+
+
+      .. py:attribute:: is_async
+         :value: True
+
+
+
+
+   .. py:method:: start()
+      :async:
+
+
+      
+      Start async binary worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: stop(wait=5.0)
+      :async:
+
+
+      
+      Stop async binary worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: wait(timeout: float = 60.0, sleep=0.5)
+      :async:
+
+
+      
+      Wait on async binary worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _update_token()
+
+
+   .. py:method:: _monitor()
+      :async:
+
+
+
+.. py:class:: Client(*args, **kwargs)
+
+   Bases: :py:obj:`ClientBase`
+
+
+   
+   Provide the Python client to the HPS data transfer APIs.
+   This class uses the provided credentials to create and store
+   an authorized :class:`requests.Session` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:class:: Meta
+
+      Bases: :py:obj:`ClientBase`
+
+
+      .. py:attribute:: is_async
+         :value: False
+
+
+
+
+   .. py:attribute:: _monitor_thread
+      :value: None
+
+
+
+   .. py:method:: __getstate__()
+
+
+   .. py:method:: __setstate__(state)
+
+
+   .. py:method:: start()
+
+      
+      Start client session using binary config credentials.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: stop(wait=5.0)
+
+      
+      Stop client session.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: wait(timeout: float = 60.0, sleep=0.5)
+
+      
+      Wait on worker binary to start.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _update_token()
+
+
+   .. py:method:: _monitor()
+
+
+.. py:exception:: APIError(*args, **kwargs)
+
+   Bases: :py:obj:`HPSError`
+
+
+   
+   Provides server-side related errors.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:exception:: ClientError(*args, **kwargs)
+
+   Bases: :py:obj:`HPSError`
+
+
+   
+   Provides client-side related errors.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:exception:: HPSError(*args, **kwargs)
+
+   Bases: :py:obj:`requests.exceptions.RequestException`
+
+
+   
+   Provides the base class for all HPS-related errors.
+
+   This class derives from the :class:`requests.exceptions.RequestException`
+   base class.
+
+   Example:
+       >>> from ansys.hps.client import HPSError
+       >>> from ansys.hps.client.jms import Client
+       >>> try:
+       >>>     client = Client(url="https://127.0.0.1:8443/hps/",
+                               username="repuser",
+                               password="wrong_psw")
+       >>> except HPSError as e:
+       >>>     print(e)
+       401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/hps/auth...
+       Invalid user credentials
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:attribute:: reason
+
+
+   .. py:attribute:: description
+
+
+   .. py:attribute:: give_up
+
+

@@ -1,0 +1,245 @@
+client.exceptions
+=================
+
+.. py:module:: client.exceptions
+
+.. autoapi-nested-parse::
+
+   This module provides the base class for all client and server HPS-related errors.
+
+   ..
+       !! processed by numpydoc !!
+
+
+Exceptions
+----------
+
+.. autoapisummary::
+
+   client.exceptions.HPSError
+   client.exceptions.APIError
+   client.exceptions.ClientError
+   client.exceptions.BinaryError
+   client.exceptions.NotReadyError
+   client.exceptions.TimeoutError
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   client.exceptions.raise_for_status
+   client.exceptions.async_raise_for_status
+
+
+Module Contents
+---------------
+
+.. py:exception:: HPSError(*args, **kwargs)
+
+   Bases: :py:obj:`requests.exceptions.RequestException`
+
+
+   
+   Provides the base class for all HPS-related errors.
+
+   This class derives from the :class:`requests.exceptions.RequestException`
+   base class.
+
+   Example:
+       >>> from ansys.hps.client import HPSError
+       >>> from ansys.hps.client.jms import Client
+       >>> try:
+       >>>     client = Client(url="https://127.0.0.1:8443/hps/",
+                               username="repuser",
+                               password="wrong_psw")
+       >>> except HPSError as e:
+       >>>     print(e)
+       401 Client Error: invalid_grant for: POST https://127.0.0.1:8443/hps/auth...
+       Invalid user credentials
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:attribute:: reason
+
+
+   .. py:attribute:: description
+
+
+   .. py:attribute:: give_up
+
+
+.. py:exception:: APIError(*args, **kwargs)
+
+   Bases: :py:obj:`HPSError`
+
+
+   
+   Provides server-side related errors.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:exception:: ClientError(*args, **kwargs)
+
+   Bases: :py:obj:`HPSError`
+
+
+   
+   Provides client-side related errors.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:exception:: BinaryError(*args, **kwargs)
+
+   Bases: :py:obj:`HPSError`
+
+
+   
+   Provides client-side related errors.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:exception:: NotReadyError(*args, **kwargs)
+
+   Bases: :py:obj:`ClientError`
+
+
+   
+   Provides client-side related errors.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:exception:: TimeoutError(*args, **kwargs)
+
+   Bases: :py:obj:`ClientError`
+
+
+   
+   Provides client-side related errors.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: raise_for_status(response: httpx.Response)
+
+   
+   Automatically checks HTTP errors.
+
+   This method mimics the requests.Response.raise_for_status() method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: async_raise_for_status(response: httpx.Response)
+   :async:
+
+

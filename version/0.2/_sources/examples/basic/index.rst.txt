@@ -1,0 +1,64 @@
+
+
+.. _sphx_glr_examples_basic:
+
+Basic usage examples
+====================
+
+These examples show how to use PyHPS Data Transfer for file operations and how to set up and use a asynchronous
+client for data transfer operations
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This script is intended to be run from the command line, where it will authenticate with the specified HPS service and set up an asynchronous client for data transfer operations, transfer files to and from remote backends using the data transfer service.">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_async_data_transfer_client_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_async_data_transfer_client.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Run Async</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Example script intended to be run from the command line, where it will perform the specified file operations based on the provided arguments.">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_file_operations_client_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_file_operations_client.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">File Operations</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/basic/async_data_transfer_client
+   /examples/basic/file_operations_client
+

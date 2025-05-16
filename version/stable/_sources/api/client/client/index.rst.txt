@@ -1,0 +1,790 @@
+client.client
+=============
+
+.. py:module:: client.client
+
+.. autoapi-nested-parse::
+
+   This module provides the Python client to the HPS data transfer APIs.
+
+   ..
+       !! processed by numpydoc !!
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   client.client.logger
+   client.client.log
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   client.client.MonitorState
+   client.client.ClientBase
+   client.client.AsyncClient
+   client.client.Client
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   client.client.bin_in_use
+
+
+Module Contents
+---------------
+
+.. py:data:: logger
+
+.. py:data:: log
+
+.. py:function:: bin_in_use(bin_path)
+
+   
+   Check if a binary is in use.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:class:: MonitorState
+
+   
+   Monitor and track state of worker binary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:attribute:: _sleep_not_started
+      :value: 2
+
+
+
+   .. py:attribute:: _sleep_while_running
+      :value: 5
+
+
+
+   .. py:property:: sleep_for
+
+
+   .. py:method:: reset()
+
+
+   .. py:method:: mark_ready(ready)
+
+      
+      Mark worker as ready or not ready.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: mark_failed(exc=None, binary=None)
+
+      
+      Mark worker as failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: report(binary)
+
+      
+      Report worker status.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+.. py:class:: ClientBase(bin_config: ansys.hps.data_transfer.client.binary.BinaryConfig = None, download_dir: str = 'dt_download', clean=False, clean_dev=True, check_in_use=True, timeout=60.0, retries=10)
+
+   
+   Provide the Python client to the HPS data transfer APIs.
+
+   This class uses the provided credentials to create and store
+   an authorized :class:`requests.Session` object.
+
+   :Parameters:
+
+       **bin_config: BinaryConfig**
+           BinaryConfig object, Default is None
+
+       **download_dir: str**
+           download dir path. Default is None
+
+       **clean: bool**
+           If True, cleans download_dir path. Default is False.
+
+       **clean_dev: bool**
+           If True, downloads binary from dev branch. Default is True.
+
+       **check_in_use: bool**
+           If True, checks if binary is in use and skips downloading new binary. Default is True.
+
+       **timeout: float**
+           Default is 60.0
+
+       **retries: int**
+           Default is 10
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Create a client object and connect to HPS data transfer with a access_token.
+
+   >>> from ansys.hps.data_transfer.client import Client
+   >>> token = authenticate(username=username, password=password, verify=False, url=auth_url)
+   >>> token = token.get("access_token", None)
+   >>> client = Client(clean=True)
+   >>> client.binary_config.update(
+           verbosity=3,
+           debug=False,
+           insecure=True,
+           token=token,
+           data_transfer_url=dt_url,
+       )
+   >>> client.start()
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:class:: Meta
+
+      .. py:attribute:: is_async
+         :value: False
+
+
+
+
+   .. py:attribute:: _bin_config
+
+
+   .. py:attribute:: _download_dir
+      :value: 'dt_download'
+
+
+
+   .. py:attribute:: _clean
+      :value: False
+
+
+
+   .. py:attribute:: _clean_dev
+      :value: True
+
+
+
+   .. py:attribute:: _check_in_use
+      :value: True
+
+
+
+   .. py:attribute:: _timeout
+      :value: 60.0
+
+
+
+   .. py:property:: retries
+
+      
+      Return the number of retries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:attribute:: _session
+      :value: None
+
+
+
+   .. py:attribute:: binary
+      :value: None
+
+
+
+   .. py:attribute:: _monitor_stop
+      :value: None
+
+
+
+   .. py:attribute:: _monitor_state
+
+
+   .. py:method:: __getstate__()
+
+
+   .. py:method:: __setstate__(state)
+
+
+   .. py:property:: binary_config
+
+      
+      Return binary config.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:property:: base_api_url
+
+      
+      Return api url from config.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:property:: session
+
+      
+      Return a session object. Creates a new one if one is not already created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:property:: is_started
+
+      
+      Return True if binary is up and running.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:property:: timeout
+
+      
+      Return the timeout for the session.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: start()
+
+      
+      Start client session using binary config credentials.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: stop(wait=5.0)
+
+      
+      Stop client session.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _platform()
+
+
+   .. py:method:: _prepare_bin_path(build_info)
+
+
+   .. py:method:: _check_binary(build_info, bin_path)
+
+      
+      Check if there is a need to download the binary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _prepare_platform_binary()
+
+
+   .. py:method:: _create_session(url: str, *, sync: bool = True)
+
+
+   .. py:method:: _on_port_changed(port)
+
+
+   .. py:method:: _on_process_died(ret_code)
+
+
+.. py:class:: AsyncClient(*args, **kwargs)
+
+   Bases: :py:obj:`ClientBase`
+
+
+   
+   An async interface to the Python client to the HPS data transfer APIs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:class:: Meta
+
+      Bases: :py:obj:`ClientBase`
+
+
+      .. py:attribute:: is_async
+         :value: True
+
+
+
+
+   .. py:method:: start()
+      :async:
+
+
+      
+      Start async binary worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: stop(wait=5.0)
+      :async:
+
+
+      
+      Stop async binary worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: wait(timeout: float = 60.0, sleep=0.5)
+      :async:
+
+
+      
+      Wait on async binary worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _update_token()
+
+
+   .. py:method:: _monitor()
+      :async:
+
+
+
+.. py:class:: Client(*args, **kwargs)
+
+   Bases: :py:obj:`ClientBase`
+
+
+   
+   Provide the Python client to the HPS data transfer APIs.
+   This class uses the provided credentials to create and store
+   an authorized :class:`requests.Session` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:class:: Meta
+
+      Bases: :py:obj:`ClientBase`
+
+
+      .. py:attribute:: is_async
+         :value: False
+
+
+
+
+   .. py:attribute:: _monitor_thread
+      :value: None
+
+
+
+   .. py:method:: __getstate__()
+
+
+   .. py:method:: __setstate__(state)
+
+
+   .. py:method:: start()
+
+      
+      Start client session using binary config credentials.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: stop(wait=5.0)
+
+      
+      Stop client session.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: wait(timeout: float = 60.0, sleep=0.5)
+
+      
+      Wait on worker binary to start.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _update_token()
+
+
+   .. py:method:: _monitor()
+
+
