@@ -41,9 +41,9 @@ dependencies = [
 tests = [
     "pytest==8.3.5",
     "pytest-cov==6.1.1",
-    "pytest-timeout==2.3.1",
+    "pytest-timeout==2.4.0",
     "pytest-mock-resources[redis]==2.12.2",
-    "pytest-rerunfailures==15.0",
+    "pytest-rerunfailures==15.1",
     "pytest-asyncio==0.26.0",
     "python-keycloak==5.3.1",
     "python-slugify>=8.0.4",
