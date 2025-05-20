@@ -56,7 +56,7 @@ jobs:
 
   tests:
     name: "Tests"
-    uses: ansys/pyhps/.github/workflows/tests.yml@maint/action
+    uses: ansys/pyhps/.github/workflows/tests.yml@main
     with:
       runner: "public-ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
