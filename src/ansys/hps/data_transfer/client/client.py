@@ -97,11 +97,11 @@ class MonitorState:
         msg = f"Worker is running, reporting {'' if ready else 'not '}ready"
         if ready:
             if not self._ok_reported:
-                log.info(msg)
+                log.debug(msg)
                 self._ok_reported = True
         else:
             self._ok_reported = False
-            log.warning(msg)
+            log.debug(msg)
 
     def mark_failed(self, exc=None, binary=None):
         """Mark the worker as failed."""
