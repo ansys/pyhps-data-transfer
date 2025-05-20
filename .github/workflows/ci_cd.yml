@@ -7,6 +7,13 @@ on:
           type: boolean
           default: false
           description: Force to push a release now
+        hps-version:
+          description: HPS version to test against
+          default: 'latest-dev'
+          type: choice
+          options:
+            - 'v1.2.0'
+            - 'latest-dev'
 
   push:
     branches:
@@ -53,7 +60,7 @@ jobs:
     with:
       runner: "public-ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
-      hps-version: "v1.2.0"
+      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
     secrets: inherit # pass all secrets
 
   docs:
