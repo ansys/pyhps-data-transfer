@@ -119,6 +119,7 @@ class BinaryConfig:
         verbosity: int = 1,
         insecure: bool = False,
         debug: bool = False,
+        auth_type: str = None,
     ):
         """Initialize the BinaryConfig class object."""
         self.data_transfer_url = data_transfer_url
@@ -138,6 +139,7 @@ class BinaryConfig:
         self._detected_port = None
         self._token = token
         self.insecure = insecure
+        self.auth_type = auth_type
 
         self._on_token_update = None
         self._on_process_died = None
@@ -413,6 +415,14 @@ class Binary:
 
         if self._config.debug:
             self._args.append("--debug")
+
+        if self._config.auth_type:
+            self._args.extend(
+                [
+                    "--auth",
+                    self._config.auth_type,
+                ]
+            )
 
         if self._config.token is not None:
             self._args.extend(

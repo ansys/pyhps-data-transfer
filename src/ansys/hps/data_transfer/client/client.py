@@ -38,11 +38,14 @@ import filelock
 import httpx
 import psutil
 import urllib3
+import random
+import string
+from collections import deque
 
 from ansys.hps.data_transfer.client.binary import Binary, BinaryConfig
 from ansys.hps.data_transfer.client.exceptions import BinaryError, async_raise_for_status, raise_for_status
 
-from .token import prepare_token
+from ansys.hps.data_transfer.client.token import prepare_token
 
 urllib3.disable_warnings()
 
@@ -194,6 +197,10 @@ class ClientBase:
         self._session = None
         self.binary = None
 
+        self._features = None
+        self._api_key = None
+        self._api_key_header = "X-API-Key"
+
         self._monitor_stop = None
         self._monitor_state = MonitorState()
 
@@ -270,6 +277,7 @@ class ClientBase:
         self._bin_config._on_port_changed = self._on_port_changed
         self._bin_config._on_process_died = self._on_process_died
 
+        self._adjust_config()
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
 
@@ -327,6 +335,9 @@ class ClientBase:
         bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
         return bin_path
 
+    def _get_features(self, d):
+        self._features = d.get("features", None)
+
     def _check_binary(self, build_info, bin_path):
         """Check if there is a need to download the binary."""
         branch = build_info["branch"]
@@ -356,6 +367,7 @@ class ClientBase:
 
         d = resp.json()
 
+        self._get_features(d)
         bin_path = self._prepare_bin_path(d["build_info"])
         lock_name = f"{os.path.splitext(os.path.basename(bin_path))[0]}.lock"
         lock_dir = os.path.dirname(bin_path)
@@ -441,6 +453,8 @@ class ClientBase:
 
         if self._bin_config.token is not None:
             session.headers["Authorization"] = prepare_token(self._bin_config.token)
+        if self._api_key:
+            session.headers[self._api_key_header] = self._api_key+"aaa"
 
         return session
 
@@ -451,6 +465,15 @@ class ClientBase:
     def _on_process_died(self, ret_code):
         self._monitor_state.reset()
 
+    def _adjust_config(self):
+        if not self._features:
+            return
+
+        if "api-key" in self._features.get("auth_types", []):
+            self._bin_config.auth_type = "api-key"
+            self._api_key = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128))
+            os.environ["ANSYS_DT_AUTHENTICATION__API_KEY__VALUE"] = self._api_key
+            os.environ["ANSYS_DT_AUTHENTICATION__API_KEY__HEADER_NAME"] = self._api_key_header
 
 class AsyncClient(ClientBase):
     """Provides an async interface to the Python client to the HPS data transfer APIs."""
