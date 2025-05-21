@@ -15,7 +15,7 @@ jobs:
 
   generate:
     name: Model generation
-    runs-on: ubuntu-latest-8-cores
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,14 +47,7 @@ jobs:
       - name: Create venv
         run: |
             python3 -m venv dev_env
-
-      - name: Generate models
-        run: |
-            cp core/docs/worker/swagger.json openapi2.json
-            ./scripts/generate_models.sh
-            ls -lah
-            sudo rm -rf out
-
+            pip install -e ".[build]"
 
       - name: Install dependencies
         run: |
@@ -70,6 +63,13 @@ jobs:
           ghcr-token: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
           version: ${{ inputs.hps-version || 'latest-dev' }}
           feature: ${{ inputs.hps-feature || 'main' }}
+
+      - name: Generate models
+        run: |
+            source dev_env/bin/activate
+            ./scripts/generate_models.sh
+            ls -lah
+            sudo rm -rf out
 
       - name: Test with tox
         run: tox -e py310-coverage
