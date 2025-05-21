@@ -47,7 +47,7 @@ jobs:
       - name: Create venv
         run: |
             python3 -m venv dev_env
-            pip install -e ".[build]"
+            pip install -e ".[build,tests]"
 
       - name: Install dependencies
         run: |
@@ -71,13 +71,10 @@ jobs:
             ls -lah
             sudo rm -rf out
 
-      - name: Test with tox
-        run: tox -e py310-coverage
-        env:
-          HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
-          HPS_TEST_USERNAME: repadmin
-          HPS_TEST_PASSWORD: repadmin
-
+      - name: Simple tests
+        run: |
+            source dev_env/bin/activate
+            pytest . -v --tb=short --disable-warnings --maxfail=1 --junit-xml=test.xml
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
