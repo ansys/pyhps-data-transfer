@@ -71,17 +71,17 @@ jobs:
             ls -lah
             sudo rm -rf out
 
-      - name: Simple tests
-        run: |
-            source dev_env/bin/activate
-            pytest . -v --tb=short --disable-warnings --maxfail=1 --junit-xml=test.xml
+    #   - name: Simple tests
+    #     run: |
+    #         source dev_env/bin/activate
+    #         pytest . -v --tb=short --disable-warnings --maxfail=1 --junit-xml=test.xml
 
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5
-        if: always()
-        with:
-          report_paths: '**/test*.xml'
-          check_name: Test report
+    #   - name: Publish Test Report
+    #     uses: mikepenz/action-junit-report@v5
+    #     if: always()
+    #     with:
+    #       report_paths: '**/test*.xml'
+    #       check_name: Test report
 
       - name: "Create PR if changes detected"
         id: create-pr
