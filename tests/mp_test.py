@@ -25,10 +25,10 @@ data transfer operations using multiprocessing and multithreading techniques
 with the Data Transfer API and Async Data Transfer API from the Ansys HPS Data Transfer Client.
 """
 
+import asyncio
 import concurrent.futures
 import logging
 import multiprocessing as mp
-import asyncio
 
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
 
@@ -37,6 +37,7 @@ log = logging.getLogger(__name__)
 
 def _check_storage(dt_api):
     log.info(dt_api.storages())
+
 
 def _async_check_storage(dt_api):
     s = asyncio.run(dt_api.storages())

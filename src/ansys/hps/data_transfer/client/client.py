@@ -27,8 +27,10 @@ import atexit
 import logging
 import os
 import platform
+import random
 import shutil
 import stat
+import string
 import threading
 import time
 import traceback
@@ -38,13 +40,9 @@ import filelock
 import httpx
 import psutil
 import urllib3
-import random
-import string
-from collections import deque
 
 from ansys.hps.data_transfer.client.binary import Binary, BinaryConfig
 from ansys.hps.data_transfer.client.exceptions import BinaryError, async_raise_for_status, raise_for_status
-
 from ansys.hps.data_transfer.client.token import prepare_token
 
 urllib3.disable_warnings()
@@ -72,10 +70,12 @@ def bin_in_use(bin_path):
             log.debug(f"Error checking process: {err}")
     return False
 
+
 def flatten_features(y, separator="."):
+    """Flatten a nested dictionary into a list of strings."""
     out = []
 
-    def flatten(x, name=''):
+    def flatten(x, name=""):
         if type(x) is dict:
             for a in x:
                 flatten(x[a], name + a + separator)
@@ -85,9 +85,10 @@ def flatten_features(y, separator="."):
                 flatten(a, name + separator)
                 i += 1
         else:
-            s = name[:-1]+str(x)
+            s = name[:-1] + str(x)
             s = s.replace(" ", "_").replace("-", "_")
             out.append(s)
+
     flatten(y)
     return out
 
@@ -500,9 +501,12 @@ class ClientBase:
 
         if self.has("auth_types.api_key"):
             self._bin_config.auth_type = "api-key"
-            self._api_key = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128))
+            self._api_key = "".join(
+                random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)
+            )
             os.environ["ANSYS_DT_AUTHENTICATION__API_KEY__VALUE"] = self._api_key
             os.environ["ANSYS_DT_AUTHENTICATION__API_KEY__HEADER_NAME"] = self._api_key_header
+
 
 class AsyncClient(ClientBase):
     """Provides an async interface to the Python client to the HPS data transfer APIs."""
