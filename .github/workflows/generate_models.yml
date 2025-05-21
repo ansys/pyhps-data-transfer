@@ -97,4 +97,4 @@ jobs:
           delete-branch: true
           reviewers: nezgrath
           add-paths: |
-            ansys/hps/data_transfer/client/models
+            src/ansys/hps/data_transfer/client/models
