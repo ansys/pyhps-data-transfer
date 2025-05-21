@@ -24,6 +24,8 @@
 import httpx
 from requests.exceptions import RequestException
 
+import logging
+log = logging.getLogger(__name__)
 
 class HPSError(RequestException):
     """Provides the base class for all HPS-related errors.
@@ -91,18 +93,7 @@ class TimeoutError(ClientError):
         """Initializes the TimeoutError class object."""
         super().__init__(*args, **kwargs)
 
-
-def raise_for_status(response: httpx.Response):
-    """Automatically check for HTTP errors.
-
-    This method mimics the ``requests.Response.raise_for_status()`` method.
-    """
-    if response.status_code < 400 or response.status_code >= 600:
-        return
-
-    if getattr(response, "is_error", False):
-        response.read()
-
+def _raise_for_status(response: httpx.Response):
     r_content = {}
     try:
         r_content = response.json()
@@ -141,7 +132,28 @@ def raise_for_status(response: httpx.Response):
         raise APIError(error_msg, reason=reason, description=description, response=response)
     return response
 
+def raise_for_status(response: httpx.Response):
+    """Automatically check for HTTP errors.
+
+    This method mimics the ``requests.Response.raise_for_status()`` method.
+    """
+    if response.status_code < 400 or response.status_code >= 600:
+        return
+
+    if getattr(response, "is_error", False):
+        response.read()
+
+    _raise_for_status(response)
 
 async def async_raise_for_status(response: httpx.Response):
-    """Method for ``httpx.Response`` objects that checks HTTP errors."""
-    return raise_for_status(response)
+    """Automatically check for HTTP errors.
+
+    This method mimics the ``requests.Response.raise_for_status()`` method.
+    """
+    if response.status_code < 400 or response.status_code >= 600:
+        return
+
+    if getattr(response, "is_error", False):
+        await response.aread()
+
+    _raise_for_status(response)
