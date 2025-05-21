@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides the core API functionality for interacting with the Ansys HPS Data Transfer Client.
+"""Provides the core API functionality for interacting with the Ansys HPS data transfer client.
 
-It includes methods and utilities for performing
+This module includes methods and utilities for performing
 data transfer operations, managing resources, and handling client interactions.
 """
 
@@ -57,7 +57,7 @@ log = logging.getLogger(__name__)
 
 
 class DataTransferApi:
-    """Class for Data transfer API.
+    """Provides the data transfer API.
 
     Parameters
     ----------
@@ -72,7 +72,7 @@ class DataTransferApi:
 
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
-        """Status of worker binary."""
+        """Get the status of the worker binary."""
 
         def _sleep():
             log.info(f"Waiting for the worker to be ready on port {self.client.binary_config.port} ...")
@@ -100,7 +100,7 @@ class DataTransferApi:
         Parameters
         ----------
         ids: List[str]
-            List of ids.
+            List of IDs.
         """
         return self._operations(ids)
 
@@ -112,7 +112,7 @@ class DataTransferApi:
         return StorageConfigResponse(**json).storage
 
     def copy(self, operations: list[SrcDst]):
-        """Get API response for copying a list of files.
+        """Get the API response for copying a list of files.
 
         Parameters
         ----------
@@ -139,7 +139,7 @@ class DataTransferApi:
         return self._exec_operation_req("list", operations)
 
     def mkdir(self, operations: builtins.list[StoragePath]):
-        """Create a dir.
+        """Create a directory.
 
         Parameters
         ----------
@@ -166,7 +166,7 @@ class DataTransferApi:
         return self._exec_operation_req("remove", operations)
 
     def rmdir(self, operations: builtins.list[StoragePath]):
-        """Delete a dir.
+        """Delete a directory.
 
         Parameters
         ----------
@@ -193,7 +193,7 @@ class DataTransferApi:
 
     @retry()
     def check_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Checks permissions of a path (including parent directory) using a list of RoleAssignment objects.
+        """Check permissions of a path (including parent directory) using a list of ``RoleAssignment`` objects.
 
         Parameters
         ----------
@@ -207,7 +207,7 @@ class DataTransferApi:
 
     @retry()
     def get_permissions(self, permissions: builtins.list[RoleQuery]):
-        """Return permissions of a file from a list of RoleQuery objects.
+        """Get permissions of a file from a list of ``RoleQuery`` objects.
 
         Parameters
         ----------
@@ -221,7 +221,7 @@ class DataTransferApi:
 
     @retry()
     def remove_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Remove permissions using a list of RoleAssignment objects.
+        """Remove permissions using a list of ``RoleAssignment`` objects.
 
         Parameters
         ----------
@@ -233,7 +233,7 @@ class DataTransferApi:
 
     @retry()
     def set_permissions(self, permissions: builtins.list[RoleAssignment]):
-        """Set permissions using a list of RoleAssignment objects.
+        """Set permissions using a list of ``RoleAssignment`` objects.
 
         Parameters
         ----------
@@ -245,7 +245,7 @@ class DataTransferApi:
 
     @retry()
     def get_metadata(self, paths: builtins.list[str | StoragePath]):
-        """Get metadata of a path on backend storage.
+        """Get metadata of a path on the backend storage.
 
         Parameters
         ----------
@@ -260,12 +260,12 @@ class DataTransferApi:
 
     @retry()
     def set_metadata(self, asgs: dict[str | StoragePath, DataAssignment]):
-        """Setting metadata for a path on backend storage.
+        """Set metadata for a path on the backend storage.
 
         Parameters
         ----------
         asgs: Dict[str | StoragePath, DataAssignment]
-            List of paths with key of type string or StoragePath and value of DataAssignment
+            List of paths with key of type string or ``StoragePath`` and value of ``DataAssignment``.
         """
         url = "/metadata:set"
         d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}

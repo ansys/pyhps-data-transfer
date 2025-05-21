@@ -20,14 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides utilities for managing binary files.
+"""Provides utilities for managing binary files.
 
-It also handles processes related to the Ansys HPS Data Transfer Client.
+This module also handles processes related to the Ansys HPS data transfer client.
 """
 
 import json
 import logging
 import os
+import platform
 import stat
 import subprocess
 import threading
@@ -52,46 +53,53 @@ level_map = {
 
 
 class PrepareSubprocess:
-    """Context manager to disable vfork and posix_spawn in subprocess."""
+    """Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
+
+    def __init__(self):
+        """Initialize the PrepareSubprocess class object."""
+        # Check if not Windows
+        self.disable_vfork = os.name != "nt" and platform.system() != "Windows"
 
     def __enter__(self):
         """Disable vfork and posix_spawn in subprocess."""
-        self._orig_use_vfork = subprocess._USE_VFORK
-        self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
-        subprocess._USE_VFORK = False
-        subprocess._USE_POSIX_SPAWN = False
+        if self.disable_vfork:
+            self._orig_use_vfork = subprocess._USE_VFORK
+            self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
+            subprocess._USE_VFORK = False
+            subprocess._USE_POSIX_SPAWN = False
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Restore original values of _USE_VFORK and _USE_POSIX_SPAWN."""
-        subprocess._USE_VFORK = self._orig_use_vfork
-        subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
+        if self.disable_vfork:
+            subprocess._USE_VFORK = self._orig_use_vfork
+            subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
 
 
 class BinaryConfig:
-    """Configure worker binary connection to HPS data transfer client.
+    """Provides for configuring the worker binary connection to the HPS data transfer client.
 
     Parameters
     ----------
-    data_transfer_url: str
-        data transfer url. Default is https://localhost:8443/hps/dt/api/v1
-    log: bool
-        Process related setting to enable logging. Default is True
-    log_to_file: bool
-        To enable logging to a file. Default is False
-    monitor_interval: float
-        duration for waiting before the next monitor check on the binary. Default is 0.5
+    data_transfer_url: str, default: `https://localhost:8443/hps/dt/api/v1`
+        Data transfer URL.
+    log: bool, default: True
+        Whether to enable logging.
+    log_to_file: bool, default: False
+        Whether to enable logging to a file.
+    monitor_interval: float, default: 0.5
+        Duration for waiting before the next monitor check on the binary.
     token: str
-        A worker config setting of access token credential.
-    host: str
-        Host IP to talk to data tarsnfer service. Default is 127.0.0.1
+        Worker configuration setting of the access token credential.
+    host: str, default: `127.0.0.1`
+        Host IP to talk to the data transfer service.
     port: int
-        Host port to talk to data tarsnfer service
-    verbosity: int
-        Default is 1
-    insecure: bool
-        Default is False
-    debug: bool
-        Default is False
+        Host port to talk to the data transfer service.
+    verbosity: int, default: 1
+        Verbosity level of the worker. The higher the number, the more verbose the logging.
+    insecure: bool, default: False
+        Whether to ignore SSL certificate verification.
+    debug: bool, default: False
+        Whether to enable debug logging.
     """
 
     def __init__(
@@ -136,7 +144,7 @@ class BinaryConfig:
         self._on_port_changed = None
 
     def update(self, **kwargs):
-        """Update worker config settings."""
+        """Update worker configuration settings."""
         for key, value in kwargs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
@@ -145,7 +153,7 @@ class BinaryConfig:
 
     @property
     def port(self):
-        """Return port."""
+        """Port."""
         return self._selected_port or self._detected_port
 
     @port.setter
@@ -155,7 +163,8 @@ class BinaryConfig:
 
     @property
     def token(self):
-        """Return token."""
+        """Token."""
+        return self._token
         return self._token
 
     @token.setter
@@ -171,17 +180,17 @@ class BinaryConfig:
 
     @property
     def url(self):
-        """Return url."""
+        """URL."""
         return f"http://{self.host}:{self.port}/api/v1"
 
 
 class Binary:
-    """Start, stop and monitor worker binary.
+    """Provides for starting, stopping, and monitoring the worker binary.
 
     Parameters
     ----------
     config: BinaryConfig
-        BinaryConfig object.
+        Binary configuration.
     """
 
     def __init__(
@@ -207,12 +216,12 @@ class Binary:
 
     @property
     def config(self):
-        """Return config."""
+        """Configuration."""
         return self._config
 
     @property
     def is_started(self):
-        """Return true if binary is up and running."""
+        """Flag indicating if the binary is up and running."""
         try:
             return self._process is not None and self._process.returncode is None
         except Exception:
@@ -221,7 +230,8 @@ class Binary:
     def start(self):
         """Start the worker binary.
 
-        check for binary in a set path, marks the binary as an executable and then start the executable.
+        This method checks for the binary in a set path, marks the binary as an executable,
+        and then starts the executable.
         """
         if self._process is not None and self._process.returncode is None:
             raise BinaryError("Worker already started.")
@@ -257,7 +267,7 @@ class Binary:
             log.warning("Worker did not prepare in time.")
 
     def stop(self, wait=5.0):
-        """Stop worker binary."""
+        """Stop the worker binary."""
         if self._process is None:
             return
 

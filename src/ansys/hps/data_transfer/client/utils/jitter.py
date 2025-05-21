@@ -19,9 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-"""This module provides utilities for implementing exponential backoff with optional jitter.
+"""Provides utilities for implementing exponential backoff with optional jitter.
 
-It is commonly used in retry mechanisms to handle transient errors in distributed systems.
+This module is commonly used in retry mechanisms to handle transient errors in distributed systems.
 """
 
 from random import uniform
@@ -30,12 +30,22 @@ from random import uniform
 def get_expo_backoff(
     base: float, attempts: int = 1, cap: float = 100_000_000, attempts_cap: int = 100_000_000, jitter: bool = True
 ):
-    """Returns a backoff value https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/.
+    """Get the backoff value.
 
-    :param base: The time to sleep in the first attempt.
-    :param attempts: The number of attempts that have already been made.
-    :param cap: The maximum value that can be returned.
-    :param jitter: Whether or not to apply jitter to the returned value.
+    For more information, see `Exponential Backoff And Jitter
+    <https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/>`_
+    in the AWS documentation.
+
+    Parameters
+    ==========
+    base : float
+        Time to sleep in the first attempt.
+    attempts : int, default: 1
+        Number of attempts that have already been made.
+    cap : float, default: 100000000
+        Maximum value that can be returned.
+    jitter : bool, default: True
+        Whether to apply jitter to the returned value.
     """
     # Full jitter formula
     # https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/

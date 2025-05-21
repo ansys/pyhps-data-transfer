@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides utilities for configuring OpenTelemetry (Otel) settings for the Ansys HPS Data Transfer Client.
+"""Provides utilities for configuring OpenTelemetry (Otel) settings for the Ansys HPS data transfer client.
 
-It allows setting up environment variables required
+This module allows setting up environment variables required
 for telemetry data export and resource attributes.
 """
 
@@ -30,7 +30,7 @@ import os
 
 
 def set_otel_config(exporter_url, resource_attributes=None, headers=None, exporter_type=None):
-    """Set data transfer worker Otel configuration using environment variables before starting data transfer worker.
+    """Set data transfer worker Otel configuration using environment variables before starting the data transfer worker.
 
     ANSYS_DT_OTEL__EXPORTER_URL - Otel exporter url.
     ANSYS_DT_OTEL__RESOURCE_ATTRIBUTES - key-value pairs of resource attributes to be passed to the Otel SDK.
