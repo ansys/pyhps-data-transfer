@@ -72,6 +72,25 @@ def bin_in_use(bin_path):
             log.debug(f"Error checking process: {err}")
     return False
 
+def flatten_features(y, separator="."):
+    out = []
+
+    def flatten(x, name=''):
+        if type(x) is dict:
+            for a in x:
+                flatten(x[a], name + a + separator)
+        elif type(x) is list:
+            i = 0
+            for a in x:
+                flatten(a, name + separator)
+                i += 1
+        else:
+            s = name[:-1]+str(x)
+            s = s.replace(" ", "_").replace("-", "_")
+            out.append(s)
+    flatten(y)
+    return out
+
 
 class MonitorState:
     """Provides for monitoring and tracking the state of the worker binary."""
@@ -293,6 +312,12 @@ class ClientBase:
         self._session = None
         self._bin_config._on_port_changed = None
 
+    def has(self, feature):
+        """Check if the feature is available using a dot notation."""
+        if self._features is None:
+            return False
+        return feature in self._features
+
     def _platform(self):
         plat = ""
         match platform.system():
@@ -336,7 +361,11 @@ class ClientBase:
         return bin_path
 
     def _get_features(self, d):
-        self._features = d.get("features", None)
+        f = d.get("features", None)
+        if f is None:
+            self._features = None
+            return
+        self._features = flatten_features(f)
 
     def _check_binary(self, build_info, bin_path):
         """Check if there is a need to download the binary."""
@@ -454,7 +483,7 @@ class ClientBase:
         if self._bin_config.token is not None:
             session.headers["Authorization"] = prepare_token(self._bin_config.token)
         if self._api_key:
-            session.headers[self._api_key_header] = self._api_key+"aaa"
+            session.headers[self._api_key_header] = self._api_key
 
         return session
 
@@ -469,7 +498,7 @@ class ClientBase:
         if not self._features:
             return
 
-        if "api-key" in self._features.get("auth_types", []):
+        if self.has("auth_types.api_key"):
             self._bin_config.auth_type = "api-key"
             self._api_key = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128))
             os.environ["ANSYS_DT_AUTHENTICATION__API_KEY__VALUE"] = self._api_key
