@@ -18,15 +18,13 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 pushd $models_dir
-$sed_cmd -i 's/from \. import \(.*\) permissions\(.*\)/from \. import \1 permissions as perms\2 #noqa: F401/g' msg.py
-$sed_cmd -i 's/permissions\./perms\./g' msg.py
-$sed_cmd -i 's/result: Optional\[Dict\[str, Any\]\] = None/result: Optional\[Any\] = None/g' ops.py
+# $sed_cmd -i 's/from \. import \(.*\) permissions\(.*\)/from \. import \1 permissions as perms\2 #noqa: F401/g' msg.py
+# $sed_cmd -i 's/permissions\./perms\./g' msg.py
+# $sed_cmd -i 's/result: Optional\[Dict\[str, Any\]\] = None/result: Optional\[Any\] = None/g' ops.py
+$sed_cmd -i 's/class DataAssignments(\(.*\)):/class DataAssignments(\1): #noqa: UP007/g' metadata.py
 popd
 
-# black ansys/hps/data_transfer/client/models
-# dev_env/bin/python -m pip install autoflake
-# dev_env/bin/autoflake --recursive --ignore-init-module-imports --remove-all-unused-imports --in-place ansys/hps/data_transfer/client/models
-for i in {1..10}
+for i in {1..5}
 do
     echo "Running $i iteration"
     pre-commit run --all-files
