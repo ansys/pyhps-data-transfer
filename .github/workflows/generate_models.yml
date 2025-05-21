@@ -15,7 +15,9 @@ jobs:
 
   generate:
     name: Model generation
-    runs-on: ubuntu-latest
+    runs-on:
+      group: "Default Larger Runners"
+      labels: ubuntu-latest-8-cores
     steps:
       - uses: actions/checkout@v4
         with:
