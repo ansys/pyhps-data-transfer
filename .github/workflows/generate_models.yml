@@ -89,10 +89,11 @@ jobs:
 
       - name: "Create PR if changes detected"
         id: create-pr
-        # if: startsWith(github.ref, 'refs/heads/main')
+        if: startsWith(github.ref, 'refs/heads/main')
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[Auto] Update pydantic models"
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           base: main
           branch: maint/model_updates
           delete-branch: true
