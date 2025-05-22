@@ -71,6 +71,10 @@ jobs:
             ls -lah
             sudo rm -rf out
 
+      - name: Adjust permissions
+        run: |
+            sudo chown -R $USER:$USER .
+
     #   - name: Simple tests
     #     run: |
     #         source dev_env/bin/activate
