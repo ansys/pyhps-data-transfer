@@ -41,16 +41,16 @@ dependencies = [
 tests = [
     "pytest==8.3.5",
     "pytest-cov==6.1.1",
-    "pytest-timeout==2.3.1",
+    "pytest-timeout==2.4.0",
     "pytest-mock-resources[redis]==2.12.2",
-    "pytest-rerunfailures==15.0",
+    "pytest-rerunfailures==15.1",
     "pytest-asyncio==0.26.0",
     "python-keycloak==5.3.1",
     "python-slugify>=8.0.4",
-    "tox==4.25.0",
+    "tox==4.26.0",
 ]
 doc = [
-    "ansys-sphinx-theme==1.4.2",
+    "ansys-sphinx-theme==1.4.4",
     "autodoc_pydantic==2.2.0",
     "jupyter_sphinx==0.5.3",
     "nbsphinx==0.9.7",
@@ -72,7 +72,7 @@ build = [
     "build==1.2.2.post1",
     "twine==6.1.0",
     "wheel",
-    "datamodel-code-generator==0.26.3",
+    "datamodel-code-generator==0.30.1",
     "pre-commit==4.2.0",
     "importlib_metadata>=7.0",
 ]
