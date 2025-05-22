@@ -94,7 +94,7 @@ jobs:
         with:
           title: "[Auto] Update pydantic models"
           base: main
-          branch: model_updates
+          branch: maint/model_updates
           delete-branch: true
           reviewers: nezgrath
           add-paths: |
