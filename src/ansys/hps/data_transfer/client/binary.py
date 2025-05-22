@@ -419,7 +419,7 @@ class Binary:
         if self._config.auth_type:
             self._args.extend(
                 [
-                    "--auth",
+                    "--auth-type",
                     self._config.auth_type,
                 ]
             )
