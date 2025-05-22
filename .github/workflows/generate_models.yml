@@ -71,6 +71,10 @@ jobs:
             ls -lah
             sudo rm -rf out
 
+      - name: Adjust permissions
+        run: |
+            sudo chown -R $USER:$USER .
+
     #   - name: Simple tests
     #     run: |
     #         source dev_env/bin/activate
@@ -89,8 +93,9 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[Auto] Update pydantic models"
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           base: main
-          branch: model_updates
+          branch: maint/model_updates
           delete-branch: true
           reviewers: nezgrath
           add-paths: |
