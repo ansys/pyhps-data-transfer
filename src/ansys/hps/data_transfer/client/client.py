@@ -504,8 +504,8 @@ class ClientBase:
             self._api_key = "".join(
                 random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)
             )
-            os.environ["ANSYS_DT_AUTHENTICATION__API_KEY__VALUE"] = self._api_key
-            os.environ["ANSYS_DT_AUTHENTICATION__API_KEY__HEADER_NAME"] = self._api_key_header
+            os.environ["ANSYS_DT_AUTH__API_KEY__VALUE"] = self._api_key
+            os.environ["ANSYS_DT_AUTH__API_KEY__HEADER_NAME"] = self._api_key_header
 
 
 class AsyncClient(ClientBase):
