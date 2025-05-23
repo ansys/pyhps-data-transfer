@@ -23,12 +23,12 @@
 """
 .. _ref_file:
 
-===============
-File Operations
-===============
+=================================
+Run file operations synchronously
+=================================
 
-Example script intended to be run from the command line,
-where it will perform the specified file operations based on the provided arguments.
+This example script is intended to be run from the command line.
+It runs the specified file operations synchronously based on the provided arguments.
 
 Example usage:
 ``python examples/file_operations_client.py --local-path=examples/basic/files/* --remote-path=hello --debug``
@@ -49,8 +49,10 @@ from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)
 
-
-def run(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
+####################################
+# Run file operations
+# ===================
+def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
     if not remote_path:
         remote_path = Path(local_path).parent.name
 
@@ -73,10 +75,6 @@ def run(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None
     op = api.wait_for([op.id])
     log.info(f"Operation {op[0].state}")
 
-    ####################################
-    # Listing files and getting metadata
-    # ==================================
-
     log.info("Listing files ...")
     op = api.list([StoragePath(path=base_dir)])
     op = api.wait_for([op.id])
@@ -94,15 +92,17 @@ def run(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None
     op = api.wait_for([op.id])
     log.info(f"Operation {op[0].state}")
 
-
+####################################
+# Define the main function
+# ========================
 def main(
-    local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards")],
-    remote_path: Annotated[str, typer.Option(help="Optional path to the remote directory to transfer files to")] = None,
-    debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
-    url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
-    username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
+    local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards.")],
+    remote_path: Annotated[str, typer.Option(help="Optional path to the remote directory to transfer files to.")] = None,
+    debug: Annotated[bool, typer.Option(help="Enable debug logging.")] = False,
+    url: Annotated[str, typer.Option(help="HPS URL to connect to.")] = "https://localhost:8443/hps",
+    username: Annotated[str, typer.Option(help="Username to authenticate with.")] = "repadmin",
     password: Annotated[
-        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
+        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with.")
     ] = "repadmin",
 ):
 
@@ -134,7 +134,7 @@ def main(
     storage_names = [f"{s['name']}({s['type']})" for s in api.storages()]
     log.info(f"Available storages: {storage_names}")
 
-    run(api=api, local_path=local_path, remote_path=remote_path)
+    file_operations(api=api, local_path=local_path, remote_path=remote_path)
 
     client.stop()
 

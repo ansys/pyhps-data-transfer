@@ -20,10 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""PyHPS data transfer models subpackage."""
+
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
 
 class FieldCompatBucketNameFileNamePostRequest(BaseModel):
+    """Provides the post operation request schema for field compatibility of the bucket name and file name."""
+
     file: bytes = Field(..., description="File")
