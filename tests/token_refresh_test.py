@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """This module contains tests for verifying the token refresh functionality
-in the Ansys HPS Data Transfer Client.
+in the Ansys HPS data transfer client.
 """
 
 import logging

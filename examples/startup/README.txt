@@ -1,4 +1,4 @@
-Startup PyHPS Data Transfer
-====================================
+Start PyHPS Data Transfer
+=========================
 
-This example demonstrates how to create a data transfer api object using a client and check for available storages.
+This example shows how to create a data transfer API object using a client and then check for available storages.

@@ -7,6 +7,13 @@ on:
           type: boolean
           default: false
           description: Force to push a release now
+        hps-version:
+          description: HPS version to test against
+          default: 'latest-dev'
+          type: choice
+          options:
+            - 'v1.2.0'
+            - 'latest-dev'
 
   push:
     branches:
@@ -20,7 +27,7 @@ on:
     - cron: "0 1 * * *"
 
 env:
-  PYTHON_VERSION: '3.10'
+  PYTHON_VERSION: '3.12'
   DOCUMENTATION_CNAME: 'data-transfer.hps.docs.pyansys.com'
   PACKAGE_NAME: 'ansys-hps-data-transfer-client'
 
@@ -36,14 +43,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Run PyAnsys code style checks"
-        uses: ansys/actions/code-style@v8
+        uses: ansys/actions/code-style@v9
 
   doc-style:
     name: "Documentation Style Check"
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
-        uses: ansys/actions/doc-style@v8
+        uses: ansys/actions/doc-style@v9
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -53,7 +60,7 @@ jobs:
     with:
       runner: "public-ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
-      hps-version: "v1.2.0"
+      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
     secrets: inherit # pass all secrets
 
   docs:
@@ -66,7 +73,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - uses: extractions/netrc@v2
         with:
@@ -85,11 +92,11 @@ jobs:
           sudo apt install latexmk texlive-latex-extra
 
       - name: "Run Ansys documentation building action"
-        uses: ansys/actions/doc-build@v8
+        uses: ansys/actions/doc-build@v9
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
           check-links: false
-          sphinxopts: "-j auto -W --color --keep-going"
+          sphinxopts: "-j auto --color --keep-going"
 
   smoke-tests:
     name: Build and Smoke tests
@@ -121,7 +128,7 @@ jobs:
           password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
 
       - name: Build wheelhouse and perform smoke test
-        uses: ansys/actions/build-wheelhouse@v8
+        uses: ansys/actions/build-wheelhouse@v9
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -133,7 +140,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@v8
+        uses: ansys/actions/build-library@v9
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: '3.13'
@@ -153,11 +160,13 @@ jobs:
           username: pyansys-ci-bot
           password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
 
-      - name: "Set up Python ${{ env.MAIN_PYTHON_VERSION }}"
+      - name: "Set up Python ${{ env.PYTHON_VERSION }}"
         uses: ansys/actions/_setup-python@main
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
           use-cache: true
+          provision-uv: false
+          prune-uv-cache: false
 
       - name: "Install the library"
         shell: bash
@@ -197,6 +206,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/heads/main')
         with:
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           tag_name: "v${{ needs.library-version.outputs.library_version }}"
           name: "v${{ needs.library-version.outputs.library_version }}"
           prerelease: true
@@ -210,7 +220,7 @@ jobs:
     needs: [package]
     steps:
       - name: Deploy the latest documentation
-        uses: ansys/actions/doc-deploy-dev@v8
+        uses: ansys/actions/doc-deploy-dev@v9
         with:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}
@@ -230,13 +240,13 @@ jobs:
       contents: write
     steps:
       - name: Release to the public PyPI repository
-        uses: ansys/actions/release-pypi-public@v8
+        uses: ansys/actions/release-pypi-public@v9
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           use-trusted-publisher: true
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@v8
+        uses: ansys/actions/release-github@v9
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -248,7 +258,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     steps:
-      - uses: ansys/actions/doc-deploy-stable@v8
+      - uses: ansys/actions/doc-deploy-stable@v9
         with:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}

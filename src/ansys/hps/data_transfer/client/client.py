@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module provides the Python client to the HPS data transfer APIs."""
+"""Provides the Python client to the HPS data transfer APIs."""
 
 import asyncio
 import atexit
@@ -71,25 +71,28 @@ def bin_in_use(bin_path):
 
 
 class MonitorState:
-    """Monitor and track state of worker binary."""
+    """Provides for monitoring and tracking the state of the worker binary."""
 
     def __init__(self):
+        """Initialize the MonitorState class object."""
         self.reset()
         self._sleep_not_started = 2
         self._sleep_while_running = 5
 
     @property
     def sleep_for(self):
+        """Sleep time based on the worker state."""
         return self._sleep_while_running if self._was_ready else self._sleep_not_started
 
     def reset(self):
+        """Reset the monitor state to the initial values."""
         self._ok_reported = False
         self._was_ready = False
         self._failed = False
         self._last_exc = None
 
     def mark_ready(self, ready):
-        """Mark worker as ready or not ready."""
+        """Mark the worker as ready or not ready."""
         self._was_ready = True
         msg = f"Worker is running, reporting {'' if ready else 'not '}ready"
         if ready:
@@ -101,7 +104,7 @@ class MonitorState:
             log.warning(msg)
 
     def mark_failed(self, exc=None, binary=None):
-        """Mark worker as failed."""
+        """Mark the worker as failed."""
         exc_str = "" if exc is None else f": {exc}"
         if binary:
             bin_str = f", binary is {'' if binary.is_started else 'not '}running"
@@ -114,7 +117,7 @@ class MonitorState:
         self._last_exc = exc
 
     def report(self, binary):
-        """Report worker status."""
+        """Report the worker status."""
         if self._failed and self._was_ready:
             descr = "running" if binary.is_started else "not running"
             if self._last_exc is not None:
@@ -123,31 +126,31 @@ class MonitorState:
 
 
 class ClientBase:
-    """Provide the Python client to the HPS data transfer APIs.
+    """Provides the Python client to the HPS data transfer APIs.
 
     This class uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
 
     Parameters
     ----------
-    bin_config: BinaryConfig
-        BinaryConfig object, Default is None
-    download_dir: str
-        download dir path. Default is None
-    clean: bool
-        If True, cleans download_dir path. Default is False.
-    clean_dev: bool
-        If True, downloads binary from dev branch. Default is True.
-    check_in_use: bool
-        If True, checks if binary is in use and skips downloading new binary. Default is True.
-    timeout: float
-        Default is 60.0
-    retries: int
-        Default is 10
+    bin_config: BinaryConfig, default: None
+        Binary configuration. If no configuration is provided, a default ``BinaryConfig`` object is created.
+    download_dir: str, default: "dt_download"
+        Path to the download directory.
+    clean: bool, default: False
+        Whether to clean the path to the download directory.
+    clean_dev: bool, default: True
+        Whether to clean the path to the download directory if the binary is from the development branch.
+    check_in_use: bool, default: True
+        Whether to check if the binary is in use and skip downloading a new binary.
+    timeout: float, default: 60.0
+        Timeout for the session. This is the maximum time to wait for a response from the server.
+    retries: int, default: 1
+        Number of times to retry the operation.
 
-    Examples
+    Examples:
     --------
-    Create a client object and connect to HPS data transfer with a access_token.
+    Create a client object and connect to HPS data transfer with an access token.
 
     >>> from ansys.hps.data_transfer.client import Client
     >>> token = authenticate(username=username, password=password, verify=False, url=auth_url)
@@ -165,6 +168,8 @@ class ClientBase:
     """
 
     class Meta:
+        """Meta class for the ``ClientBase`` class."""
+
         is_async = False
 
     def __init__(
@@ -177,6 +182,7 @@ class ClientBase:
         timeout=60.0,
         retries=10,
     ):
+        """Initializes the Client class object."""
         self._bin_config = bin_config or BinaryConfig()
         self._download_dir = download_dir
         self._clean = clean
@@ -192,41 +198,43 @@ class ClientBase:
         self._monitor_state = MonitorState()
 
     def __getstate__(self):
+        """Return pickled state of the object."""
         state = self.__dict__.copy()
         del state["_session"]
         del state["_monitor_stop"]
         return state
 
     def __setstate__(self, state):
+        """Restore state from pickled state."""
         self.__dict__.update(state)
         self._session = None
         self._monitor_stop = None
 
     @property
     def binary_config(self):
-        """Return binary config."""
+        """Binary configuration."""
         return self._bin_config
 
     @property
     def base_api_url(self):
-        """Return api url from config."""
+        """API URL from the configuration."""
         return self._bin_config.url
 
     @property
     def session(self):
-        """Return a session object. Creates a new one if one is not already created."""
+        """Session object. If one does not exist, a new one is created."""
         if self._session is None:
             self._session = self._create_session(self.base_api_url, sync=not self.Meta.is_async)
         return self._session
 
     @property
     def is_started(self):
-        """Return True if binary is up and running."""
+        """Flag indicating if the binary is up and running."""
         return self.binary is not None and self.binary.is_started
 
     @property
     def timeout(self):
-        """Return the timeout for the session."""
+        """Timeout for the session."""
         return self._timeout
 
     @timeout.setter
@@ -236,7 +244,7 @@ class ClientBase:
 
     @property
     def retries(self):
-        """Return the number of retries."""
+        """Number of retries."""
         return self._retries
 
     @retries.setter
@@ -245,15 +253,15 @@ class ClientBase:
         self._retries = value
 
     def start(self):
-        """Start client session using binary config credentials."""
+        """Start the client session using the binary configuration credentials."""
         if self.binary is not None:
             return
 
         if self._clean and os.path.exists(self._download_dir):
             try:
                 shutil.rmtree(self._download_dir)
-            except:
-                pass
+            except Exception as ex:
+                log.debug(f"Failed to remove directory {self._download_dir}: {ex}")
 
         self._monitor_stop = threading.Event()
         self._monitor_state.reset()
@@ -268,7 +276,7 @@ class ClientBase:
         # self._session = self._create_session(self.base_api_url)
 
     def stop(self, wait=5.0):
-        """Stop client session."""
+        """Stop the client session."""
         if self.binary is None:
             return
         self._monitor_stop.set()
@@ -312,7 +320,6 @@ class ClientBase:
     def _prepare_bin_path(self, build_info):
         log.debug(f"Server version: {build_info}")
         version_hash = build_info["version_hash"]
-        branch = build_info["branch"]
 
         # Figure out binary download path
         bin_ext = ".exe" if platform.system() == "Windows" else ""
@@ -378,8 +385,8 @@ class ClientBase:
                 if not os.path.exists(bin_dir):
                     try:
                         os.makedirs(bin_dir)
-                    except:
-                        pass
+                    except Exception as ex:
+                        log.warning(f"Failed to create directory {bin_dir}: {ex}")
 
                 platform_str = self._platform()
                 log.debug(
@@ -405,8 +412,8 @@ class ClientBase:
                 os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
                 if self._bin_config.debug:
                     log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
-        except filelock.Timeout:
-            raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}")
+        except filelock.Timeout as ex:
+            raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}") from ex
 
     def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
@@ -446,33 +453,36 @@ class ClientBase:
 
 
 class AsyncClient(ClientBase):
-    """An async interface to the Python client to the HPS data transfer APIs."""
+    """Provides an async interface to the Python client to the HPS data transfer APIs."""
 
     class Meta(ClientBase.Meta):
+        """Meta class for AsyncClient class."""
+
         is_async = True
 
     def __init__(self, *args, **kwargs):
+        """Initializes the AsyncClient class object."""
         super().__init__(*args, **kwargs)
         self._bin_config._on_token_update = self._update_token
 
     async def start(self):
-        """Start async binary worker."""
+        """Start the async binary worker."""
         super().start()
         asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
-        """Stop async binary worker."""
+        """Stop the async binary worker."""
         if self._session is not None:
             try:
                 await self._session.post(self.base_api_url + "/shutdown")
                 await asyncio.sleep(0.1)
-            except:
-                pass
+            except Exception as ex:
+                log.warning(f"Failed to send shutdown request: {ex}")
         super().stop(wait=wait)
         # asyncio_atexit.register(self.stop)
 
     async def wait(self, timeout: float = 60.0, sleep=0.5):
-        """Wait on async binary worker."""
+        """Wait on the async binary worker."""
         start = time.time()
         while time.time() - start < timeout:
             try:
@@ -525,31 +535,37 @@ class AsyncClient(ClientBase):
 
 
 class Client(ClientBase):
-    """Provide the Python client to the HPS data transfer APIs.
+    """Provides the Python client to the HPS data transfer APIs.
+
     This class uses the provided credentials to create and store
     an authorized :class:`requests.Session` object.
     """
 
     class Meta(ClientBase.Meta):
+        """Meta class for Client class."""
+
         is_async = False
 
     def __init__(self, *args, **kwargs):
+        """Initializes the Client class object."""
         super().__init__(*args, **kwargs)
         self._bin_config._on_token_update = self._update_token
         self._monitor_thread = None
 
     def __getstate__(self):
+        """Return pickled state of the object."""
         state = super().__getstate__()
         del state["_monitor_thread"]
         return state
 
     def __setstate__(self, state):
+        """Restore state from pickled state."""
         super().__setstate__(state)
         self.__dict__.update(state)
         self._monitor_thread = None
 
     def start(self):
-        """Start client session using binary config credentials."""
+        """Start the client session using the binary configuration credentials."""
         super().start()
         atexit.register(self.stop)
         self._monitor_thread = threading.Thread(
@@ -558,16 +574,16 @@ class Client(ClientBase):
         self._monitor_thread.start()
 
     def stop(self, wait=5.0):
-        """Stop client session."""
+        """Stop the client session."""
         if self._session is not None:
             try:
                 self._session.post(self.base_api_url + "/shutdown")
-            except:
-                pass
+            except Exception as ex:
+                log.warning(f"Failed to send shutdown request: {ex}")
         super().stop(wait=wait)
 
     def wait(self, timeout: float = 60.0, sleep=0.5):
-        """Wait on worker binary to start."""
+        """Wait on the worker binary to start."""
         start = time.time()
         while time.time() - start < timeout:
             try:
@@ -591,6 +607,8 @@ class Client(ClientBase):
             self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
             # Make sure the token gets intercepted by the worker
             resp = self.session.get("/")
+            if resp.status_code != 200:
+                log.error(f"Failed to update token, server responded with: {resp.status_code}")
         except Exception as e:
             log.debug(f"Error updating token: {e}")
 

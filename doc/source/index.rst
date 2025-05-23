@@ -3,13 +3,16 @@ PyHPS Data Transfer documentation |version|
 
 Ansys HPC Platform Services (HPS) is a set of technology components designed to help you
 manage the execution of simulations while making use of your full range of computing assets.
-Data transfer service is a modular, plugin-based solution, which helps to solve complex data transfer problems for HPS.
-PyHPS Data Transfer brings HPS data transfer client to your Python app.
-Wrapping around data transfer client REST APIs, PyHPS Data Transfer allows you to:
+PyHPS Data Transfer is a Python client library for the HPS data transfer service. This
+modular, plugin-based solution wraps around data transfer client REST APIs to help solve
+complex data transfer problems for HPS.
+
+With PyHPS Data Transfer, you can perform these operations:
 
 * Create and list files.
 * Copy files.
 * Set and view permissions.
+* Delete files.
 
 
 .. grid:: 1 2 2 2
@@ -20,7 +23,8 @@ Wrapping around data transfer client REST APIs, PyHPS Data Transfer allows you t
             :link: getting_started/index
             :link-type: doc
 
-            Learn how to install and start using PyHPS Data Transfer.
+            Learn how to install PyHPS Data Transfer in user mode and
+            quickly start using it.
 
         .. grid-item-card:: User guide :fa:`book-open-reader`
             :padding: 2 2 2 2

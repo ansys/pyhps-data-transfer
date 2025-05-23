@@ -23,19 +23,20 @@
 """
 .. _ref_transfer:
 
-==============================
-Basic script to transfer files
-==============================
+==============
+Transfer files
+==============
 
-Basic script to transfer files to remote backends and back using the data transfer service.
-'local-path' is the path to the files or directory to transfer. Supports wildcards.
+This example script transfers files to remote backends and back using the data transfer service.
+The ``local-path`` argument is the path to the files or directory to transfer. Wildcards are supported.
 
-Example usage:
-
-    ``python examples/transfer_files.py --local_path=examples/basic/files/* --remote-path=hello --debug``
+Example usage: ``python examples/transfer_files.py --local_path=examples/basic/files/* --remote-path=hello --debug``
 
 """
 
+###################################################
+# Perform necessary imports
+# =========================
 import filecmp
 import glob
 import logging
@@ -48,17 +49,15 @@ from humanfriendly import format_size
 import typer
 from typing_extensions import Annotated
 
-###################################################
-# Necessary imports
-# =================
-
 from ansys.hps.data_transfer.client import Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)
 
-
+########################################################################
+# Define a method to transfer files using the data transfer service
+# =================================================================
 def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
     """Transfer files to remote backends and back using new data transfer service."""
     if not remote_path:
@@ -73,7 +72,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     op = api.wait_for([op.id])
     log.debug(f"Operation {op[0].state}")
 
-    log.info("== Create remote directory ...")
+    log.info("== Creating remote directory ...")
     mkdir_op = api.mkdir([StoragePath(path=remote_path)])
     api.wait_for([mkdir_op.id])
     log.info(f"Directory {remote_path} created")
@@ -95,7 +94,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     t1 = perf_counter()
     log.debug(f"Operation {op[0].state}")
 
-    log.info(f"== Query files and metadata in {remote_path} ...")
+    log.info(f"== Querying files and metadata in {remote_path} ...")
     op = api.list([StoragePath(path=remote_path)])
     op = api.wait_for([op.id])
     log.debug(f"Operation {op[0].state}")
@@ -145,7 +144,9 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
         log.info(f"- {fname}: {'Success' if success else 'Failed'}")
         assert success, f"File {fname} comparison failed!"
 
-
+###################################################
+# Define the main function
+# ========================
 def main(
     local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards")],
     remote_path: Annotated[str, typer.Option(help="Optional path to the remote directory to transfer files to")] = None,
@@ -167,10 +168,9 @@ def main(
     token = token.get("access_token", None)
     assert token is not None
 
-    log.info("Connecting to the data transfer service client..")
-    ##############################
-    # Create a ``client`` instance
-    # ============================
+###################################################
+# Create a ``Client`` instance
+# ============================
     client = Client(clean=True)
 
     client.binary_config.update(
@@ -181,9 +181,14 @@ def main(
         data_transfer_url=dt_url,
     )
     client.start()
-
+###################################################
+# Create a ``DataTransferApi`` instance
+# =====================================
     api = DataTransferApi(client)
     api.status(wait=True)
+###################################################
+# Get available storages
+# ======================
     storage_names = [f"{s['name']}({s['type']})" for s in api.storages()]
     log.info(f"Available storages: {storage_names}")
 
