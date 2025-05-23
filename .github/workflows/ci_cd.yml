@@ -27,7 +27,7 @@ on:
     - cron: "0 1 * * *"
 
 env:
-  PYTHON_VERSION: '3.10'
+  PYTHON_VERSION: '3.12'
   DOCUMENTATION_CNAME: 'data-transfer.hps.docs.pyansys.com'
   PACKAGE_NAME: 'ansys-hps-data-transfer-client'
 
