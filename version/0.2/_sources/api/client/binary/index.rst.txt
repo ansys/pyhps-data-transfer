@@ -1,0 +1,449 @@
+client.binary
+=============
+
+.. py:module:: client.binary
+
+.. autoapi-nested-parse::
+
+   This module provides utilities for managing binary files and processes related to the
+   Ansys HPS Data Transfer Client.
+
+   ..
+       !! processed by numpydoc !!
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   client.binary.log
+   client.binary.level_map
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   client.binary.PrepareSubprocess
+   client.binary.BinaryConfig
+   client.binary.Binary
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:data:: level_map
+
+.. py:class:: PrepareSubprocess
+
+   
+   Context manager to disable vfork and posix_spawn in subprocess.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:method:: __enter__()
+
+
+   .. py:method:: __exit__(exc_type, exc_val, exc_tb)
+
+
+.. py:class:: BinaryConfig(data_transfer_url: str = 'https://localhost:8443/hps/dt/api/v1', log: bool = True, log_to_file: bool = False, monitor_interval: float = 0.5, path=None, token: str = None, host: str = '127.0.0.1', port: int = None, verbosity: int = 1, insecure: bool = False, debug: bool = False)
+
+   
+   Configure worker binary connection to HPS data transfer client.
+
+
+   :Parameters:
+
+       **data_transfer_url: str**
+           data transfer url. Default is https://localhost:8443/hps/dt/api/v1
+
+       **log: bool**
+           Process related setting to enable logging. Default is True
+
+       **log_to_file: bool**
+           To enable logging to a file. Default is False
+
+       **monitor_interval: float**
+           duration for waiting before the next monitor check on the binary. Default is 0.5
+
+       **token: str**
+           A worker config setting of access token credential.
+
+       **host: str**
+           Host IP to talk to data tarsnfer service. Default is 127.0.0.1
+
+       **port: int**
+           Host port to talk to data tarsnfer service
+
+       **verbosity: int**
+           Default is 1
+
+       **insecure: bool**
+           Default is False
+
+       **debug: bool**
+           Default is False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:attribute:: data_transfer_url
+      :value: 'https://localhost:8443/hps/dt/api/v1'
+
+
+
+   .. py:attribute:: log
+      :value: True
+
+
+
+   .. py:attribute:: log_to_file
+      :value: False
+
+
+
+   .. py:attribute:: monitor_interval
+      :value: 0.5
+
+
+
+   .. py:attribute:: path
+      :value: None
+
+
+
+   .. py:attribute:: debug
+      :value: False
+
+
+
+   .. py:attribute:: verbosity
+      :value: 1
+
+
+
+   .. py:attribute:: host
+      :value: '127.0.0.1'
+
+
+
+   .. py:attribute:: _selected_port
+      :value: None
+
+
+
+   .. py:attribute:: _detected_port
+      :value: None
+
+
+
+   .. py:attribute:: _token
+      :value: None
+
+
+
+   .. py:attribute:: insecure
+      :value: False
+
+
+
+   .. py:attribute:: _on_token_update
+      :value: None
+
+
+
+   .. py:attribute:: _on_process_died
+      :value: None
+
+
+
+   .. py:attribute:: _on_port_changed
+      :value: None
+
+
+
+   .. py:method:: update(**kwargs)
+
+
+   .. py:property:: port
+
+      
+      Return port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:property:: token
+
+      
+      Return token.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:property:: url
+
+      
+      Return url.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+.. py:class:: Binary(config: BinaryConfig = BinaryConfig())
+
+   
+   Start, stop and monitor worker binary.
+
+
+   :Parameters:
+
+       **config: BinaryConfig**
+           BinaryConfig object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+   .. py:attribute:: _config
+
+
+   .. py:attribute:: _base_args
+      :value: []
+
+
+
+   .. py:attribute:: _args
+      :value: []
+
+
+
+   .. py:attribute:: _stop
+      :value: None
+
+
+
+   .. py:attribute:: _prepared
+      :value: None
+
+
+
+   .. py:attribute:: _process
+      :value: None
+
+
+
+   .. py:method:: __getstate__()
+
+
+   .. py:property:: config
+
+      
+      Return config.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:property:: is_started
+
+      
+      Return true if binary is up and running.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: start()
+
+      
+      Start the worker binary.
+      check for binary in a set path, marks the binary as an executable and then start the executable.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: stop(wait=5.0)
+
+      
+      Stop worker binary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      ..
+          !! processed by numpydoc !!
+
+
+   .. py:method:: _log_output()
+
+
+   .. py:method:: _log_line(line)
+
+
+   .. py:method:: _monitor()
+
+
+   .. py:method:: _prepare()
+
+
+   .. py:method:: _get_open_port()
+
+
+   .. py:method:: _build_base_args()
+
+
+   .. py:method:: _build_args()
+
+

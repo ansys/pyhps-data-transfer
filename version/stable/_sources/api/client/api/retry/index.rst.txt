@@ -1,0 +1,60 @@
+client.api.retry
+================
+
+.. py:module:: client.api.retry
+
+.. autoapi-nested-parse::
+
+   This module provides utilities for implementing retry mechanisms in the
+   Ansys HPS Data Transfer Client. It includes functionality for handling transient
+   errors and ensuring robust and reliable operations during data transfer.
+
+   ..
+       !! processed by numpydoc !!
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   client.api.retry.log
+   client.api.retry.max_tries_env_name
+   client.api.retry.max_time_env_name
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   client.api.retry._on_backoff
+   client.api.retry._giveup
+   client.api.retry._lookup_max_time
+   client.api.retry._lookup_max_tries
+   client.api.retry.retry
+
+
+Module Contents
+---------------
+
+.. py:data:: log
+
+.. py:data:: max_tries_env_name
+   :value: 'ANSYS_DT_CLIENT_RETRY_MAX_TIME'
+
+
+.. py:data:: max_time_env_name
+   :value: 'ANSYS_DT_CLIENT_RETRY_MAX_TRIES'
+
+
+.. py:function:: _on_backoff(details)
+
+.. py:function:: _giveup(e)
+
+.. py:function:: _lookup_max_time()
+
+.. py:function:: _lookup_max_tries()
+
+.. py:function:: retry(max_tries=_lookup_max_tries, max_time=_lookup_max_time, raise_on_giveup=True, jitter=backoff.full_jitter)
+

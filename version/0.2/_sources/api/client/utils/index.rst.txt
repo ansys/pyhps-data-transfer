@@ -1,0 +1,55 @@
+client.utils
+============
+
+.. py:module:: client.utils
+
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 1
+
+   /api/client/utils/jitter/index
+   /api/client/utils/otel_config/index
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   client.utils.set_otel_config
+
+
+Package Contents
+----------------
+
+.. py:function:: set_otel_config(exporter_url, resource_attributes=None, headers=None, exporter_type=None)
+
+   
+   Set data transfer worker Otel configuration using environment variables before starting data transfer worker
+   ANSYS_DT_OTEL__EXPORTER_URL - Otel exporter url
+   ANSYS_DT_OTEL__RESOURCE_ATTRIBUTES - key-value pairs of resource attributes to be passed to the Otel SDK
+   ANSYS_DT_OTEL__HEADERS - key-value pairs of headers to be associated with gRPC requests
+   ANSYS_DT_OTEL__EXPORTER_TYPE - Otel exporter type
+   ANSYS_DT_OTEL__ENABLED - enables Otel
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
