@@ -60,7 +60,7 @@ jobs:
     with:
       runner: "public-ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
-      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
+      hps-version: ${{ inputs.hps-version || 'v1.2.0' }}
     secrets: inherit # pass all secrets
 
   docs:
