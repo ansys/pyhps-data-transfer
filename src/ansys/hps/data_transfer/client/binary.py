@@ -120,6 +120,7 @@ class BinaryConfig:
         insecure: bool = False,
         debug: bool = False,
         auth_type: str = None,
+        env: dict | None = None,
     ):
         """Initialize the BinaryConfig class object."""
         self.data_transfer_url = data_transfer_url
@@ -138,6 +139,7 @@ class BinaryConfig:
         self._selected_port = port
         self._detected_port = None
         self._token = token
+        self._env = env
         self.insecure = insecure
         self.auth_type = auth_type
 
@@ -184,6 +186,18 @@ class BinaryConfig:
     def url(self):
         """URL."""
         return f"http://{self.host}:{self.port}/api/v1"
+
+    @property
+    def env(self):
+        """Get additional environment variables that will be passed to the child process."""
+        return self._env or {}
+
+    @env.setter
+    def env(self, value):
+        """Set environment variables to pass to the child process."""
+        if not isinstance(value, dict):
+            raise TypeError("Environment variables must be a dictionary.")
+        self._env = value
 
 
 class Binary:
@@ -345,7 +359,11 @@ class Binary:
                 log.debug(f"Starting worker: {redacted}")
 
                 with PrepareSubprocess():
-                    self._process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    env = os.environ.copy()
+                    env.update(self._config.env)
+                    self._process = subprocess.Popen(
+                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
+                    )
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:

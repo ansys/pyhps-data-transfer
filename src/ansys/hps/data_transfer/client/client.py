@@ -511,7 +511,7 @@ class ClientBase:
                 api_key_header_env: self._api_key_header,
                 api_key_value_env: self._api_key,
             }
-            os.environ.update({k: v for k, v in env.items() if k not in os.environ})
+            self._bin_config.env.update({k: v for k, v in env.items() if k not in os.environ})
 
 
 class AsyncClient(ClientBase):
