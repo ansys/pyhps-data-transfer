@@ -139,7 +139,7 @@ class BinaryConfig:
         self._selected_port = port
         self._detected_port = None
         self._token = token
-        self._env = env
+        self._env = env or {}
         self.insecure = insecure
         self.auth_type = auth_type
 
@@ -190,7 +190,7 @@ class BinaryConfig:
     @property
     def env(self):
         """Get additional environment variables that will be passed to the child process."""
-        return self._env or {}
+        return self._env
 
     @env.setter
     def env(self, value):
@@ -356,11 +356,18 @@ class Binary:
                 redacted = f"{args}"
                 if self._config.token is not None:
                     redacted = args.replace(self._config.token, "***")
+
+                env = os.environ.copy()
+                env_str = ""
+                if self._config.env:
+                    env.update(self._config.env)
+                    env_str = ",".join([k for k in self._config.env.keys() if k != "PATH"])
+
                 log.debug(f"Starting worker: {redacted}")
+                if self._config.debug:
+                    log.debug(f"Worker environment: {env_str}")
 
                 with PrepareSubprocess():
-                    env = os.environ.copy()
-                    env.update(self._config.env)
                     self._process = subprocess.Popen(
                         args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
                     )
