@@ -51,6 +51,9 @@ for n in ["httpx", "httpcore", "requests", "urllib3"]:
     logger = logging.getLogger(n)
     logger.setLevel(logging.CRITICAL)
 
+api_key_header_env = "ANSYS_DT_AUTH__API_KEY__HEADER_NAME"
+api_key_value_env = "ANSYS_DT_AUTH__API_KEY__VALUE"
+
 log = logging.getLogger(__name__)
 
 
@@ -504,8 +507,11 @@ class ClientBase:
             self._api_key = "".join(
                 random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)
             )
-            os.environ["ANSYS_DT_AUTH__API_KEY__VALUE"] = self._api_key
-            os.environ["ANSYS_DT_AUTH__API_KEY__HEADER_NAME"] = self._api_key_header
+            env = {
+                api_key_header_env: self._api_key_header,
+                api_key_value_env: self._api_key,
+            }
+            os.environ.update({k: v for k, v in env.items() if k not in os.environ})
 
 
 class AsyncClient(ClientBase):
