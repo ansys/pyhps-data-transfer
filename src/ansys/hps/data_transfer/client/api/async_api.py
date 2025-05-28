@@ -28,7 +28,7 @@ data transfer operations asynchronously, managing resources, and handling client
 
 import asyncio
 import builtins
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 import logging
 import textwrap
 import time
@@ -205,7 +205,7 @@ class AsyncDataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
-        progress_handler: Callable[[str, float], None] = None,
+        progress_handler: Callable[[str, float], Awaitable[None]] = None,
     ):
         """Provides an async interface to wait for a list of operations to complete.
 
