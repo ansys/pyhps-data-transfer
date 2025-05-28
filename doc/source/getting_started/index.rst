@@ -4,7 +4,7 @@ Getting started
 ===============
 
 This section describes how to install PyHPS Data Transfer in user mode. If you are interested in contributing
-to PyHPS Data Transfer.
+to PyHPS Data Transfer, see :ref:`contribute` for information on installing in developer mode.
 
 Prerequisites
 -------------
@@ -18,8 +18,8 @@ You must have pip_ and Python 3.9, 3.10, 3.11, or 3.12 installed.
 
        python --version
 
-#. If you do not have a Python 3.x version installed, install the latest 3.x version from the
-   Python organization's `Downloads <https://python.org>`_ page.
+#. If a Python 3.x version is not available, install the latest 3.x version from the
+   Python organization's `Downloads <https://www.python.org/downloads/>`_ page.
 
 #. To see if you have ``pip`` installed, run this command:
 
@@ -27,7 +27,7 @@ You must have pip_ and Python 3.9, 3.10, 3.11, or 3.12 installed.
 
        pip --version
 
-#. If you do not have ``pip`` installed, see `Installing Packages <https://packaging.python.org/tutorials/installing-packages/>`_
+#. If ``pip`` is not installed, see `Installing Packages <https://packaging.python.org/tutorials/installing-packages/>`_
    in the *Python Packaging User Guide*.
 
 #. To ensure that you have the latest version of ``pip``, run this command:
@@ -40,7 +40,7 @@ You must have pip_ and Python 3.9, 3.10, 3.11, or 3.12 installed.
 Installation
 ------------
 
-To install ansys-hps-data-transfer-client in user mode, run this command:
+To install PyHPS Data Transfer in user mode, run this command:
 
 .. code:: bash
 

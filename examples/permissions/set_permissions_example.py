@@ -27,7 +27,7 @@
 Set and query permissions
 =========================
 
-Example script to set and query permissions on files and
+This example script sets and queries permissions on files and
 directories using the data transfer service.
 
 Example usage:
@@ -64,8 +64,11 @@ log = logging.getLogger("ansys.hps")
 log.addHandler(stream_handler)
 log.setLevel(logging.DEBUG)
 
-
+######################################################################
+# Define a method to get the user ID of ``repuser``` from Keycloak
+# ================================================================
 def get_user_id_from_keycloak(keycloak_url):
+    """Get the user id of 'repuser' from Keycloak."""
     admin = KeycloakAdmin(
         server_url=keycloak_url + "/",
         username="keycloak",
@@ -78,7 +81,11 @@ def get_user_id_from_keycloak(keycloak_url):
     return user_id
 
 
+##################################################################################
+# Define a method to set and query permissions on files and directories
+# =====================================================================
 def permissions(api: DataTransferApi, url: str):
+    """Set and query permissions on files and directories."""
     keycloak_url = f"{url}/auth"
     auth_url = f"{keycloak_url}/realms/rep"
     dt_url = f"{url}/dt/api/v1"
@@ -95,6 +102,9 @@ def permissions(api: DataTransferApi, url: str):
     for file in files:
         log.info(f"- {file}")
 
+##############################################################
+# Copy files as ``repuser``
+# =======================
     log.info("### Trying to copy files as 'repuser'...")
     target_dir = "permissions_demo"
     src_dst = [
@@ -109,12 +119,12 @@ def permissions(api: DataTransferApi, url: str):
         )
         for f in files
     ]
-    log.info("### Operations to be executed: ")
+    log.info("### Operations to execute: ")
     for sd in src_dst:
         log.info(f"- {sd.src.remote}:{sd.src.path} -> {sd.dst.remote}:{sd.dst.path}")
 
     try:
-        # The operation will fail because 'repuser' does not have the necessary permissions
+        # The operation fails because 'repuser' does not have the necessary permissions
         resp = api.copy(src_dst)
     except Exception as ex:
         log.error(f"Encountered error: {ex}")
@@ -122,6 +132,9 @@ def permissions(api: DataTransferApi, url: str):
     admin_token = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     admin_token = admin_token.get("access_token", None)
 
+##############################################################
+# Create a data transfer client for ``repadmin``
+# ==============================================
     log.info("### Preparing data transfer client for 'repadmin' ...")
     admin_client = Client()
     admin_client.binary_config.update(
@@ -133,13 +146,12 @@ def permissions(api: DataTransferApi, url: str):
     )
     admin_client.start()
 
-    ###################################
-    # Create a DataTransferApi instance
-    # =================================
-
     admin = DataTransferApi(admin_client)
     admin.status(wait=True)
 
+##############################################################
+# Grant ``repuser`` the necessary permissions
+# ===========================================
     log.info("### Granting 'repuser' the necessary permissions ...")
     user_id = get_user_id_from_keycloak(keycloak_url)
 
@@ -156,6 +168,9 @@ def permissions(api: DataTransferApi, url: str):
     except Exception as ex:
         log.info(ex)
 
+##############################################################
+# Verify permissions for ``repuser``
+# ==================================
     try:
         log.info("### Verifying permissions for 'repuser' ...")
         resp = admin.check_permissions(
@@ -175,11 +190,17 @@ def permissions(api: DataTransferApi, url: str):
         op = api.wait_for([resp.id], timeout=None)[0]
         log.info(f"### Copy operation state: {op.state}")
 
+##############################################################
+# List files in the target directory as ``repadmin``
+# ==================================================
         log.info("### Listing files in the target directory as 'repadmin' ...")
         resp = admin.list([StoragePath(path=target_dir, remote="any")])
         op = admin.wait_for([resp.id], timeout=10)[0]
         log.info(f"### Result: {op.result}")
 
+##############################################################
+# Download files to ``downloaded`` directory
+# ==========================================
         target_dir = os.path.join(os.path.dirname(__file__), "downloaded")
         log.info(f"### Downloading files to {target_dir}...")
         src_dst = [
@@ -207,11 +228,11 @@ def permissions(api: DataTransferApi, url: str):
             ]
         )
 
-    log.info("And that's all folks!")
-
     admin_client.stop()
 
-
+###################################################
+# Define the main function
+# ========================
 def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",

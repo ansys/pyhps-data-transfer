@@ -7,6 +7,13 @@ on:
           type: boolean
           default: false
           description: Force to push a release now
+        hps-version:
+          description: HPS version to test against
+          default: 'latest-dev'
+          type: choice
+          options:
+            - 'v1.2.0'
+            - 'latest-dev'
 
   push:
     branches:
@@ -20,7 +27,7 @@ on:
     - cron: "0 1 * * *"
 
 env:
-  PYTHON_VERSION: '3.10'
+  PYTHON_VERSION: '3.12'
   DOCUMENTATION_CNAME: 'data-transfer.hps.docs.pyansys.com'
   PACKAGE_NAME: 'ansys-hps-data-transfer-client'
 
@@ -53,7 +60,7 @@ jobs:
     with:
       runner: "public-ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
-      hps-version: "v1.2.0"
+      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
     secrets: inherit # pass all secrets
 
   docs:
@@ -66,7 +73,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - uses: extractions/netrc@v2
         with:
@@ -87,7 +94,7 @@ jobs:
       - name: "Run Ansys documentation building action"
         uses: ansys/actions/doc-build@v9
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
           check-links: false
           sphinxopts: "-j auto --color --keep-going"
 
@@ -153,11 +160,13 @@ jobs:
           username: pyansys-ci-bot
           password: ${{ secrets.PYANSYS_CI_BOT_PACKAGE_TOKEN }}
 
-      - name: "Set up Python ${{ env.MAIN_PYTHON_VERSION }}"
+      - name: "Set up Python ${{ env.PYTHON_VERSION }}"
         uses: ansys/actions/_setup-python@main
         with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
           use-cache: true
+          provision-uv: false
+          prune-uv-cache: false
 
       - name: "Install the library"
         shell: bash
