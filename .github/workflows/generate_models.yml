@@ -15,7 +15,7 @@ jobs:
 
   generate:
     name: Model generation
-    runs-on: ubuntu-latest-8-cores
+    runs-on: public-ubuntu-latest-8-cores
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,14 +47,7 @@ jobs:
       - name: Create venv
         run: |
             python3 -m venv dev_env
-
-      - name: Generate models
-        run: |
-            cp core/docs/worker/swagger.json openapi2.json
-            ./scripts/generate_models.sh
-            ls -lah
-            sudo rm -rf out
-
+            pip install -e ".[build,tests]"
 
       - name: Install dependencies
         run: |
@@ -71,20 +64,28 @@ jobs:
           version: ${{ inputs.hps-version || 'latest-dev' }}
           feature: ${{ inputs.hps-feature || 'main' }}
 
-      - name: Test with tox
-        run: tox -e py310-coverage
-        env:
-          HPS_TEST_URL: ${{ steps.hps-services.outputs.url }}
-          HPS_TEST_USERNAME: repadmin
-          HPS_TEST_PASSWORD: repadmin
+      - name: Generate models
+        run: |
+            source dev_env/bin/activate
+            ./scripts/generate_models.sh
+            ls -lah
+            sudo rm -rf out
 
+      - name: Adjust permissions
+        run: |
+            sudo chown -R $USER:$USER .
 
-      - name: Publish Test Report
-        uses: mikepenz/action-junit-report@v5
-        if: always()
-        with:
-          report_paths: '**/test*.xml'
-          check_name: Test report
+    #   - name: Simple tests
+    #     run: |
+    #         source dev_env/bin/activate
+    #         pytest . -v --tb=short --disable-warnings --maxfail=1 --junit-xml=test.xml
+
+    #   - name: Publish Test Report
+    #     uses: mikepenz/action-junit-report@v5
+    #     if: always()
+    #     with:
+    #       report_paths: '**/test*.xml'
+    #       check_name: Test report
 
       - name: "Create PR if changes detected"
         id: create-pr
@@ -92,9 +93,10 @@ jobs:
         uses: peter-evans/create-pull-request@v7
         with:
           title: "[Auto] Update pydantic models"
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           base: main
-          branch: model_updates
+          branch: maint/model_updates
           delete-branch: true
           reviewers: nezgrath
           add-paths: |
-            ansys/hps/data_transfer/client/models
+            src/ansys/hps/data_transfer/client/models
