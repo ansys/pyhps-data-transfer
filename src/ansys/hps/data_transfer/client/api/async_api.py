@@ -222,7 +222,7 @@ class AsyncDataTransferApi:
         raise_on_error: bool
             Raise an exception if an error occurs. Default is False.
         progress_handler: Callable[[str, float], None]
-            A function to handle progress updates. Default is None.
+            A async function to handle progress updates. Default is None.
 
         """
         if not isinstance(operation_ids, list):
@@ -251,7 +251,7 @@ class AsyncDataTransferApi:
                         log.debug(f"- Operation '{op.description}' {' '.join(fields)}")
                 if progress_handler is not None:
                     for op in ops:
-                        progress_handler(op.id, op.progress)
+                        await progress_handler(op.id, op.progress)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:

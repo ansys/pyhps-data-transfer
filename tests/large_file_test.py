@@ -208,7 +208,7 @@ async def test_async_batch_with_wait_parameters(storage_path, async_client):
     progress_data = []
 
     # test progress handler
-    def handler(id, current_progress):
+    async def handler(id, current_progress):
         progress_data.append(current_progress)
         log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
 
@@ -236,7 +236,7 @@ async def test_async_batch_with_multiple_operations_to_wait(storage_path, async_
     progress_data = []
 
     # test progress handler
-    def handler(id, current_progress):
+    async def handler(id, current_progress):
         progress_data.append(current_progress)
         log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
 
