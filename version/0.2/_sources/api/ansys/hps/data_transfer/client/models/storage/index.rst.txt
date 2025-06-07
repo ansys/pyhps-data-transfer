@@ -1,0 +1,164 @@
+
+
+
+
+
+
+The ``storage.py`` module
+=========================
+
+.. py:module:: ansys.hps.data_transfer.client.models.storage
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: storage
+.. tab-set::
+
+
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~PathType`
+            - Path type enum for the file, directory, or any.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the schema for the path type.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: PathType(*args, **kwds)
+
+
+
+   
+   Path type enum for the file, directory, or any.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PathType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~FilePath`
+            - 
+          * - :py:attr:`~DirPath`
+            - 
+          * - :py:attr:`~AnyPath`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.storage import PathType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: FilePath
+   :value: 'file'
+
+
+.. py:attribute:: DirPath
+   :value: 'dir'
+
+
+.. py:attribute:: AnyPath
+   :value: 'any'
+
+
+
+
+
+
+
+
+
