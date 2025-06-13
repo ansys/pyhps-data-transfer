@@ -28,6 +28,7 @@ data transfer operations asynchronously, managing resources, and handling client
 
 import asyncio
 import builtins
+from collections.abc import Awaitable, Callable
 import logging
 import textwrap
 import time
@@ -204,8 +205,26 @@ class AsyncDataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
+        progress_handler: Callable[[str, float], Awaitable[None]] = None,
     ):
-        """Provides an async interface to wait for a list of operations to complete."""
+        """Provides an async interface to wait for a list of operations to complete.
+
+        Parameters
+        ----------
+        operation_ids: list[str | Operation]
+            The list of operation ids to wait for.
+        timeout: float | None
+            The maximum time to wait for the operations to complete.
+        interval: float
+            The interval between checks for the operations to complete.
+        cap: float
+            The maximum backoff value used to calculate the next wait time. Default is 2.0.
+        raise_on_error: bool
+            Raise an exception if an error occurs. Default is False.
+        progress_handler: Callable[[str, float], None]
+            A async function to handle progress updates. Default is None.
+
+        """
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
         operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]
@@ -230,6 +249,9 @@ class AsyncDataTransferApi:
                         if op.progress > 0:
                             fields.append(f"progress={op.progress:.3f}")
                         log.debug(f"- Operation '{op.description}' {' '.join(fields)}")
+                if progress_handler is not None:
+                    for op in ops:
+                        await progress_handler(op.id, op.progress)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
