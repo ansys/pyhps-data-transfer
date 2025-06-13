@@ -183,3 +183,4 @@ cython_debug/
 # End of https://www.toptal.com/developers/gitignore/api/python
 build_info.*
 doc/source/api/_autosummary
+test_run/
