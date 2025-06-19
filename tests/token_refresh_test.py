@@ -47,6 +47,8 @@ def test_token_passing(client, admin_token, auth_url):
     tk = authenticate(username="repadmin", password="repadmin", verify=False, url=auth_url)
     client.binary_config.token = tk["access_token"]
     assert client.binary_config.token == tk["access_token"]
+    expires_in = tk["expires_in"]
+    log.info(f"Token expires in {expires_in} seconds")
 
     time.sleep(2)
 

@@ -124,7 +124,7 @@ async def async_copy(storage_path, api, file_size=5, num_files=2):
 def test_large_batch(storage_path, client):
     """Test copying a large file to a remote storage."""
     api = DataTransferApi(client)
-    op, manager = sync_copy(storage_path, api)
+    op, manager = sync_copy(storage_path, api, 10)
     assert op.id is not None
     op = api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages

@@ -211,11 +211,11 @@ def user_binary_config(user_access_token, dt_url):
 
 
 @pytest.fixture
-def client(binary_config, binary_dir):
+def client(binary_config, binary_dir, admin_access_token):
     """Return the client."""
     from ansys.hps.data_transfer.client import Client
 
-    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
+    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False, refresh_token_callback=admin_access_token)
     c.start()
     yield c
 
@@ -227,7 +227,7 @@ def cleanup_test_storages(binary_config, binary_dir):
     """Remove the test storages after the tests."""
     yield
 
-    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False)
+    c = Client(bin_config=binary_config, download_dir=binary_dir, clean_dev=False, refresh_token_callback=admin_access_token)
     c.start()
     api = DataTransferApi(c)
     op = api.rmdir([StoragePath(path="python_client_tests")])

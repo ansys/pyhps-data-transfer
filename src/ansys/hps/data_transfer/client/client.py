@@ -23,6 +23,7 @@
 """Provides the Python client to the HPS data transfer APIs."""
 
 import asyncio
+from collections.abc import Callable
 import atexit
 import logging
 import os
@@ -153,9 +154,13 @@ class ClientBase:
     Create a client object and connect to HPS data transfer with an access token.
 
     >>> from ansys.hps.data_transfer.client import Client
-    >>> token = authenticate(username=username, password=password, verify=False, url=auth_url)
-    >>> token = token.get("access_token", None)
+    >>> def refresh_token():
+            # Function to refresh the token            
+            token = authenticate(username=username, self.password, verify=False, url=auth_url)
+            token = token.get("access_token", None)    
+            return token
     >>> client = Client(clean=True)
+    >>> client.refresh_token_callback = refresh_token
     >>> client.binary_config.update(
             verbosity=3,
             debug=False,
@@ -176,6 +181,7 @@ class ClientBase:
         self,
         bin_config: BinaryConfig = None,
         download_dir: str = "dt_download",
+        refresh_token_callback: Callable[[], str] = None,
         clean=False,
         clean_dev=True,
         check_in_use=True,
@@ -188,11 +194,14 @@ class ClientBase:
         self._clean = clean
         self._clean_dev = clean_dev
         self._check_in_use = check_in_use
+        self.refresh_token_callback = refresh_token_callback
         self._timeout = timeout
         self.retries = retries
 
         self._session = None
         self.binary = None
+        self._unauthorized_max_retry = 1
+        self._unauthorized_num_retry = 0
 
         self._monitor_stop = None
         self._monitor_state = MonitorState()
@@ -426,7 +435,7 @@ class ClientBase:
         if sync:
             session = httpx.Client(
                 transport=httpx.HTTPTransport(retries=self._retries, verify=verify),
-                event_hooks={"response": [raise_for_status]},
+                event_hooks={"response": [self._auto_refresh_token, raise_for_status]},
                 **args,
             )
         else:
@@ -450,6 +459,42 @@ class ClientBase:
 
     def _on_process_died(self, ret_code):
         self._monitor_state.reset()
+    
+    def _auto_refresh_token(self, response: httpx.Response):
+        """Provide a callback for refreshing an expired token.
+
+        Automatically refreshes the access token and
+        re-sends the request in case of an unauthorized error.
+        """
+        log.info(f"++++++++++++================ {self.refresh_token_callback} +++++++++============")
+        log.info(f"++++++++++++================ {response.status_code} +++++++++============")
+        log.info(f"response: {response}")
+        content = response.read() 
+        log.info(f"Response read: {content.decode()}")
+        if self.refresh_token_callback is None:
+            log.debug("No refresh callback provided, skipping token refresh.")
+            return response
+        if (
+            response.status_code == 401
+            and self._unauthorized_num_retry < self._unauthorized_max_retry
+        ):
+            log.info("++++++++++++================ INSIDE +++++++++============")
+            log.info("401 authorization error: Trying to get a new access token.")
+            self._unauthorized_num_retry += 1
+            token= self.refresh_token_callback()
+            log.info(f"401 authorization error: new access token: {token}")
+            self._bin_config.token = token
+            log.info(f"response.request.headers: {response.request.headers}")
+            log.info(f"response.request.url: {response.request.url}")
+            log.info(f"response.request.method: {response.request.method}")
+            response.request.headers.update(
+                {"Authorization": f"Bearer {token}"}
+            )
+            log.debug("Retrying request with updated access token.")
+            return response
+
+        self._unauthorized_num_retry = 0
+        return response
 
 
 class AsyncClient(ClientBase):

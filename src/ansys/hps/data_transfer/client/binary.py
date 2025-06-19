@@ -338,8 +338,8 @@ class Binary:
                 args = " ".join(self._args)
 
                 redacted = f"{args}"
-                if self._config.token is not None:
-                    redacted = args.replace(self._config.token, "***")
+                #if self._config.token is not None:
+                    #redacted = args.replace(self._config.token, "***")
                 log.debug(f"Starting worker: {redacted}")
 
                 with PrepareSubprocess():

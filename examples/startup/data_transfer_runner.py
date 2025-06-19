@@ -49,7 +49,7 @@ def main(
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
     password: Annotated[
-        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
+        str, typer.Option(help="Password to authenticate with")
     ] = "repadmin",
 ):
 
@@ -58,32 +58,37 @@ def main(
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG)
 
     user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
+    log.info(f"Whats in TOKEN: {user_token}")
+
     user_token = user_token.get("access_token", None)
     assert user_token is not None
 
-    client = Client()
-    client.binary_config.update(
-        verbosity=3,
-        debug=debug,
-        insecure=True,
-        token=user_token,
-    )
-
-    client.binary_config.debug = True
-    client.start()
-    api = DataTransferApi(client)
-    s = api.status(wait=True)
-    log.info("Status: %s" % s)
-
-    log.info("Available storage:")
-    for d in api.storages():
-        log.info(f"- {json.dumps(d, indent=4)}")
+    def get_token():
+        """Retrieve the user token."""
+        user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
+        user_token = user_token.get("access_token", None)
+        log.info(f"IVE been called to get a token! {user_token}")
+        return user_token
 
     for i in range(10):
-        log.info("Idling for a while...")
-        time.sleep(2)
+        client = Client(refresh_token_callback=get_token)
+        client.binary_config.update(
+            verbosity=3,
+            debug=debug,
+            insecure=True,
+            token=user_token,
+        )
 
-    client.stop()
+        client.binary_config.debug = True
+        client.start()
+        api = DataTransferApi(client)
+        s = api.status(wait=True)
+        log.info("Status: %s" % s)        
+        time.sleep(10)
+        d = api.storages()    
+
+        client.stop()
+        log.info("Idling for a while...")
 
 
 if __name__ == "__main__":
