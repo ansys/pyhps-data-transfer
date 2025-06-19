@@ -36,29 +36,49 @@ from ansys.hps.data_transfer.client.models.ops import OperationState
 
 log = logging.getLogger(__name__)
 
-num_files = 2
-file_size = 5  # GB
+
+class TempFileManager:
+    def __init__(self, file_name, file_size):
+        self.file_name = file_name
+        self.file_size = file_size
+
+    def write_file(self):
+        """Write a file with random data."""
+        start_time = time.time()
+        log.info(f"Generating file {self.file_name} with size {self.file_size} GB")
+        gb1 = 1024 * 1024 * 1024  # 1GB
+        with open(self.file_name, "wb") as fout:
+            for _i in range(self.file_size):
+                fout.write(os.urandom(gb1))
+        log.info(f"File {self.file_name} has been generated after {(time.time() - start_time):.2f} seconds")
+        return 0
+
+    def delete_file(self):
+        """Delete a file."""
+        log.info(f"Deleting file {self.file_name}")
+        try:
+            os.remove(self.file_name)
+            log.info(f"Temporary file {self.file_name} has been deleted.")
+        except Exception as ex:
+            log.warning(f"Failed to delete file {self.file_name}: {ex}")
+        return 0
 
 
-def write_file(file_name, size):
-    """Write a file with random data."""
-    start_time = time.time()
-    log.info(f"Generating file {file_name} with size {size} GB")
-    gb1 = 1024 * 1024 * 1024  # 1GB
-    with open(file_name, "wb") as fout:
-        for _i in range(size):
-            fout.write(os.urandom(gb1))
-    log.info(f"File {file_name} has been generated after {(time.time() - start_time):.2f} seconds")
-    return 0
+def sync_copy(storage_path, api, file_size=5, num_files=2):
+    """Copying a large file to a remote storage.
 
-
-def test_large_batch(storage_path, client):
-    """Test copying a large file to a remote storage."""
-    api = DataTransferApi(client)
+    Parameters:
+    storage_path: str
+        The path to the remote storage.
+    api: DataTransferApi
+        The DataTransferApi object.
+    file_size: int
+        The size of the file to be copied in GB.
+    """
     api.status(wait=True)
-
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
-        write_file(temp_file.name, file_size)
+        manager = TempFileManager(temp_file.name, file_size)
+        manager.write_file()
     temp_file_name = os.path.basename(temp_file.name)
 
     src = StoragePath(path=temp_file.name, remote="local")
@@ -69,18 +89,25 @@ def test_large_batch(storage_path, client):
 
     log.info("Starting copy ...")
     op = api.copy(dsts)
-    assert op.id is not None
-    op = api.wait_for(op.id)
-    assert op[0].state == OperationState.Succeeded, op[0].messages
+    return op, manager
 
 
-async def test_async_large_batch(storage_path, async_client):
-    """Test copying a large file to a remote storage using the AsyncDataTransferApi."""
-    api = AsyncDataTransferApi(async_client)
+async def async_copy(storage_path, api, file_size=5, num_files=2):
+    """Copying a large file to a remote storage using the AsyncDataTransferApi.
+
+    Parameters:
+    storage_path: str
+        The path to the remote storage.
+    api: DataTransferApi
+        The DataTransferApi object.
+    file_size: int
+        The size of the file to be copied in GB.
+    """
     api.status(wait=True)
 
     with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
-        write_file(temp_file.name, file_size)
+        manager = TempFileManager(temp_file.name, file_size)
+        manager.write_file()
     temp_file_name = os.path.basename(temp_file.name)
 
     src = StoragePath(path=temp_file.name, remote="local")
@@ -91,6 +118,135 @@ async def test_async_large_batch(storage_path, async_client):
 
     log.info("Starting copy ...")
     op = await api.copy(dsts)
+    return op, manager
+
+
+def test_large_batch(storage_path, client):
+    """Test copying a large file to a remote storage."""
+    api = DataTransferApi(client)
+    op, manager = sync_copy(storage_path, api)
+    assert op.id is not None
+    op = api.wait_for(op.id)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+    manager.delete_file()
+
+
+def test_batch_with_wait_parameters(storage_path, client):
+    """Test copying a large file to a remote storage with wait parameter progress_handler."""
+    api = DataTransferApi(client)
+    log.info("Copy with progress handler")
+    op, manager = sync_copy(storage_path, api, 1, 1)
+    assert op.id is not None
+
+    # List to store progress data
+    progress_data = []
+
+    # test progress handler
+    def handler(id, current_progress):
+        progress_data.append(current_progress)
+        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+
+    # Wait for the operation to complete with progress handler
+    op = api.wait_for(op.id, progress_handler=handler)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+    # Check if progress data is collected
+    assert len(progress_data) > 0, "No progress data collected"
+    # Check if the last progress is 100%
+    assert progress_data[-1] == 1.0, "Last progress is not 100%"
+    manager.delete_file()
+
+
+def test_batch_with_multiple_operations_to_wait(storage_path, client):
+    """Test copying a large file to a remote storage with wait parameter progress_handler."""
+    api = DataTransferApi(client)
+    log.info("Copy with progress handler")
+    op1, manager1 = sync_copy(storage_path, api, 1, 1)
+    op2, manager2 = sync_copy(storage_path, api, 1, 1)
+    assert op1.id is not None
+    assert op2.id is not None
+
+    # List to store progress data
+    progress_data = []
+
+    # test progress handler
+    def handler(id, current_progress):
+        progress_data.append(current_progress)
+        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+
+    # Wait for the operation to complete with progress handler
+    op = api.wait_for([op1.id, op2.id], progress_handler=handler)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+    assert op[1].state == OperationState.Succeeded, op[1].messages
+    # Check if progress data is collected at least twice
+    assert len(progress_data) > 2, "No progress data collected"
+    # Check if the last progress is 100%
+    assert progress_data[-1] == 1.0, "Last progress is not 100%"
+    assert progress_data[-2] == 1.0, "Last progress is not 100%"
+    manager1.delete_file()
+    manager2.delete_file()
+
+
+async def test_async_large_batch(storage_path, async_client):
+    """Test copying a large file to a remote storage using the AsyncDataTransferApi."""
+    api = AsyncDataTransferApi(async_client)
+    op, manager = await async_copy(storage_path, api)
     assert op.id is not None
     op = await api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
+    manager.delete_file()
+
+
+async def test_async_batch_with_wait_parameters(storage_path, async_client):
+    """Test copying a large file to a remote storage using the AsyncDataTransferApi
+    with wait parameter progress_handler."""
+    api = AsyncDataTransferApi(async_client)
+    log.info("Copy with progress handler")
+    op, manager = await async_copy(storage_path, api, 1, 1)
+    assert op.id is not None
+
+    # List to store progress data
+    progress_data = []
+
+    # test progress handler
+    async def handler(id, current_progress):
+        progress_data.append(current_progress)
+        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+
+    # Wait for the operation to complete with progress handler
+    op = await api.wait_for(op.id, progress_handler=handler)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+    # Check if progress data is collected
+    assert len(progress_data) > 0, "No progress data collected"
+    # Check if the last progress is 100%
+    assert progress_data[-1] == 1.0, "Last progress is not 100%"
+    manager.delete_file()
+
+
+async def test_async_batch_with_multiple_operations_to_wait(storage_path, async_client):
+    """Test copying a large file to a remote storage using the AsyncDataTransferApi
+    with wait parameter progress_handler."""
+    api = AsyncDataTransferApi(async_client)
+    log.info("Copy with progress handler")
+    op1, manager1 = await async_copy(storage_path, api, 1, 1)
+    op2, manager2 = await async_copy(storage_path, api, 1, 1)
+    assert op1.id is not None
+    assert op2.id is not None
+
+    # List to store progress data
+    progress_data = []
+
+    # test progress handler
+    async def handler(id, current_progress):
+        progress_data.append(current_progress)
+        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+
+    # Wait for the operation to complete with progress handler
+    op = await api.wait_for([op1.id, op2.id], progress_handler=handler)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+    assert op[1].state == OperationState.Succeeded, op[1].messages
+    # Check if progress data is collected at least twice
+    assert len(progress_data) > 2, "No progress data collected"
+    # Check if the last progress is 100%
+    assert progress_data[-1] == 1.0, "Last progress is not 100%"
+    manager1.delete_file()
+    manager2.delete_file()
