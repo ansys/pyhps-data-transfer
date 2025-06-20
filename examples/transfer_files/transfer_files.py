@@ -55,6 +55,7 @@ from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
 log = logging.getLogger(__name__)
 
+
 ########################################################################
 # Define a method to transfer files using the data transfer service
 # =================================================================
@@ -108,16 +109,31 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
 
     log.info("== List of uploaded files:")
     total_size = 0
+    total_uncompressed_size = 0
+    total_compressed_size = 0
     for fname in fnames:
-        size = op[0].result[f"{remote_path}/{fname}"].get("size", 0)
-        total_size += size
-        checksum = op[0].result[f"{remote_path}/{fname}"].get("checksum")
-        log.info(f"- name={fname} size={format_size(size)} checksum={checksum if checksum else 'n/a'}")
+        metadata = op[0].result[f"{remote_path}/{fname}"]
+        total_size += metadata.get("size", 0)
+        if "compressed_size" in metadata:
+            total_compressed_size += metadata["compressed_size"]
+            total_uncompressed_size += metadata["uncompressed_size"]
+        log.info(f"{fname}")
+        log.info("  Metadata:")
+        for k, v in metadata.items():
+            if "size" in k:
+                log.info(f"  - {k}= {format_size(v)}")
+            else:
+                log.info(f"  - {k}= {v}")
 
     log.info("== Upload performance:")
     log.info(f"- Total time: {t1-t0:.5f} s")
     log.info(f"- Total size: {format_size(total_size)}")
     log.info(f"- Throughput: {format_size(total_size / (t1 - t0) )}/s")
+
+    if total_compressed_size > 0:
+        log.info(f"- Total uncompressed size: {format_size(total_uncompressed_size)}")
+        log.info(f"- Total compressed size: {format_size(total_compressed_size)}")
+        log.info(f"- Compression ratio: {total_uncompressed_size / total_compressed_size:.2f}")
 
     log.info("== Downloading files again")
     copy_args = [
@@ -144,6 +160,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
         log.info(f"- {fname}: {'Success' if success else 'Failed'}")
         assert success, f"File {fname} comparison failed!"
 
+
 ###################################################
 # Define the main function
 # ========================
@@ -168,10 +185,10 @@ def main(
     token = token.get("access_token", None)
     assert token is not None
 
-###################################################
-# Create a ``Client`` instance
-# ============================
-    client = Client(clean=True)
+    ###################################################
+    # Create a ``Client`` instance
+    # ============================
+    client = Client(clean=False)
 
     client.binary_config.update(
         verbosity=3,
@@ -181,14 +198,14 @@ def main(
         data_transfer_url=dt_url,
     )
     client.start()
-###################################################
-# Create a ``DataTransferApi`` instance
-# =====================================
+    ###################################################
+    # Create a ``DataTransferApi`` instance
+    # =====================================
     api = DataTransferApi(client)
     api.status(wait=True)
-###################################################
-# Get available storages
-# ======================
+    ###################################################
+    # Get available storages
+    # ======================
     storage_names = [f"{s['name']}({s['type']})" for s in api.storages()]
     log.info(f"Available storages: {storage_names}")
 
@@ -198,4 +215,6 @@ def main(
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    app = typer.Typer(pretty_exceptions_enable=False)
+    app.command()(main)
+    app()
