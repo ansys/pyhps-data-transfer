@@ -61,6 +61,7 @@ class CopyMetadataRequest(BaseModel):
 
 class Features(BaseModel):
     auth_types: list[str] | None = None
+    compression_plugins: list[str] | None = None
     metadata_plugins: list[str] | None = None
     operation_plugins: list[str] | None = None
     permissions_plugins: list[str] | None = None
@@ -115,9 +116,10 @@ class StoragePath(BaseModel):
 
 
 class WorkerConfigResponse(BaseModel):
-    auth: dict[str, Any] | None = None
-    metadata: dict[str, Any] | None = None
-    permissions: dict[str, Any] | None = None
+    auth: dict[str, dict[str, Any]] | None = None
+    compression: dict[str, dict[str, Any]] | None = None
+    metadata: dict[str, dict[str, Any]] | None = None
+    permissions: dict[str, dict[str, Any]] | None = None
     storage: list[dict[str, Any]] | None = None
     user_id: str | None = None
 
