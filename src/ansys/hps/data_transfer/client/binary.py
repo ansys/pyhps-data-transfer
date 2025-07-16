@@ -119,6 +119,8 @@ class BinaryConfig:
         verbosity: int = 1,
         insecure: bool = False,
         debug: bool = False,
+        auth_type: str = None,
+        env: dict | None = None,
     ):
         """Initialize the BinaryConfig class object."""
         self.data_transfer_url = data_transfer_url
@@ -137,7 +139,9 @@ class BinaryConfig:
         self._selected_port = port
         self._detected_port = None
         self._token = token
+        self._env = env or {}
         self.insecure = insecure
+        self.auth_type = auth_type
 
         self._on_token_update = None
         self._on_process_died = None
@@ -182,6 +186,18 @@ class BinaryConfig:
     def url(self):
         """URL."""
         return f"http://{self.host}:{self.port}/api/v1"
+
+    @property
+    def env(self):
+        """Get additional environment variables that will be passed to the child process."""
+        return self._env
+
+    @env.setter
+    def env(self, value):
+        """Set environment variables to pass to the child process."""
+        if not isinstance(value, dict):
+            raise TypeError("Environment variables must be a dictionary.")
+        self._env = value
 
 
 class Binary:
@@ -338,12 +354,28 @@ class Binary:
                 args = " ".join(self._args)
 
                 redacted = f"{args}"
+<<<<<<< HEAD
                 #if self._config.token is not None:
                     #redacted = args.replace(self._config.token, "***")
+=======
+                if self._config.token is not None:
+                    redacted = args.replace(self._config.token, "***")
+
+                env = os.environ.copy()
+                env_str = ""
+                if self._config.env:
+                    env.update(self._config.env)
+                    env_str = ",".join([k for k in self._config.env.keys() if k != "PATH"])
+
+>>>>>>> 7dc6add89457e3e4ebd8359200a9994d3d83053d
                 log.debug(f"Starting worker: {redacted}")
+                if self._config.debug:
+                    log.debug(f"Worker environment: {env_str}")
 
                 with PrepareSubprocess():
-                    self._process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    self._process = subprocess.Popen(
+                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
+                    )
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
@@ -413,6 +445,14 @@ class Binary:
 
         if self._config.debug:
             self._args.append("--debug")
+
+        if self._config.auth_type:
+            self._args.extend(
+                [
+                    "--auth-type",
+                    self._config.auth_type,
+                ]
+            )
 
         if self._config.token is not None:
             self._args.extend(

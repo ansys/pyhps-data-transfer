@@ -28,8 +28,10 @@ import atexit
 import logging
 import os
 import platform
+import random
 import shutil
 import stat
+import string
 import threading
 import time
 import traceback
@@ -42,14 +44,16 @@ import urllib3
 
 from ansys.hps.data_transfer.client.binary import Binary, BinaryConfig
 from ansys.hps.data_transfer.client.exceptions import BinaryError, async_raise_for_status, raise_for_status
-
-from .token import prepare_token
+from ansys.hps.data_transfer.client.token import prepare_token
 
 urllib3.disable_warnings()
 
 for n in ["httpx", "httpcore", "requests", "urllib3"]:
     logger = logging.getLogger(n)
     logger.setLevel(logging.CRITICAL)
+
+api_key_header_env = "ANSYS_DT_AUTH__API_KEY__HEADER_NAME"
+api_key_value_env = "ANSYS_DT_AUTH__API_KEY__VALUE"
 
 log = logging.getLogger(__name__)
 
@@ -69,6 +73,28 @@ def bin_in_use(bin_path):
         except Exception as err:
             log.debug(f"Error checking process: {err}")
     return False
+
+
+def flatten_features(y, separator="."):
+    """Flatten a nested dictionary into a list of strings."""
+    out = []
+
+    def flatten(x, name=""):
+        if type(x) is dict:
+            for a in x:
+                flatten(x[a], name + a + separator)
+        elif type(x) is list:
+            i = 0
+            for a in x:
+                flatten(a, name + separator)
+                i += 1
+        else:
+            s = name[:-1] + str(x)
+            s = s.replace(" ", "_").replace("-", "_")
+            out.append(s)
+
+    flatten(y)
+    return out
 
 
 class MonitorState:
@@ -98,11 +124,11 @@ class MonitorState:
         msg = f"Worker is running, reporting {'' if ready else 'not '}ready"
         if ready:
             if not self._ok_reported:
-                log.info(msg)
+                log.debug(msg)
                 self._ok_reported = True
         else:
             self._ok_reported = False
-            log.warning(msg)
+            log.debug(msg)
 
     def mark_failed(self, exc=None, binary=None):
         """Mark the worker as failed."""
@@ -203,6 +229,10 @@ class ClientBase:
         self._unauthorized_max_retry = 1
         self._unauthorized_num_retry = 0
 
+        self._features = None
+        self._api_key = None
+        self._api_key_header = "X-API-Key"
+
         self._monitor_stop = None
         self._monitor_state = MonitorState()
 
@@ -279,6 +309,7 @@ class ClientBase:
         self._bin_config._on_port_changed = self._on_port_changed
         self._bin_config._on_process_died = self._on_process_died
 
+        self._adjust_config()
         self.binary = Binary(config=self._bin_config)
         self.binary.start()
 
@@ -293,6 +324,12 @@ class ClientBase:
         self.binary = None
         self._session = None
         self._bin_config._on_port_changed = None
+
+    def has(self, feature):
+        """Check if the feature is available using a dot notation."""
+        if self._features is None:
+            return False
+        return feature in self._features
 
     def _platform(self):
         plat = ""
@@ -336,6 +373,13 @@ class ClientBase:
         bin_path = os.path.join(bin_dir, f"hpsdata-{version_hash}{bin_ext}")
         return bin_path
 
+    def _get_features(self, d):
+        f = d.get("features", None)
+        if f is None:
+            self._features = None
+            return
+        self._features = flatten_features(f)
+
     def _check_binary(self, build_info, bin_path):
         """Check if there is a need to download the binary."""
         branch = build_info["branch"]
@@ -365,6 +409,7 @@ class ClientBase:
 
         d = resp.json()
 
+        self._get_features(d)
         bin_path = self._prepare_bin_path(d["build_info"])
         lock_name = f"{os.path.splitext(os.path.basename(bin_path))[0]}.lock"
         lock_dir = os.path.dirname(bin_path)
@@ -450,6 +495,8 @@ class ClientBase:
 
         if self._bin_config.token is not None:
             session.headers["Authorization"] = prepare_token(self._bin_config.token)
+        if self._api_key:
+            session.headers[self._api_key_header] = self._api_key
 
         return session
 
@@ -495,6 +542,21 @@ class ClientBase:
 
         self._unauthorized_num_retry = 0
         return response
+
+    def _adjust_config(self):
+        if not self._features:
+            return
+
+        if self.has("auth_types.api_key"):
+            self._bin_config.auth_type = "api-key"
+            self._api_key = "".join(
+                random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)
+            )
+            env = {
+                api_key_header_env: self._api_key_header,
+                api_key_value_env: self._api_key,
+            }
+            self._bin_config.env.update({k: v for k, v in env.items() if k not in os.environ})
 
 
 class AsyncClient(ClientBase):
