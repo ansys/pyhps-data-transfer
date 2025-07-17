@@ -36,6 +36,7 @@ Example usage:
 import json
 import logging
 import time
+import jwt
 
 import typer
 from typing_extensions import Annotated
@@ -58,37 +59,56 @@ def main(
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG)
 
     user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
-    log.info(f"Whats in TOKEN: {user_token}")
-
     user_token = user_token.get("access_token", None)
     assert user_token is not None
 
-    def get_token():
-        """Retrieve the user token."""
-        user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
-        user_token = user_token.get("access_token", None)
-        log.info(f"IVE been called to get a token! {user_token}")
-        return user_token
+    decoded_token = jwt.decode(user_token, options={"verify_signature": False})    
+    exp_time = decoded_token.get("exp", None)
+    if exp_time:
+        log.info(f"+++===Token expiration time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(exp_time))}")
+
+    client = Client()
+    client.binary_config.update(
+        verbosity=3,
+        debug=debug,
+        insecure=True,
+        token=user_token,
+        auth_type="oidc",  # Use OIDC for authentication
+    )
+
+    client.binary_config.debug = True
+    client.start()
+    api = DataTransferApi(client)
+    s = api.status(wait=True)
+    log.info("Status: %s" % s)
 
     for i in range(10):
-        client = Client(refresh_token_callback=get_token)
-        client.binary_config.update(
-            verbosity=3,
-            debug=debug,
-            insecure=True,
-            token=user_token,
-        )
+        log.info("Available storage:")
+
+        for d in api.storages():
+            log.info(f"- {json.dumps(d, indent=4)}")
+        
+        log.info("Idling for a while...")
+        time.sleep(10)
 
         client.binary_config.debug = True
         client.start()
         api = DataTransferApi(client)
         s = api.status(wait=True)
-        log.info("Status: %s" % s)        
-        time.sleep(10)
-        d = api.storages()    
+        log.info("Status: %s" % s)
 
-        client.stop()
+        log.info("Available storage:")
+        for d in api.storages():
+            log.info(f"- {json.dumps(d, indent=4)}")
+
+    
+        for d in api.storages():
+            log.info(f"- {json.dumps(d, indent=4)}")
         log.info("Idling for a while...")
+        client.stop()
+        time.sleep(10)
+
+        
 
 
 if __name__ == "__main__":

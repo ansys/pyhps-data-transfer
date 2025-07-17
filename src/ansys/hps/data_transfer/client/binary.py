@@ -354,10 +354,6 @@ class Binary:
                 args = " ".join(self._args)
 
                 redacted = f"{args}"
-<<<<<<< HEAD
-                #if self._config.token is not None:
-                    #redacted = args.replace(self._config.token, "***")
-=======
                 if self._config.token is not None:
                     redacted = args.replace(self._config.token, "***")
 
@@ -367,7 +363,6 @@ class Binary:
                     env.update(self._config.env)
                     env_str = ",".join([k for k in self._config.env.keys() if k != "PATH"])
 
->>>>>>> 7dc6add89457e3e4ebd8359200a9994d3d83053d
                 log.debug(f"Starting worker: {redacted}")
                 if self._config.debug:
                     log.debug(f"Worker environment: {env_str}")
