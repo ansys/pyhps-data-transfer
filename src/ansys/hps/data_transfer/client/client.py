@@ -24,6 +24,7 @@
 
 import asyncio
 import atexit
+from collections.abc import Callable
 import logging
 import os
 import platform
@@ -179,9 +180,13 @@ class ClientBase:
     Create a client object and connect to HPS data transfer with an access token.
 
     >>> from ansys.hps.data_transfer.client import Client
-    >>> token = authenticate(username=username, password=password, verify=False, url=auth_url)
-    >>> token = token.get("access_token", None)
+    >>> def refresh_token():
+            # Function to refresh the token            
+            token = authenticate(username=username, self.password, verify=False, url=auth_url)
+            token = token.get("access_token", None)    
+            return token
     >>> client = Client(clean=True)
+    >>> client.refresh_token_callback = refresh_token
     >>> client.binary_config.update(
             verbosity=3,
             debug=False,
@@ -205,6 +210,7 @@ class ClientBase:
         clean=False,
         clean_dev=True,
         check_in_use=True,
+        refresh_token_callback: Callable[[], str] = None,
         timeout=60.0,
         retries=10,
     ):
@@ -216,6 +222,7 @@ class ClientBase:
         self._check_in_use = check_in_use
         self._timeout = timeout
         self.retries = retries
+        self.refresh_token_callback = refresh_token_callback
 
         self._session = None
         self.binary = None
@@ -226,6 +233,9 @@ class ClientBase:
 
         self._monitor_stop = None
         self._monitor_state = MonitorState()
+
+        self._unauthorized_max_retry = 1
+        self._unauthorized_num_retry = 0
 
     def __getstate__(self):
         """Return pickled state of the object."""
@@ -471,7 +481,7 @@ class ClientBase:
         if sync:
             session = httpx.Client(
                 transport=httpx.HTTPTransport(retries=self._retries, verify=verify),
-                event_hooks={"response": [raise_for_status]},
+                event_hooks={"response": [self._auto_refresh_token, raise_for_status]},
                 **args,
             )
         else:
@@ -498,11 +508,50 @@ class ClientBase:
     def _on_process_died(self, ret_code):
         self._monitor_state.reset()
 
+    def _auto_refresh_token(self, response: httpx.Response):
+        """Provide a callback for refreshing an expired token.
+        Automatically refreshes the access token and
+        re-sends the request in case of an unauthorized error.
+        """        
+        log.info(f"response status: {response.status_code} for {response.request.method} {response.url}")
+        if (
+            response.status_code == 401
+            and self._unauthorized_num_retry < self._unauthorized_max_retry
+        ):
+            log.info("401 authorization error: Trying to get a new access token.")
+            if self.refresh_token_callback is None:
+                log.debug("No refresh callback provided, skipping token refresh.")
+                return
+            self._unauthorized_num_retry += 1
+            token= self.refresh_token_callback()
+            log.info(f"401 authorization error: new access token: {token}")
+            self._bin_config.token = token
+            # Update the Authorization header
+            response.request.headers.update(
+                {"Authorization": f"Bearer {token}"}
+            )
+            log.debug(f"Updated Authorization header: {response.request.headers.get('Authorization')}")
+
+            log.debug("Retrying request with updated access token.")
+            retried_response = self._session.send(response.request)
+            log.debug(f"Retried response status: {retried_response.status_code}")
+            log.debug(f"Retried response body: {retried_response.text}")
+            # Modify the response body
+            response._content = retried_response.content
+            response.status_code = retried_response.status_code
+            return
+
+        if self._unauthorized_num_retry > 0:
+            log.error(f"Unauthorized retry limit reached: {self._unauthorized_num_retry}")
+        self._unauthorized_num_retry = 0
+        return
+
     def _adjust_config(self):
         if not self._features:
             return
 
         if self.has("auth_types.api_key"):
+            return
             self._bin_config.auth_type = "api-key"
             self._api_key = "".join(
                 random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)

@@ -36,6 +36,7 @@ Example usage:
 import json
 import logging
 import time
+import jwt
 
 import typer
 from typing_extensions import Annotated
@@ -48,25 +49,34 @@ def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
-    password: Annotated[
-        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
-    ] = "repadmin",
+    password: Annotated[str, typer.Option(help="Password to authenticate with")] = "repadmin",
 ):
 
     auth_url = f"{url}/auth/realms/rep"
     log = logging.getLogger()
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG)
 
-    user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
-    user_token = user_token.get("access_token", None)
+    def refresh_token():
+        user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
+        user_token = user_token.get("access_token", None)
+        return user_token
+    
+    # Call refresh_token() once to get the access token
+    user_token = refresh_token()
     assert user_token is not None
 
-    client = Client()
+    decoded_token = jwt.decode(user_token, options={"verify_signature": False})    
+    exp_time = decoded_token.get("exp", None)
+    if exp_time:
+        log.info(f"Token expiration time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(exp_time))}")
+
+    client = Client(refresh_token_callback=refresh_token)
     client.binary_config.update(
         verbosity=3,
         debug=debug,
         insecure=True,
         token=user_token,
+        auth_type="oidc", # Use OIDC for authentication
     )
 
     client.binary_config.debug = True
@@ -76,12 +86,11 @@ def main(
     log.info("Status: %s" % s)
 
     log.info("Available storage:")
-    for d in api.storages():
-        log.info(f"- {json.dumps(d, indent=4)}")
-
-    for i in range(10):
-        log.info("Idling for a while...")
-        time.sleep(2)
+    for _ in range(5):
+        for d in api.storages():
+            log.info(f"- {json.dumps(d, indent=4)}")
+        log.info("+++====== Idling for a while...")
+        time.sleep(10)
 
     client.stop()
 
