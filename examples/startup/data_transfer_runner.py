@@ -89,7 +89,7 @@ def main(
     for _ in range(5):
         for d in api.storages():
             log.info(f"- {json.dumps(d, indent=4)}")
-        log.info("+++====== Idling for a while...")
+        log.info("Idling for a while...")
         time.sleep(10)
 
     client.stop()

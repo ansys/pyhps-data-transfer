@@ -513,36 +513,31 @@ class ClientBase:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """        
-        log.info(f"response status: {response.status_code} for {response.request.method} {response.url}")
+        log.debug(f"response status: {response.status_code} for {response.request.method} {response.url}")
         if (
             response.status_code == 401
             and self._unauthorized_num_retry < self._unauthorized_max_retry
         ):
             log.info("401 authorization error: Trying to get a new access token.")
             if self.refresh_token_callback is None:
-                log.debug("No refresh callback provided, skipping token refresh.")
+                log.info("No refresh callback provided, skipping token refresh.")
                 return
             self._unauthorized_num_retry += 1
             token= self.refresh_token_callback()
-            log.info(f"401 authorization error: new access token: {token}")
+            #log.info(f"401 authorization error: new access token: {token}")
             self._bin_config.token = token
             # Update the Authorization header
             response.request.headers.update(
                 {"Authorization": f"Bearer {token}"}
             )
-            log.debug(f"Updated Authorization header: {response.request.headers.get('Authorization')}")
-
             log.debug("Retrying request with updated access token.")
             retried_response = self._session.send(response.request)
             log.debug(f"Retried response status: {retried_response.status_code}")
-            log.debug(f"Retried response body: {retried_response.text}")
             # Modify the response body
             response._content = retried_response.content
             response.status_code = retried_response.status_code
             return
-
-        if self._unauthorized_num_retry > 0:
-            log.error(f"Unauthorized retry limit reached: {self._unauthorized_num_retry}")
+               
         self._unauthorized_num_retry = 0
         return
 
@@ -550,8 +545,9 @@ class ClientBase:
         if not self._features:
             return
 
-        if self.has("auth_types.api_key"):
-            return
+        if self.has("auth_types.api_key"):            
+            if self._bin_config.auth_type == "oidc":
+                return
             self._bin_config.auth_type = "api-key"
             self._api_key = "".join(
                 random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)

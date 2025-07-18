@@ -23,9 +23,6 @@
 
 import httpx
 from requests.exceptions import RequestException
-import logging
-
-log = logging.getLogger(__name__)
 
 
 class HPSError(RequestException):
@@ -145,8 +142,6 @@ def raise_for_status(response: httpx.Response):
 
     if getattr(response, "is_error", False):
         response.read()
-    log.info(f"In here raise_for_status: {response.status_code} {response.text} {response.url}")
-    log.debug(f"My Authorization header: {response.request.headers.get('Authorization')}")
     _raise_for_status(response)
 
 
