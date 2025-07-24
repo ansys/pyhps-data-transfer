@@ -51,7 +51,6 @@ level_map = {
     "panic": logging.CRITICAL,
 }
 
-
 class PrepareSubprocess:
     """Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
 
@@ -74,6 +73,37 @@ class PrepareSubprocess:
             subprocess._USE_VFORK = self._orig_use_vfork
             subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
 
+def default_log_message(debug : bool, data : dict[str, any]):
+    """Default log message handler.
+
+    Parameters
+    ----------
+    data : dict
+        Data to log.
+    """
+    # log.warning(f"Worker: {d}")
+
+    level = data.pop("level", "info")
+    data.pop("time", None)
+    if not debug:
+        data.pop("caller", None)
+        data.pop("mode", None)
+    msg = data.pop("message", None)
+
+    if msg is None:
+        return
+
+    msg = msg.capitalize()
+    level_no = level_map.get(level, logging.INFO)
+    other = ""
+    for k, v in data.items():
+        formatted_value = f'"{v}"' if isinstance(v, str) and " " in v else v
+        other += f"{k}={formatted_value} "
+    other = other.strip()
+    if other:
+        msg += f" {other}"
+    msg = msg.encode("ascii", errors="ignore").decode().strip()
+    log.log(level_no, f"{msg}")
 
 class BinaryConfig:
     """Provides for configuring the worker binary connection to the HPS data transfer client.
@@ -109,6 +139,7 @@ class BinaryConfig:
         # Process related settings
         log: bool = True,
         log_to_file: bool = False,
+        log_message: callable = default_log_message,
         monitor_interval: float = 0.5,
         # TODO: Remove path? not used anywhere
         path=None,
@@ -128,6 +159,7 @@ class BinaryConfig:
         # Process related settings
         self.log = log
         self.log_to_file = log_to_file
+        self._log_message = log_message
         self.monitor_interval = monitor_interval
         self.path = path
 
@@ -302,6 +334,8 @@ class Binary:
             time.sleep(wait * 0.1)
 
     def _log_output(self):
+        log_message = self._config._log_message
+
         while not self._stop.is_set():
             if self._process is None or self._process.stdout is None:
                 time.sleep(1)
@@ -311,8 +345,9 @@ class Binary:
                 if not line:
                     break
                 line = line.decode(errors="strip").strip()
-                # log.info("Worker: %s" % line)
-                self._log_line(line)
+                if log_message is not None:
+                    d = json.loads(line)
+                    log_message(self._config.debug, d)
             except json.decoder.JSONDecodeError:
                 pass
             except Exception as e:
@@ -320,32 +355,6 @@ class Binary:
                     log.debug(f"Error reading worker output: {e}")
                 time.sleep(1)
         log.debug("Worker log output stopped")
-
-    def _log_line(self, line):
-        d = json.loads(line)
-        # log.warning(f"Worker: {d}")
-
-        level = d.pop("level", "info")
-        d.pop("time", None)
-        if not self._config.debug:
-            d.pop("caller", None)
-            d.pop("mode", None)
-        msg = d.pop("message", None)
-
-        if msg is None:
-            return
-
-        msg = msg.capitalize()
-        level_no = level_map.get(level, logging.INFO)
-        other = ""
-        for k, v in d.items():
-            formatted_value = f'"{v}"' if isinstance(v, str) and " " in v else v
-            other += f"{k}={formatted_value} "
-        other = other.strip()
-        if other:
-            msg += f" {other}"
-        msg = msg.encode("ascii", errors="ignore").decode().strip()
-        log.log(level_no, f"{msg}")
 
     def _monitor(self):
         while not self._stop.is_set():
