@@ -47,7 +47,7 @@ from ansys.hps.data_transfer.client.token import prepare_token
 
 urllib3.disable_warnings()
 
-for n in ["httpx", "httpcore", "requests", "urllib3"]:
+for n in ["httpx", "httpcore", "requests", "urllib3", "filelock"]:
     logger = logging.getLogger(n)
     logger.setLevel(logging.CRITICAL)
 
@@ -355,7 +355,9 @@ class ClientBase:
         return f"{plat}-{arch}"
 
     def _prepare_bin_path(self, build_info):
-        log.debug(f"Server version: {build_info}")
+        log.debug(f"Server build info:")
+        for k, v in build_info.items():
+            log.debug(f"  {k}: {v}")
         version_hash = build_info["version_hash"]
 
         # Figure out binary download path
@@ -453,16 +455,16 @@ class ClientBase:
                     os.remove(bin_path)
 
                 st = os.stat(bin_path)
-                log.debug(f"Marking binary as executable: {bin_path}")
+                # log.debug(f"Marking binary as executable: {bin_path}")
                 os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
-                if self._bin_config.debug:
-                    log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
+                # if self._bin_config.debug:
+                    # log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
         except filelock.Timeout as ex:
             raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}") from ex
 
     def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
-        log.debug("Creating session for %s with verify=%s", url, verify)
+        # log.debug("Creating session for %s with verify=%s", url, verify)
 
         args = {
             "timeout": httpx.Timeout(self._timeout),

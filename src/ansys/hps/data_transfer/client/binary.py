@@ -263,7 +263,7 @@ class Binary:
 
         # Mark binary as executable
         if not os.access(bin_path, os.X_OK):
-            log.debug(f"Marking binary as executable: {bin_path}")
+            # log.debug(f"Marking binary as executable: {bin_path}")
             st = os.stat(bin_path)
             os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
 
@@ -363,9 +363,9 @@ class Binary:
                     env.update(self._config.env)
                     env_str = ",".join([k for k in self._config.env.keys() if k != "PATH"])
 
-                log.debug(f"Starting worker: {redacted}")
+                log.debug(f"Command: {redacted}")
                 if self._config.debug:
-                    log.debug(f"Worker environment: {env_str}")
+                    log.debug(f"Environment: {env_str}")
 
                 with PrepareSubprocess():
                     self._process = subprocess.Popen(
