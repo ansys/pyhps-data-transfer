@@ -325,7 +325,7 @@ class Binary:
             t.start()
 
         if not self._prepared.wait(timeout=5.0):
-            log.warning("Worker did not prepare in time.")
+            log.warning("Worker preparation is taking longer than expected ...")
 
     def stop(self, wait=5.0):
         """Stop the worker binary."""
@@ -338,6 +338,7 @@ class Binary:
         start = time.time()
         while True:
             if self._process.poll() is not None:
+                log.debug("Worker stopped.")
                 break
             if time.time() - start > wait:
                 log.warning("Worker did not stop in time, killing ...")
@@ -366,7 +367,7 @@ class Binary:
                 if self._config.debug:
                     log.debug(f"Error reading worker output: {e}")
                 time.sleep(1)
-        log.debug("Worker log output stopped")
+        # log.debug("Worker log output stopped")
 
     def _monitor(self):
         while not self._stop.is_set():
@@ -406,7 +407,7 @@ class Binary:
                 #     log.debug(f"Worker running ...")
 
             time.sleep(self._config.monitor_interval)
-        log.debug("Worker monitor stopped")
+        # log.debug("Worker monitor stopped")
 
     def _prepare(self):
         if self._config._selected_port is None:
