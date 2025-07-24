@@ -48,13 +48,9 @@ from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
-log = logging.getLogger(__name__)
-logger = logging.getLogger()
-logging.basicConfig(format="%(asctime)s %(levelname)8s > %(message)s", level=logging.DEBUG)
-
-
 async def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    verbosity: Annotated[int, typer.Option(help="Increase verbosity")] = 1,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
     password: Annotated[
@@ -62,6 +58,9 @@ async def main(
     ] = "repadmin",
 ):
 
+    log = logging.getLogger()
+    logging.basicConfig(format="%(asctime)s %(levelname)8s > %(message)s", level=logging.DEBUG if debug or verbosity > 1 else logging.INFO)
+    
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"
     token = authenticate(username=username, password=password, verify=False, url=auth_url)
@@ -75,7 +74,7 @@ async def main(
     client = AsyncClient(clean=True)
 
     client.binary_config.update(
-        verbosity=3,
+        verbosity=verbosity,
         debug=debug,
         insecure=True,
         token=token,

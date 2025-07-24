@@ -235,6 +235,7 @@ def permissions(api: DataTransferApi, url: str):
 # ========================
 def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    verbosity: Annotated[int, typer.Option(help="Increase verbosity")] = 1,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
     password: Annotated[
@@ -242,7 +243,7 @@ def main(
     ] = "repadmin",
 ):
     logging.basicConfig(
-        format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG if debug else logging.INFO
+        format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG if debug or verbosity > 1 else logging.INFO
     )
 
     dt_url = f"{url}/dt/api/v1"
@@ -256,8 +257,8 @@ def main(
     client = Client(clean=True)
 
     client.binary_config.update(
-        verbosity=3,
-        debug=False,
+        verbosity=verbosity,
+        debug=debug,
         insecure=True,
         token=token,
         data_transfer_url=dt_url,
