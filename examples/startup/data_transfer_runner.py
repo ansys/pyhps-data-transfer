@@ -46,6 +46,7 @@ from ansys.hps.data_transfer.client.authenticate import authenticate
 
 def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    verbose: Annotated[bool, typer.Option(help="Increase verbosity")] = False,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
     password: Annotated[
@@ -55,7 +56,7 @@ def main(
 
     auth_url = f"{url}/auth/realms/rep"
     log = logging.getLogger()
-    logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG if debug else logging.INFO)
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG if debug or verbose else logging.INFO)
 
     user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)
@@ -68,6 +69,8 @@ def main(
     )
     if debug:
         client.binary_config.update(verbosity=3, debug=True)
+    if verbose:
+        client.binary_config.update(verbosity=3)
 
     client.start()
     api = DataTransferApi(client)
