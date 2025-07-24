@@ -49,7 +49,7 @@ from humanfriendly import format_size
 import typer
 from typing_extensions import Annotated
 
-from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
@@ -158,9 +158,8 @@ def main(
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
     ] = "repadmin",
 ):
-    logging.basicConfig(
-        format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG if debug or verbosity > 1 else logging.INFO
-    )
+    logging.basicConfig()
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(debug, verbosity))
 
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"

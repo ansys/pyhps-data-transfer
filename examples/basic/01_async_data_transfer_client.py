@@ -44,7 +44,7 @@ import os
 import typer
 from typing_extensions import Annotated
 
-from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi
+from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
@@ -59,7 +59,7 @@ async def main(
 ):
 
     log = logging.getLogger()
-    logging.basicConfig(format="%(asctime)s %(levelname)8s > %(message)s", level=logging.DEBUG if debug or verbosity > 1 else logging.INFO)
+    logging.basicConfig(yyformat="%(levelname)8s > %(message)s", level=get_log_level(debug, verbosity))
     
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"

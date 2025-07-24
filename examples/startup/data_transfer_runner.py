@@ -40,7 +40,7 @@ import time
 import typer
 from typing_extensions import Annotated
 
-from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
 
 
@@ -56,7 +56,7 @@ def main(
 
     auth_url = f"{url}/auth/realms/rep"
     log = logging.getLogger()
-    logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG if debug or verbosity > 1 else logging.INFO)
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(debug, verbosity))
 
     user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)

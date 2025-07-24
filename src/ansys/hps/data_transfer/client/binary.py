@@ -51,6 +51,19 @@ level_map = {
     "panic": logging.CRITICAL,
 }
 
+verbosity_map = {
+    0: logging.WARNING,
+    1: logging.INFO,
+    2: logging.DEBUG,
+    3: logging.DEBUG,
+}
+
+def get_log_level(verbosity: int, debug: bool = False) -> int:
+    """Get the log level based on verbosity and debug flag."""
+    if debug:
+        return logging.DEBUG
+    return verbosity_map.get(verbosity, logging.INFO)
+
 class PrepareSubprocess:
     """Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
 
