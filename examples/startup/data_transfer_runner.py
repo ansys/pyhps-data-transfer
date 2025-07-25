@@ -56,7 +56,7 @@ def main(
 
     auth_url = f"{url}/auth/realms/rep"
     log = logging.getLogger()
-    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(debug, verbosity))
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
     user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)

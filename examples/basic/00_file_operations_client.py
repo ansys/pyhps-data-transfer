@@ -47,6 +47,7 @@ from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_leve
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
+
 log = logging.getLogger(__name__)
 
 ####################################
@@ -55,11 +56,6 @@ log = logging.getLogger(__name__)
 def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
     if not remote_path:
         remote_path = Path(local_path).parent.name
-
-    log.info("Query storages ...")
-    storages = api.storages()
-    storage_names = [f"{storage['name']}({storage['type']})" for storage in storages]
-    log.info(f"Available storages: {storage_names}")
 
     log.info("Creating a directory ...")
     base_dir = "basic-example"
@@ -73,12 +69,10 @@ def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional
 
     op = api.copy([SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)])
     op = api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
     log.info("Listing files ...")
     op = api.list([StoragePath(path=base_dir)])
     op = api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
     log.info(f"Files in {base_dir}: {op[0].result}")
 
     log.info("Getting metadata ...")
@@ -90,7 +84,6 @@ def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional
     log.info("Removing files ...")
     op = api.rmdir([StoragePath(path=base_dir)])
     op = api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
 ####################################
 # Define the main function
@@ -106,8 +99,8 @@ def main(
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with.")
     ] = "repadmin",
 ):
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
-    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(debug, verbosity))
 
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"

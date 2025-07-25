@@ -59,8 +59,8 @@ async def main(
 ):
 
     log = logging.getLogger()
-    logging.basicConfig(yyformat="%(levelname)8s > %(message)s", level=get_log_level(debug, verbosity))
-    
+    logging.basicConfig(yyformat="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
+
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"
     token = authenticate(username=username, password=password, verify=False, url=auth_url)
@@ -112,7 +112,6 @@ async def main(
 
     op = await api.copy([SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)])
     op = await api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
     files = glob.glob(os.path.join(os.path.dirname(__file__), "*.txt"))
     srcs = [StoragePath(path=file, remote="local") for file in files]
@@ -120,12 +119,10 @@ async def main(
 
     op = await api.copy([SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)])
     op = await api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
     log.info("Listing files ...")
     op = await api.list([StoragePath(path=base_dir)])
     op = await api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
     log.info(f"Files in {base_dir}: {op[0].result}")
 
     log.info("Getting metadata ...")
@@ -137,7 +134,6 @@ async def main(
     log.info("Removing files ...")
     op = await api.rmdir([StoragePath(path=base_dir)])
     op = await api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
     await client.stop()
 

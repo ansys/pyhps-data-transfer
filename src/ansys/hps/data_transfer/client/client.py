@@ -355,7 +355,7 @@ class ClientBase:
         return f"{plat}-{arch}"
 
     def _prepare_bin_path(self, build_info):
-        log.debug(f"Server build info:")
+        log.debug("Server build info:")
         for k, v in build_info.items():
             log.debug(f"  {k}: {v}")
         version_hash = build_info["version_hash"]
@@ -458,7 +458,7 @@ class ClientBase:
                 # log.debug(f"Marking binary as executable: {bin_path}")
                 os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
                 # if self._bin_config.debug:
-                    # log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
+                # log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
         except filelock.Timeout as ex:
             raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}") from ex
 

@@ -44,6 +44,7 @@ class Operation(BaseModel):
     ended_at: str | None = None
     error: str | None = None
     id: str | None = None
+    info: dict[str, Any] | None = Field(None, description="Additional info about the operation, used for logging")
     messages: list[str] | None = None
     progress: float | None = None
     progress_current: int | None = None

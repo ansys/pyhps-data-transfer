@@ -53,8 +53,50 @@ from ..models.ops import Operation, OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
 from .retry import retry
+from dateutil import parser
 
 log = logging.getLogger(__name__)
+
+
+class DefaultOperationHandler:
+    """Allows additional handling of the operations."""
+
+    def __init__(self):
+        """Initializes the OperationHandler class object."""
+        self.start = time.time()
+        self.report_threshold = 60.0  # seconds
+
+    def __call__(self, ops: list[Operation]):
+        """Handle operations after they are fetched."""
+        so_far = time.time() - self.start
+        done_ops = [op.state for op in ops if op.state in [OperationState.Succeeded, OperationState.Failed]]
+        for op in ops:
+            if op.state in [OperationState.Succeeded, OperationState.Failed]:
+                try:
+                    start = parser.parse(op.started_at)
+                    end = parser.parse(op.ended_at)
+                    duration = hf.format_timespan(end - start)
+                except Exception:
+                    duration = "unknown"
+                op_type = "operation" if len(op.children) == 0 else "operation group"
+
+                extras = ""
+                if op.info:
+                    for k, v in op.info.items():
+                        extras += f", {k} {v}"
+                log.info(f"{op_type.capitalize()} '{op.description}'({op.id}) has {self._formatState(op)}, took {duration}")
+
+        num_running = len(ops) - len(done_ops)
+        if num_running > 0 and so_far > self.report_threshold:
+            log.info(f"Waiting for {num_running} operations to complete. {hf.format_timespan(so_far)} so far ...")
+        else:
+            duration = hf.format_timespan(time.time() - self.start)
+            log.debug(f"Completed {duration} operations after {duration}")
+
+    def _formatState(self, op: Operation) -> str:
+        """Format the state of the operation."""
+        s = f"{op.state.value}"
+        return s
 
 
 class DataTransferApi:
@@ -283,6 +325,7 @@ class DataTransferApi:
         cap: float = 2.0,
         raise_on_error: bool = False,
         progress_handler: Callable[[str, float], None] = None,
+        operation_handler: Callable[[builtins.list[Operation]], None] = None,
     ):
         """Wait for operations to complete.
 
@@ -301,6 +344,9 @@ class DataTransferApi:
         progress_handler: Callable[[str, float], None]
             A function to handle progress updates. Default is None.
         """
+        if operation_handler is None:
+            operation_handler = DefaultOperationHandler()
+
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
         operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]
@@ -312,22 +358,11 @@ class DataTransferApi:
             attempt += 1
             try:
                 ops = self._operations(operation_ids)
-                so_far = hf.format_timespan(time.time() - start)
-                log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
-                if self.client.binary_config.debug:
-                    for op in ops:
-                        fields = [
-                            f"id={op.id}",
-                            f"state={op.state}",
-                            f"start={op.started_at}",
-                            f"succeeded_on={op.succeeded_on}",
-                        ]
-                        if op.progress > 0:
-                            fields.append(f"progress={op.progress:.3f}")
-                        log.debug(f"- Operation '{op.description}' {' '.join(fields)}")
                 if progress_handler is not None:
                     for op in ops:
                         progress_handler(op.id, op.progress)
+                if operation_handler is not None:
+                    operation_handler(ops)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
@@ -340,10 +375,8 @@ class DataTransferApi:
 
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=cap, jitter=True)
-            if self.client.binary_config.debug:
-                log.debug(f"Next check in {hf.format_timespan(duration)} ...")
+            # if self.client.binary_config.debug:
+            # log.debug(f"Next check in {hf.format_timespan(duration)} ...")
             time.sleep(duration)
 
-        duration = hf.format_timespan(time.time() - start)
-        log.debug(f"Operations completed after {duration}: {op_str}")
         return ops

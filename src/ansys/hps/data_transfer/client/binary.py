@@ -58,11 +58,13 @@ verbosity_map = {
     3: logging.DEBUG,
 }
 
+
 def get_log_level(verbosity: int, debug: bool = False) -> int:
     """Get the log level based on verbosity and debug flag."""
     if debug:
         return logging.DEBUG
     return verbosity_map.get(verbosity, logging.INFO)
+
 
 class PrepareSubprocess:
     """Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
@@ -86,7 +88,8 @@ class PrepareSubprocess:
             subprocess._USE_VFORK = self._orig_use_vfork
             subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
 
-def default_log_message(debug : bool, data : dict[str, any]):
+
+def default_log_message(debug: bool, data: dict[str, any]):
     """Default log message handler.
 
     Parameters
@@ -117,6 +120,7 @@ def default_log_message(debug : bool, data : dict[str, any]):
         msg += f" {other}"
     msg = msg.encode("ascii", errors="ignore").decode().strip()
     log.log(level_no, f"{msg}")
+
 
 class BinaryConfig:
     """Provides for configuring the worker binary connection to the HPS data transfer client.
