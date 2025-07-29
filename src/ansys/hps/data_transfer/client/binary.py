@@ -154,7 +154,7 @@ class BinaryConfig:
         # Required
         data_transfer_url: str = "https://localhost:8443/hps/dt/api/v1",
         # Process related settings
-        log: bool = True,
+        # log: bool = True,
         log_to_file: bool = False,
         log_message: callable = default_log_message,
         monitor_interval: float = 0.5,
@@ -164,7 +164,7 @@ class BinaryConfig:
         token: str = None,
         host: str = "127.0.0.1",
         port: int = None,
-        verbosity: int = 1,
+        verbosity: int = 3,
         insecure: bool = False,
         debug: bool = False,
         auth_type: str = None,
@@ -174,7 +174,7 @@ class BinaryConfig:
         self.data_transfer_url = data_transfer_url
 
         # Process related settings
-        self.log = log
+        self.log = debug
         self.log_to_file = log_to_file
         self._log_message = log_message
         self.monitor_interval = monitor_interval
@@ -252,7 +252,7 @@ class BinaryConfig:
     def log_message(self):
         """Get the log message handler."""
         return self._log_message
-    
+
     @log_message.setter
     def log_message(self, value):
         """Set the log message handler."""
@@ -466,12 +466,12 @@ class Binary:
             ]
         )
 
-        self._args.extend(
-            [
-                "-v",
-                str(self._config.verbosity),
-            ]
-        )
+        # self._args.extend(
+        #     [
+        #         "-v",
+        #         str(self._config.verbosity),
+        #     ]
+        # )
 
         if self._config.insecure:
             self._args.append("--insecure")

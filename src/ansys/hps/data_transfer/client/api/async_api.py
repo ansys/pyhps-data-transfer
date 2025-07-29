@@ -53,8 +53,8 @@ from ..models.msg import (
 from ..models.ops import Operation, OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
-from .retry import retry
 from .handler import AsyncOperationHandler
+from .retry import retry
 
 log = logging.getLogger(__name__)
 
@@ -92,9 +92,9 @@ class AsyncDataTransferApi:
             return s
 
     @retry()
-    async def operations(self, ids: list[str]):
+    async def operations(self, ids: list[str], expand: bool = False):
         """Provides an async interface to get a list of operations by their IDs."""
-        return await self._operations(ids)
+        return await self._operations(ids, expand=expand)
 
     async def storages(self):
         """Provides an async interface to get the list of storage configurations."""
@@ -141,9 +141,12 @@ class AsyncDataTransferApi:
         json = resp.json()
         return OpIdResponse(**json)
 
-    async def _operations(self, ids: builtins.list[str]):
+    async def _operations(self, ids: builtins.list[str], expand: bool = False):
         url = "/operations"
-        resp = await self.client.session.get(url, params={"ids": ids})
+        params = {"ids": ids}
+        if expand:
+            params["expand"] = "true"
+        resp = await self.client.session.get(url, params=params)
         json = resp.json()
         return OpsResponse(**json).operations
 
@@ -239,20 +242,9 @@ class AsyncDataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = await self._operations(operation_ids)
-
-                meta = getattr(operation_handler, "Meta", dict())
-                expand_groups = getattr(meta, "expand_groups", False)
-                if expand_groups:
-                    expanded = []
-                    for op in ops:
-                        if not op.children:
-                            continue
-                        expanded.extend(await self._operations(op.children))
-                        expanded.append(op)
-                    if operation_handler is not None:
-                        await operation_handler(expanded)
-
+                ops = await self._operations(operation_ids, expand=True)
+                if operation_handler is not None:
+                    await operation_handler(ops)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:

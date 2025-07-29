@@ -29,12 +29,9 @@ data transfer operations, managing resources, and handling client interactions.
 import builtins
 from collections.abc import Callable
 import logging
-import textwrap
-import traceback
 import time
 
 import backoff
-import humanfriendly as hf
 
 from ..client import Client
 from ..exceptions import TimeoutError
@@ -53,11 +50,11 @@ from ..models.msg import (
 from ..models.ops import Operation, OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
-from .retry import retry
-from dateutil import parser
 from .handler import DefaultOperationHandler
+from .retry import retry
 
 log = logging.getLogger(__name__)
+
 
 class DataTransferApi:
     """Provides the data transfer API.
@@ -97,7 +94,7 @@ class DataTransferApi:
             return s
 
     @retry()
-    def operations(self, ids: list[str]):
+    def operations(self, ids: list[str], expand: bool = False):
         """Get a list of operations.
 
         Parameters
@@ -105,7 +102,7 @@ class DataTransferApi:
         ids: List[str]
             List of IDs.
         """
-        return self._operations(ids)
+        return self._operations(ids, expand=expand)
 
     def storages(self):
         """Get types of storages available on the storage backend."""
@@ -188,9 +185,12 @@ class DataTransferApi:
         r = OpIdResponse(**json)
         return r
 
-    def _operations(self, ids: builtins.list[str]):
+    def _operations(self, ids: builtins.list[str], expand: bool = False):
         url = "/operations"
-        resp = self.client.session.get(url, params={"ids": ids})
+        params = {"ids": ids}
+        if expand:
+            params["expand"] = "true"
+        resp = self.client.session.get(url, params=params)
         json = resp.json()
         return OpsResponse(**json).operations
 
@@ -314,20 +314,9 @@ class DataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = self._operations(operation_ids)
-
-                meta = getattr(operation_handler, "Meta", dict())
-                expand_groups = getattr(meta, "expand_groups", False)
-                if expand_groups:
-                    expanded = []
-                    for op in ops:
-                        if not op.children:
-                            continue
-                        expanded.extend(self._operations(op.children))
-                        expanded.append(op)
-                    if operation_handler is not None:
-                        operation_handler(expanded)
-
+                ops = self._operations(operation_ids, expand=True)
+                if operation_handler is not None:
+                    operation_handler(ops)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:

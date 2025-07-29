@@ -70,7 +70,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     log.info("== Removing remote directory if it exists ...")
     op = api.rmdir([StoragePath(path=remote_path)])
     op = api.wait_for([op.id])
-    
+
 
     log.info("== Creating remote directory ...")
     mkdir_op = api.mkdir([StoragePath(path=remote_path)])
@@ -92,18 +92,18 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     op = api.copy(copy_args)
     op = api.wait_for([op.id])
     t1 = perf_counter()
-    
+
 
     log.info(f"== Querying files and metadata in {remote_path} ...")
     op = api.list([StoragePath(path=remote_path)])
     op = api.wait_for([op.id])
-    
+
     log.debug(f"Files in {remote_path}: {op[0].result}")
     fnames = op[0].result[f"any:{remote_path}"]
 
     op = api.get_metadata([StoragePath(path=f"{remote_path}/{fname}") for fname in fnames])
     op = api.wait_for(op.id)
-    
+
     log.debug(f"Metadata for {remote_path}: {op[0].result}")
 
     log.info("== List of uploaded files:")
@@ -131,7 +131,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     op = api.copy(copy_args)
     op = api.wait_for([op.id])
     t1 = perf_counter()
-    
+
 
     log.info("== Download performance:")
     log.info(f"- Total time: {t1-t0:.5f} s")

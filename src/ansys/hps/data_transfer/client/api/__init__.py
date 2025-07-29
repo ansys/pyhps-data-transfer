@@ -24,4 +24,4 @@
 
 from .api import DataTransferApi
 from .async_api import AsyncDataTransferApi
-from .handler import DefaultOperationHandler, AsyncOperationHandler
+from .handler import AsyncOperationHandler, DefaultOperationHandler
