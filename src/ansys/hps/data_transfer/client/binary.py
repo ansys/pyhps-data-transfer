@@ -248,6 +248,18 @@ class BinaryConfig:
             raise TypeError("Environment variables must be a dictionary.")
         self._env = value
 
+    @property
+    def log_message(self):
+        """Get the log message handler."""
+        return self._log_message
+    
+    @log_message.setter
+    def log_message(self, value):
+        """Set the log message handler."""
+        if not callable(value):
+            raise TypeError("Log message handler must be a callable.")
+        self._log_message = value
+
 
 class Binary:
     """Provides for starting, stopping, and monitoring the worker binary.
