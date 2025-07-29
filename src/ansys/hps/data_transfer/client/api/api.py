@@ -30,6 +30,7 @@ import builtins
 from collections.abc import Callable
 import logging
 import textwrap
+import traceback
 import time
 
 import backoff
@@ -61,10 +62,14 @@ log = logging.getLogger(__name__)
 class DefaultOperationHandler:
     """Allows additional handling of the operations."""
 
+    class Meta:
+        """Meta class for DefaultOperationHandler."""
+        expand_groups = True
+
     def __init__(self):
         """Initializes the OperationHandler class object."""
         self.start = time.time()
-        self.report_threshold = 60.0  # seconds
+        self.report_threshold = 10.0  # seconds
 
     def __call__(self, ops: list[Operation]):
         """Handle operations after they are fetched."""
@@ -72,32 +77,41 @@ class DefaultOperationHandler:
         done_ops = [op.state for op in ops if op.state in [OperationState.Succeeded, OperationState.Failed]]
         for op in ops:
             if op.state in [OperationState.Succeeded, OperationState.Failed]:
-                try:
-                    start = parser.parse(op.started_at)
-                    end = parser.parse(op.ended_at)
-                    duration = hf.format_timespan(end - start)
-                except Exception:
-                    duration = "unknown"
-                op_type = "operation" if len(op.children) == 0 else "operation group"
-
-                extras = ""
-                if op.info:
-                    for k, v in op.info.items():
-                        extras += f", {k} {v}"
-                log.info(f"{op_type.capitalize()} '{op.description}'({op.id}) has {self._formatState(op)}, took {duration}")
+                log.info(self._format_op(op))
+            elif so_far > self.report_threshold:
+                self._format_op(op, progress=True)
 
         num_running = len(ops) - len(done_ops)
+        # num_completed = len(done_ops)
         if num_running > 0 and so_far > self.report_threshold:
             log.info(f"Waiting for {num_running} operations to complete. {hf.format_timespan(so_far)} so far ...")
+        # elif num_completed == len(ops):
+        #     duration = hf.format_timespan(time.time() - self.start)
+        #     log.debug(f"Completed {num_completed} operations after {duration}")
+
+    def _format_op(self, op: Operation) -> str:
+        """Format the operation description."""
+        op_type = "operation" if len(op.children) == 0 else "operation group"
+        
+        msg = f"{op_type.capitalize()} '{op.description}'({op.id})"
+
+        try:
+            start = parser.parse(op.started_at)
+            end = parser.parse(op.ended_at)
+            duration = hf.format_timespan(end - start)
+        except Exception:
+            duration = "unknown"
+
+        state = op.state.value
+        if op.state in [OperationState.Succeeded, OperationState.Failed]:
+            msg += f" has {state} after {duration}"
         else:
-            duration = hf.format_timespan(time.time() - self.start)
-            log.debug(f"Completed {duration} operations after {duration}")
+            msg += f" is {state}, {duration} so far, progress {op.progress:.2f}%"
 
-    def _formatState(self, op: Operation) -> str:
-        """Format the state of the operation."""
-        s = f"{op.state.value}"
-        return s
-
+        if op.info is not None:
+            info = ", ".join([f"{k}={v}" for k, v in op.info.items()])
+            msg += ", " + info
+        return msg
 
 class DataTransferApi:
     """Provides the data transfer API.
@@ -324,7 +338,6 @@ class DataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
-        progress_handler: Callable[[str, float], None] = None,
         operation_handler: Callable[[builtins.list[Operation]], None] = None,
     ):
         """Wait for operations to complete.
@@ -341,8 +354,8 @@ class DataTransferApi:
             The maximum backoff value used to calculate the next wait time. Default is 2.0.
         raise_on_error: bool
             Raise an exception if an error occurs. Default is False.
-        progress_handler: Callable[[str, float], None]
-            A function to handle progress updates. Default is None.
+        operation_handler: Callable[[builtins.list[Operation]], None]
+            A callable that will be called with the list of operations when they are fetched.
         """
         if operation_handler is None:
             operation_handler = DefaultOperationHandler()
@@ -352,17 +365,23 @@ class DataTransferApi:
         operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]
         start = time.time()
         attempt = 0
-        op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")
-        # log.debug(f"Waiting for operations to complete: {op_str}")
         while True:
             attempt += 1
             try:
                 ops = self._operations(operation_ids)
-                if progress_handler is not None:
+
+                meta = getattr(operation_handler, "Meta", dict())
+                expand_groups = getattr(meta, "expand_groups", False)
+                if expand_groups:
+                    expanded = []
                     for op in ops:
-                        progress_handler(op.id, op.progress)
-                if operation_handler is not None:
-                    operation_handler(ops)
+                        if not op.children:
+                            continue
+                        expanded.extend(self._operations(op.children))
+                        expanded.append(op)
+                    if operation_handler is not None:
+                        operation_handler(expanded)
+
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
@@ -375,8 +394,6 @@ class DataTransferApi:
 
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=cap, jitter=True)
-            # if self.client.binary_config.debug:
-            # log.debug(f"Next check in {hf.format_timespan(duration)} ...")
             time.sleep(duration)
 
         return ops
