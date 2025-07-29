@@ -115,6 +115,7 @@ def main(
     client.binary_config.update(
         verbosity=verbosity,
         debug=debug,
+        log=debug,
         insecure=True,
         token=token,
         data_transfer_url=dt_url,

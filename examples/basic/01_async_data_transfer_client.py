@@ -59,7 +59,7 @@ async def main(
 ):
 
     log = logging.getLogger()
-    logging.basicConfig(yyformat="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"
