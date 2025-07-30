@@ -22,27 +22,29 @@
 
 """Provides functionality for monitoring of operations."""
 
+import datetime
 import logging
 import time
 
 from dateutil import parser
 import humanfriendly as hf
-import datetime
 
 from ..models.ops import Operation, OperationState
 
 log = logging.getLogger(__name__)
 
 
-class DefaultOperationHandler:
-    """Allows additional handling of the operations."""
+class WaitHandler:
+    """Allows additional handling of operation status on wait."""
 
     final = [OperationState.Succeeded, OperationState.Failed]
 
     def __init__(self):
-        """Initializes the OperationHandler class object."""
+        """Initializes the WaitHandler class object."""
         self.start = time.time()
         self.report_threshold = 10.0  # seconds
+        self.min_progress_interval = 2.0  # seconds
+        self.last_progress = self.start
 
     def __call__(self, ops: list[Operation]):
         """Handle operations after they are fetched."""
@@ -78,27 +80,28 @@ class DefaultOperationHandler:
             else:
                 end = datetime.datetime.now(start.tzinfo)
             duration = (end - start).seconds
-            durationStr = hf.format_timespan(end - start)
+            duration_str = hf.format_timespan(end - start)
         except Exception as ex:
             log.debug(f"Failed to parse operation duration: {ex}")
             duration = 0
-            durationStr = "unknown"
+            duration_str = "unknown"
 
         state = op.state.value
         if op_done:
-            msg += f" has {state} after {durationStr}"
+            msg += f" has {state} after {duration_str}"
             if op.info is not None:
                 info = ", ".join([f"{k}={v}" for k, v in op.info.items()])
                 msg += ", " + info
-        else:
-            msg += f" is {state}, {durationStr} so far, progress {op.progress:.2f}%"
-
-        if op_done or duration > self.report_threshold:
+            # if op.messages:
+                # msg += f', messages="{"; ".join(op.messages)}"'
+            log.log(lvl, msg)
+        elif duration > self.report_threshold and time.time() - self.last_progress > self.min_progress_interval:
+            self.last_progress = time.time()
+            msg += f" is {state}, {duration_str} so far, progress {op.progress:.2f}%"
             log.log(lvl, msg)
 
-
-class AsyncOperationHandler(DefaultOperationHandler):
-    """Asynchronous operation handler for operations."""
+class AsyncWaitHandler(WaitHandler):
+    """Allows additional, asynchronous handling of operation status on wait."""
 
     def __init__(self):
         """Initializes the AsyncOperationHandler class object."""

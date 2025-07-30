@@ -53,7 +53,7 @@ from ..models.msg import (
 from ..models.ops import Operation, OperationState
 from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
-from .handler import AsyncOperationHandler
+from .handler import AsyncWaitHandler
 from .retry import retry
 
 log = logging.getLogger(__name__)
@@ -66,6 +66,7 @@ class AsyncDataTransferApi:
         """Initialize the async data transfer API with the client object."""
         self.dump_mode = "json"
         self.client = client
+        self.wait_handler_class = AsyncWaitHandler
 
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
@@ -230,7 +231,7 @@ class AsyncDataTransferApi:
             A callable that will be called with the list of operations when they are fetched.
         """
         if operation_handler is None:
-            operation_handler = AsyncOperationHandler()
+            operation_handler = self.wait_handler_class()
 
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
