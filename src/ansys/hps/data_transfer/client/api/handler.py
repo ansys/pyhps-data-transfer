@@ -42,8 +42,8 @@ class WaitHandler:
     def __init__(self):
         """Initializes the WaitHandler class object."""
         self.start = time.time()
-        self.report_threshold = 1.0  # seconds
-        self.min_progress_interval = 2.0  # seconds
+        self.report_threshold = 2.0  # seconds
+        self.min_progress_interval = 3.0  # seconds
         self.last_progress = self.start
 
     def __call__(self, ops: list[Operation]):
@@ -97,7 +97,6 @@ class WaitHandler:
             log.log(lvl, msg)
         elif duration > self.report_threshold and time.time() - self.last_progress > self.min_progress_interval:
             self.last_progress = time.time()
-            log.warning(f"{op.progress} {op.progress_current} {op.progress_total}")
             msg += f" is {state}, {duration_str} so far, progress {op.progress:.2f}%"
             log.log(lvl, msg)
 
