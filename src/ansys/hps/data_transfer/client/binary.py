@@ -203,6 +203,8 @@ class BinaryConfig:
                 setattr(self, key, value)
             else:
                 raise AttributeError(f"Unknown attribute {key}")
+        if self.debug:
+            self.log = True
 
     @property
     def port(self):

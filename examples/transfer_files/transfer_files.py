@@ -53,7 +53,7 @@ from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_leve
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
-log = logging.getLogger(__name__)
+log = logging.getLogger()
 
 ########################################################################
 # Define a method to transfer files using the data transfer service
@@ -158,7 +158,6 @@ def main(
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
     ] = "repadmin",
 ):
-    logging.basicConfig()
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
     dt_url = f"{url}/dt/api/v1"

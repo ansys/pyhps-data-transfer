@@ -42,7 +42,7 @@ class WaitHandler:
     def __init__(self):
         """Initializes the WaitHandler class object."""
         self.start = time.time()
-        self.report_threshold = 10.0  # seconds
+        self.report_threshold = 1.0  # seconds
         self.min_progress_interval = 2.0  # seconds
         self.last_progress = self.start
 
@@ -51,7 +51,7 @@ class WaitHandler:
         self._log_ops(ops)
 
     def _log_ops(self, ops: list[Operation]) -> str:
-        so_far = time.time() - self.start
+        # so_far = time.time() - self.start
         num_running = 0
         for op in ops:
             for ch in op.children_detail or []:
@@ -63,8 +63,8 @@ class WaitHandler:
                 num_running += 1
             self._log_op(logging.INFO, op)
 
-        if num_running > 0 and so_far > self.report_threshold:
-            log.info(f"Waiting for {num_running} operations to complete. {hf.format_timespan(so_far)} so far ...")
+        # if num_running > 0 and so_far > self.report_threshold:
+            # log.info(f"Waiting for {num_running} operations to complete. {hf.format_timespan(so_far)} so far ...")
 
     def _log_op(self, lvl: int, op: Operation):
         """Format the operation description."""
@@ -97,6 +97,7 @@ class WaitHandler:
             log.log(lvl, msg)
         elif duration > self.report_threshold and time.time() - self.last_progress > self.min_progress_interval:
             self.last_progress = time.time()
+            log.warning(f"{op.progress} {op.progress_current} {op.progress_total}")
             msg += f" is {state}, {duration_str} so far, progress {op.progress:.2f}%"
             log.log(lvl, msg)
 
