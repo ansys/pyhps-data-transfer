@@ -63,9 +63,6 @@ class WaitHandler:
                 num_running += 1
             self._log_op(logging.INFO, op)
 
-        # if num_running > 0 and so_far > self.report_threshold:
-            # log.info(f"Waiting for {num_running} operations to complete. {hf.format_timespan(so_far)} so far ...")
-
     def _log_op(self, lvl: int, op: Operation):
         """Format the operation description."""
         op_type = "operation" if len(op.children) == 0 else "operation group"
@@ -93,12 +90,15 @@ class WaitHandler:
                 info = ", ".join([f"{k}={v}" for k, v in op.info.items()])
                 msg += ", " + info
             # if op.messages:
-                # msg += f', messages="{"; ".join(op.messages)}"'
+            # msg += f', messages="{"; ".join(op.messages)}"'
             log.log(lvl, msg)
         elif duration > self.report_threshold and time.time() - self.last_progress > self.min_progress_interval:
             self.last_progress = time.time()
-            msg += f" is {state}, {duration_str} so far, progress {op.progress:.2f}%"
+            msg += f" is {state}, {duration_str} so far"
+            if op.progress_current > 0:
+                msg += f", progress {op.progress * 100.0:.1f}%"
             log.log(lvl, msg)
+
 
 class AsyncWaitHandler(WaitHandler):
     """Allows additional, asynchronous handling of operation status on wait."""
