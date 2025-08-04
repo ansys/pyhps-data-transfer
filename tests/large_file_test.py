@@ -248,7 +248,7 @@ async def test_async_batch_with_multiple_operations_to_wait(storage_path, async_
     # test progress handler
     async def handler(ops):
         for op in ops:
-            progress_data.append(op.progress)
+            progress_data[op.id].append(op.progress)
             log.info(f"{op.progress * 100.0}% completed for operation id: {op.id}")
 
     # Wait for the operation to complete with progress handler
