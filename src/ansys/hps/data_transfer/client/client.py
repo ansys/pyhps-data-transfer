@@ -530,6 +530,18 @@ class AsyncClient(ClientBase):
         self._bin_config._on_token_update = self._update_token
         self._monitor_task = None
 
+    def __getstate__(self):
+        """Return pickled state of the object."""
+        state = super().__getstate__()
+        del state["_monitor_task"]
+        return state
+
+    def __setstate__(self, state):
+        """Restore state from pickled state."""
+        super().__setstate__(state)
+        self.__dict__.update(state)
+        self._monitor_task = None
+
     async def start(self):
         """Start the async binary worker."""
         super().start()
