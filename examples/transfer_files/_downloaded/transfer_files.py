@@ -158,7 +158,6 @@ def main(
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
     ] = "repadmin",
 ):
-    logging.basicConfig()
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
     dt_url = f"{url}/dt/api/v1"
