@@ -86,9 +86,7 @@ class WaitHandler:
         state = op.state.value
         if op_done:
             msg += f" has {state} after {duration_str}"
-            if op.info is not None:
-                info = ", ".join([f"{k}={v}" for k, v in op.info.items()])
-                msg += ", " + info
+            msg += self._info_str(op)
             # if op.messages:
             # msg += f', messages="{"; ".join(op.messages)}"'
             log.log(lvl, msg)
@@ -96,8 +94,17 @@ class WaitHandler:
             self.last_progress = time.time()
             msg += f" is {state}, {duration_str} so far"
             if op.progress_current > 0:
-                msg += f", progress {op.progress * 100.0:.1f}%"
+                msg += f", progress {op.progress*100.0:.1f}%"
+            msg += self._info_str(op)
             log.log(lvl, msg)
+
+    
+    def _info_str(self, op: Operation) -> str:
+        """Format the operation info."""
+        if not op.info:
+            return ""
+        info = ", ".join([f"{k}={v}" for k, v in op.info.items()])
+        return f", {info}"
 
 
 class AsyncWaitHandler(WaitHandler):
