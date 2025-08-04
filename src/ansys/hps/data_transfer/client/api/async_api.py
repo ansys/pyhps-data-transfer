@@ -32,6 +32,7 @@ from collections.abc import Awaitable, Callable
 import logging
 import textwrap
 import time
+import traceback
 
 import backoff
 import humanfriendly as hf
@@ -245,7 +246,12 @@ class AsyncDataTransferApi:
                 expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
                 ops = await self._operations(operation_ids, expand=expand)
                 if handler is not None:
-                    await handler(ops)
+                    try:
+                        await handler(ops)
+                    except Exception as e:
+                        log.warning(f"Handler error: {e}")
+                        log.debug(traceback.format_exc())
+
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:

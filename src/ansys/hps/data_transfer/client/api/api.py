@@ -30,6 +30,7 @@ import builtins
 from collections.abc import Callable
 import logging
 import time
+import traceback
 
 import backoff
 
@@ -318,7 +319,12 @@ class DataTransferApi:
                 expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
                 ops = self._operations(operation_ids, expand=expand)
                 if handler is not None:
-                    handler(ops)
+                    try:
+                        handler(ops)
+                    except Exception as e:
+                        log.warning(f"Handler error: {e}")
+                        log.debug(traceback.format_exc())
+
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
