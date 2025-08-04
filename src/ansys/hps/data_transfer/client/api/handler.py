@@ -37,6 +37,10 @@ log = logging.getLogger(__name__)
 class WaitHandler:
     """Allows additional handling of operation status on wait."""
 
+    class Meta:
+        """Meta class for WaitHandler."""
+        expand_group = True
+
     final = [OperationState.Succeeded, OperationState.Failed]
 
     def __init__(self):

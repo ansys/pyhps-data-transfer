@@ -69,7 +69,7 @@ class DataTransferApi:
         """Initializes the DataTransferApi class object."""
         self.dump_mode = "json"
         self.client = client
-        self.wait_handler_class = WaitHandler
+        self.wait_handler_factory = WaitHandler
 
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
@@ -285,7 +285,7 @@ class DataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
-        operation_handler: Callable[[builtins.list[Operation]], None] = None,
+        handler: Callable[[builtins.list[Operation]], None] = None,
     ):
         """Wait for operations to complete.
 
@@ -304,8 +304,8 @@ class DataTransferApi:
         operation_handler: Callable[[builtins.list[Operation]], None]
             A callable that will be called with the list of operations when they are fetched.
         """
-        if operation_handler is None:
-            operation_handler = self.wait_handler_class()
+        if handler is None:
+            handler = self.wait_handler_factory()
 
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
@@ -315,9 +315,10 @@ class DataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = self._operations(operation_ids, expand=True)
-                if operation_handler is not None:
-                    operation_handler(ops)
+                expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
+                ops = self._operations(operation_ids, expand=expand)
+                if handler is not None:
+                    handler(ops)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:

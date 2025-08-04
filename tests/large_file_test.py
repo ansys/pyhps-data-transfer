@@ -132,7 +132,7 @@ def test_large_batch(storage_path, client):
 
 
 def test_batch_with_wait_parameters(storage_path, client):
-    """Test copying a large file to a remote storage with wait parameter progress_handler."""
+    """Test copying a large file to a remote storage with wait parameter handler."""
     api = DataTransferApi(client)
     log.info("Copy with progress handler")
     op, manager = sync_copy(storage_path, api, 1, 1)
@@ -142,12 +142,13 @@ def test_batch_with_wait_parameters(storage_path, client):
     progress_data = []
 
     # test progress handler
-    def handler(id, current_progress):
+    def handler(ops):
+        current_progress = ops[0].progress
         progress_data.append(current_progress)
-        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+        log.info(f"{current_progress * 100.0}% completed for operation id: {ops[0].id}")
 
     # Wait for the operation to complete with progress handler
-    op = api.wait_for(op.id, progress_handler=handler)
+    op = api.wait_for(op.id, handler=handler)
     assert op[0].state == OperationState.Succeeded, op[0].messages
     # Check if progress data is collected
     assert len(progress_data) > 0, "No progress data collected"
@@ -157,7 +158,7 @@ def test_batch_with_wait_parameters(storage_path, client):
 
 
 def test_batch_with_multiple_operations_to_wait(storage_path, client):
-    """Test copying a large file to a remote storage with wait parameter progress_handler."""
+    """Test copying a large file to a remote storage with wait parameter handler."""
     api = DataTransferApi(client)
     log.info("Copy with progress handler")
     op1, manager1 = sync_copy(storage_path, api, 1, 1)
@@ -166,22 +167,27 @@ def test_batch_with_multiple_operations_to_wait(storage_path, client):
     assert op2.id is not None
 
     # List to store progress data
-    progress_data = []
+    progress_data = {
+        op1.id: [],
+        op2.id: []
+    }
 
     # test progress handler
-    def handler(id, current_progress):
-        progress_data.append(current_progress)
-        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+    def handler(ops):
+        for op in ops:
+            progress_data[op.id].append(op.progress)
+            log.info(f"{op.progress * 100.0}% completed for operation id: {op.id}")
 
     # Wait for the operation to complete with progress handler
-    op = api.wait_for([op1.id, op2.id], progress_handler=handler)
+    op = api.wait_for([op1.id, op2.id], handler=handler)
     assert op[0].state == OperationState.Succeeded, op[0].messages
     assert op[1].state == OperationState.Succeeded, op[1].messages
     # Check if progress data is collected at least twice
-    assert len(progress_data) > 2, "No progress data collected"
+    assert len(progress_data[op1.id]) > 2, "No progress data collected"
+    assert len(progress_data[op2.id]) > 2, "No progress data collected"
     # Check if the last progress is 100%
-    assert progress_data[-1] == 1.0, "Last progress is not 100%"
-    assert progress_data[-2] == 1.0, "Last progress is not 100%"
+    assert progress_data[op1.id][-1] == 1.0, "Last progress is not 100%"
+    assert progress_data[op2.id][-1] == 1.0, "Last progress is not 100%"
     manager1.delete_file()
     manager2.delete_file()
 
@@ -198,7 +204,7 @@ async def test_async_large_batch(storage_path, async_client):
 
 async def test_async_batch_with_wait_parameters(storage_path, async_client):
     """Test copying a large file to a remote storage using the AsyncDataTransferApi
-    with wait parameter progress_handler."""
+    with wait parameter handler."""
     api = AsyncDataTransferApi(async_client)
     log.info("Copy with progress handler")
     op, manager = await async_copy(storage_path, api, 1, 1)
@@ -208,12 +214,13 @@ async def test_async_batch_with_wait_parameters(storage_path, async_client):
     progress_data = []
 
     # test progress handler
-    async def handler(id, current_progress):
+    async def handler(ops):
+        current_progress = ops[0].progress
         progress_data.append(current_progress)
-        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+        log.info(f"{current_progress * 100.0}% completed for operation id: {ops[0].id}")
 
     # Wait for the operation to complete with progress handler
-    op = await api.wait_for(op.id, progress_handler=handler)
+    op = await api.wait_for(op.id, handler=handler)
     assert op[0].state == OperationState.Succeeded, op[0].messages
     # Check if progress data is collected
     assert len(progress_data) > 0, "No progress data collected"
@@ -224,7 +231,7 @@ async def test_async_batch_with_wait_parameters(storage_path, async_client):
 
 async def test_async_batch_with_multiple_operations_to_wait(storage_path, async_client):
     """Test copying a large file to a remote storage using the AsyncDataTransferApi
-    with wait parameter progress_handler."""
+    with wait parameter handler."""
     api = AsyncDataTransferApi(async_client)
     log.info("Copy with progress handler")
     op1, manager1 = await async_copy(storage_path, api, 1, 1)
@@ -233,20 +240,26 @@ async def test_async_batch_with_multiple_operations_to_wait(storage_path, async_
     assert op2.id is not None
 
     # List to store progress data
-    progress_data = []
+    progress_data = {
+        op1.id: [],
+        op2.id: []
+    }
 
     # test progress handler
-    async def handler(id, current_progress):
-        progress_data.append(current_progress)
-        log.info(f"{current_progress * 100.0}% completed for operation id: {id}")
+    async def handler(ops):
+        for op in ops:
+            progress_data.append(op.progress)
+            log.info(f"{op.progress * 100.0}% completed for operation id: {op.id}")
 
     # Wait for the operation to complete with progress handler
-    op = await api.wait_for([op1.id, op2.id], progress_handler=handler)
+    op = await api.wait_for([op1.id, op2.id], handler=handler)
     assert op[0].state == OperationState.Succeeded, op[0].messages
     assert op[1].state == OperationState.Succeeded, op[1].messages
     # Check if progress data is collected at least twice
-    assert len(progress_data) > 2, "No progress data collected"
+    assert len(progress_data[op1.id]) > 2, "No progress data collected"
+    assert len(progress_data[op2.id]) > 2, "No progress data collected"
     # Check if the last progress is 100%
-    assert progress_data[-1] == 1.0, "Last progress is not 100%"
+    assert progress_data[op1.id][-1] == 1.0, "Last progress is not 100%"
+    assert progress_data[op2.id][-1] == 1.0, "Last progress is not 100%"
     manager1.delete_file()
     manager2.delete_file()

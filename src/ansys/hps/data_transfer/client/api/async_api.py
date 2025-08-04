@@ -66,7 +66,7 @@ class AsyncDataTransferApi:
         """Initialize the async data transfer API with the client object."""
         self.dump_mode = "json"
         self.client = client
-        self.wait_handler_class = AsyncWaitHandler
+        self.wait_handler_factory = AsyncWaitHandler
 
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
@@ -210,8 +210,7 @@ class AsyncDataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
-        # progress_handler: Callable[[str, float], Awaitable[None]] = None,
-        operation_handler: Callable[[builtins.list[Operation]], Awaitable[None]] = None,
+        handler: Callable[[builtins.list[Operation]], Awaitable[None]] = None,
     ):
         """Provides an async interface to wait for a list of operations to complete.
 
@@ -230,8 +229,8 @@ class AsyncDataTransferApi:
         operation_handler: Callable[[builtins.list[Operation]], None]
             A callable that will be called with the list of operations when they are fetched.
         """
-        if operation_handler is None:
-            operation_handler = self.wait_handler_class()
+        if handler is None:
+            handler = self.wait_handler_factory()
 
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
@@ -243,9 +242,10 @@ class AsyncDataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = await self._operations(operation_ids, expand=True)
-                if operation_handler is not None:
-                    await operation_handler(ops)
+                expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
+                ops = await self._operations(operation_ids, expand=expand)
+                if handler is not None:
+                    await handler(ops)
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
