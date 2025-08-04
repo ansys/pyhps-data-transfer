@@ -528,11 +528,12 @@ class AsyncClient(ClientBase):
         """Initializes the AsyncClient class object."""
         super().__init__(*args, **kwargs)
         self._bin_config._on_token_update = self._update_token
+        self._monitor_task = None
 
     async def start(self):
         """Start the async binary worker."""
         super().start()
-        asyncio.create_task(self._monitor())
+        self._monitor_task = asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
         """Stop the async binary worker."""
@@ -540,6 +541,8 @@ class AsyncClient(ClientBase):
             try:
                 await self._session.post(self.base_api_url + "/shutdown")
                 await asyncio.sleep(0.1)
+                if self._monitor_task is not None:
+                    self._monitor_task.cancel()
             except Exception as ex:
                 log.warning(f"Failed to send shutdown request: {ex}")
         super().stop(wait=wait)
@@ -575,18 +578,21 @@ class AsyncClient(ClientBase):
             log.debug(f"Error updating token: {e}")
 
     async def _monitor(self):
-        while not self._monitor_stop.is_set():
-            await asyncio.sleep(self._monitor_state.sleep_for)
-
-            if self._session is None or self.binary is None:
-                continue
+        while True:
             try:
+                await asyncio.sleep(self._monitor_state.sleep_for)
+                if self._session is None or self.binary is None:
+                    continue
+                
                 resp = await self._session.get(self.base_api_url)
 
                 if resp.status_code == 200:
                     ready = resp.json().get("ready", False)
                     self._monitor_state.mark_ready(ready)
                     continue
+            except asyncio.CancelledError:
+                log.debug("Monitor task cancelled")
+                return
             except Exception as ex:
                 if self.binary_config.debug:
                     log.debug("URL: %s", self.base_api_url)
@@ -595,7 +601,6 @@ class AsyncClient(ClientBase):
                 continue
 
             self._monitor_state.report(self.binary)
-        log.debug("Worker status monitor stopped")
 
 
 class Client(ClientBase):
