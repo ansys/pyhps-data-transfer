@@ -463,8 +463,6 @@ class Binary:
             [
                 "--dt-url",
                 self._config.data_transfer_url,
-                "--log-types",
-                "console",
             ]
         )
 
