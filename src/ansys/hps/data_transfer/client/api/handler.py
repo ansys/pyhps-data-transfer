@@ -39,6 +39,7 @@ class WaitHandler:
 
     class Meta:
         """Meta class for WaitHandler."""
+
         expand_group = True
 
     final = [OperationState.Succeeded, OperationState.Failed]
@@ -98,11 +99,10 @@ class WaitHandler:
             self.last_progress = time.time()
             msg += f" is {state}, {duration_str} so far"
             if op.progress_current > 0:
-                msg += f", progress {op.progress*100.0:.1f}%"
+                msg += f", progress {op.progress * 100.0:.1f}%"
             msg += self._info_str(op)
             log.log(lvl, msg)
 
-    
     def _info_str(self, op: Operation) -> str:
         """Format the operation info."""
         if not op.info:

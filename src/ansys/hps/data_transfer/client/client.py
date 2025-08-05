@@ -595,7 +595,7 @@ class AsyncClient(ClientBase):
                 await asyncio.sleep(self._monitor_state.sleep_for)
                 if self._session is None or self.binary is None:
                     continue
-                
+
                 resp = await self._session.get(self.base_api_url)
 
                 if resp.status_code == 200:

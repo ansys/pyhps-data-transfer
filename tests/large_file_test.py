@@ -167,10 +167,7 @@ def test_batch_with_multiple_operations_to_wait(storage_path, client):
     assert op2.id is not None
 
     # List to store progress data
-    progress_data = {
-        op1.id: [],
-        op2.id: []
-    }
+    progress_data = {op1.id: [], op2.id: []}
 
     # test progress handler
     def handler(ops):
@@ -240,10 +237,7 @@ async def test_async_batch_with_multiple_operations_to_wait(storage_path, async_
     assert op2.id is not None
 
     # List to store progress data
-    progress_data = {
-        op1.id: [],
-        op2.id: []
-    }
+    progress_data = {op1.id: [], op2.id: []}
 
     # test progress handler
     async def handler(ops):
