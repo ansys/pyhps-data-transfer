@@ -409,7 +409,9 @@ class Binary:
 
                 with PrepareSubprocess():
                     self._process = subprocess.Popen(
-                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
+                        args, shell=True, 
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                        env=env
                     )
             else:
                 ret_code = self._process.poll()
