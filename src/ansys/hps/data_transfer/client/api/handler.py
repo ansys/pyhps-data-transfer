@@ -72,7 +72,7 @@ class WaitHandler:
         """Format the operation description."""
         op_type = "operation" if len(op.children) == 0 else "operation group"
 
-        msg = f"{op_type.capitalize()} '{op.description}'({op.id})"
+        msg = f"Data transfer {op_type} '{op.description}'({op.id})"
 
         op_done = op.state in self.final
         try:

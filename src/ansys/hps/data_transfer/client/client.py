@@ -38,6 +38,7 @@ import traceback
 import backoff
 import filelock
 import httpx
+import humanfriendly as hf
 import psutil
 import urllib3
 
@@ -226,6 +227,8 @@ class ClientBase:
 
         self._monitor_stop = None
         self._monitor_state = MonitorState()
+
+        self.progress_interval = 5.0  # seconds
 
     def __getstate__(self):
         """Return pickled state of the object."""
@@ -436,17 +439,35 @@ class ClientBase:
                         log.warning(f"Failed to create directory {bin_dir}: {ex}")
 
                 platform_str = self._platform()
-                log.debug(
-                    f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}, reason: {reason}"
-                )
+                log.info(f"Downloading binary for platform '{platform_str}' from {dt_url}, reason: {reason}")
+                log.debug(f"Binary download path: {bin_path}")
                 url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
                 try:
+                    start = time.time()
+                    last_progress = start
+                    written = 0
                     with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
                         resp.read()
                         if resp.status_code != 200:
                             raise BinaryError(f"Failed to download binary: {resp.text}")
+
                         for chunk in resp.iter_bytes():
-                            f.write(chunk)
+                            now = time.time()
+                            written += f.write(chunk)
+
+                            since_last_progress = now - last_progress
+                            if since_last_progress > self.progress_interval:
+                                msg = f"Downloading binary, {hf.format_timespan(now - start)} so far ..."
+                                content_length = resp.headers.get("Content-Length", None)
+                                if content_length is not None:
+                                    content_length = int(content_length)
+                                    prog = float(written) / float(content_length) * 100.0
+                                    msg += f" {prog:.1f}%, {hf.format_size(written)}/{hf.format_size(content_length)}"
+                                else:
+                                    msg += f" {hf.format_size(written)} downloaded"
+                                log.info(msg)
+                                last_progress = now
+
                     self._bin_config.path = bin_path
                 except Exception as ex:
                     if self._bin_config.debug:
