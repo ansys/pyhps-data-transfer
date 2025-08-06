@@ -439,7 +439,9 @@ class ClientBase:
                         log.warning(f"Failed to create directory {bin_dir}: {ex}")
 
                 platform_str = self._platform()
-                log.info(f"Downloading binary for platform '{platform_str}' from {dt_url}, reason: {reason}")
+                log.info(
+                    f"Downloading data transfer worker for platform '{platform_str}' from {dt_url}, reason: {reason}"
+                )
                 log.debug(f"Binary download path: {bin_path}")
                 url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
                 try:
