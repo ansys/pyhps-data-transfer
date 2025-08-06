@@ -40,12 +40,13 @@ import time
 import typer
 from typing_extensions import Annotated
 
-from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
 
 
 def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    verbosity: Annotated[int, typer.Option(help="Increase verbosity")] = 1,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
     password: Annotated[
@@ -55,7 +56,7 @@ def main(
 
     auth_url = f"{url}/auth/realms/rep"
     log = logging.getLogger()
-    logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG)
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
     user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
     user_token = user_token.get("access_token", None)
@@ -63,26 +64,35 @@ def main(
 
     client = Client()
     client.binary_config.update(
-        verbosity=3,
-        debug=debug,
         insecure=True,
         token=user_token,
+        verbosity=verbosity,
     )
+    if debug:
+        client.binary_config.update(verbosity=3, debug=True)
 
-    client.binary_config.debug = True
     client.start()
     api = DataTransferApi(client)
     s = api.status(wait=True)
-    log.info("Status: %s" % s)
 
+    log.info("--- Worker info ---")
+    log.info(f"Ready: {s.ready}")
+    log.info(f"Build info:")
+    for k, v in s.build_info.__dict__.items():
+        log.info(f"  {k}: {v}")
+    log.info(f"Features:")
+    for k, v in s.features.__dict__.items():
+        log.info(f"  {k}: {v}")
     log.info("Available storage:")
     for d in api.storages():
-        log.info(f"- {json.dumps(d, indent=4)}")
+        log.info(f"  name={d['name']} type={d['type']} priority={d['priority']}")
 
-    for i in range(10):
+    log.info("--- Idling for a while ---")
+    for i in range(5):
         log.info("Idling for a while...")
         time.sleep(2)
 
+    log.info("--- Stopping ---")
     client.stop()
 
 

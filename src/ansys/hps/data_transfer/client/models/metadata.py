@@ -26,12 +26,12 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field, RootModel
+from pydantic import BaseModel, RootModel
 
 
 class DataAssignment(BaseModel):
     compressed_size: int | None = None
-    compression: str | None = Field(None, description="Make sure to add new fields to MergeBase method down below")
+    compression: str | None = None
     custom: dict[str, Any] | None = None
     uncompressed_size: int | None = None
 
