@@ -1,38 +1,43 @@
 name: 💡 New feature
-description: features should define complete functionality that is testable and capable of adding value for the customer when shipped
+description: Enhancements to the code
 title: "Add ..."
-labels: ["feature"]
+labels: ["enhancement"]
 assignees: [""]
 
 body:
 
+  - type: markdown
+    attributes:
+      value: '# 📝 **New Feature**'
+
   - type: textarea
     id: feature-description
     attributes:
-      label: '📝 Description of the feature'
-      placeholder: Describe the feature and why it is useful for the project
+      label: Description of the feature
+      placeholder: Describe what feature you devised and why it is useful for the project
     validations:
       required: true
 
-  - type: textarea
-    id: acceptanceCriteria
+  - type: markdown
     attributes:
-      label: Acceptance Criteria
-      description: List the criteria that must be met for the story to be considered complete.
-      placeholder: "- Given [context], when [action], then [outcome]"
-    validations:
-      required: true
+      value: '# 💡 **Implementation**'
 
   - type: textarea
-    id: business-value
+    id: implementation-description
     attributes:
-      label: '💵 Business Value'
+      label: Steps for implementing the feature (optional)
+      placeholder: Describe how this new feature can be implemented
     validations:
       required: false
+
+  - type: markdown
+    attributes:
+      value: '# 🔗 **References**'
 
   - type: textarea
     id: references
     attributes:
-      label: '🔗 Useful links and references'
+      label: Useful links and references
+      placeholder: A list of links and references to help when implementing the feature
     validations:
       required: false
