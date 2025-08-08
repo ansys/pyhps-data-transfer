@@ -13,6 +13,7 @@ on:
           type: choice
           options:
             - 'v1.2.0'
+            - 'v1.3.45'
             - 'latest-dev'
 
   push:
@@ -60,7 +61,7 @@ jobs:
     with:
       runner: "public-ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
-      hps-version: ${{ inputs.hps-version || 'latest-dev' }}
+      hps-version: ${{ inputs.hps-version || 'v1.3.45' }}
     secrets: inherit # pass all secrets
 
   docs:
