@@ -34,6 +34,7 @@ from . import metadata as metadata_1, ops, permissions as permissions_1
 class BinaryInfo(BaseModel):
     name: str | None = None
     platform: str | None = None
+    size: int | None = None
     type: str | None = None
 
 
