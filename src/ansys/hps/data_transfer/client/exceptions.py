@@ -142,6 +142,7 @@ def raise_for_status(response: httpx.Response):
 
     if getattr(response, "is_error", False):
         response.read()
+
     _raise_for_status(response)
 
 
