@@ -181,9 +181,9 @@ class ClientBase:
 
     >>> from ansys.hps.data_transfer.client import Client
     >>> def refresh_token():
-            # Function to refresh the token            
+            # Function to refresh the token
             token = authenticate(username=username, self.password, verify=False, url=auth_url)
-            token = token.get("access_token", None)    
+            token = token.get("access_token", None)
             return token
     >>> client = Client(clean=True)
     >>> client.refresh_token_callback = refresh_token
@@ -510,26 +510,22 @@ class ClientBase:
 
     def _auto_refresh_token(self, response: httpx.Response):
         """Provide a callback for refreshing an expired token.
+
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
-        """        
+        """
         log.debug(f"response status: {response.status_code} for {response.request.method} {response.url}")
-        if (
-            response.status_code == 401
-            and self._unauthorized_num_retry < self._unauthorized_max_retry
-        ):
+        if response.status_code == 401 and self._unauthorized_num_retry < self._unauthorized_max_retry:
             log.info("401 authorization error: Trying to get a new access token.")
             if self.refresh_token_callback is None:
                 log.info("No refresh callback provided, skipping token refresh.")
                 return
             self._unauthorized_num_retry += 1
-            token= self.refresh_token_callback()
-            #log.info(f"401 authorization error: new access token: {token}")
+            token = self.refresh_token_callback()
+            # log.info(f"401 authorization error: new access token: {token}")
             self._bin_config.token = token
             # Update the Authorization header
-            response.request.headers.update(
-                {"Authorization": f"Bearer {token}"}
-            )
+            response.request.headers.update({"Authorization": f"Bearer {token}"})
             log.debug("Retrying request with updated access token.")
             retried_response = self._session.send(response.request)
             log.debug(f"Retried response status: {retried_response.status_code}")
@@ -537,7 +533,7 @@ class ClientBase:
             response._content = retried_response.content
             response.status_code = retried_response.status_code
             return
-               
+
         self._unauthorized_num_retry = 0
         return
 

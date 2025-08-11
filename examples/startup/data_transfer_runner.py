@@ -60,12 +60,12 @@ def main(
         user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
         user_token = user_token.get("access_token", None)
         return user_token
-    
+
     # Call refresh_token() once to get the access token
     user_token = refresh_token()
     assert user_token is not None
 
-    decoded_token = jwt.decode(user_token, options={"verify_signature": False})    
+    decoded_token = jwt.decode(user_token, options={"verify_signature": False})
     exp_time = decoded_token.get("exp", None)
     if exp_time:
         log.info(f"Token expiration time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(exp_time))}")
