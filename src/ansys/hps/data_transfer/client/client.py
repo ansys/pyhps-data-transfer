@@ -545,9 +545,7 @@ class ClientBase:
         if not self._features:
             return
 
-        if self.has("auth_types.api_key"):            
-            if self._bin_config.auth_type == "oidc":
-                return
+        if self.has("auth_types.api_key"):
             self._bin_config.auth_type = "api-key"
             self._api_key = "".join(
                 random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)

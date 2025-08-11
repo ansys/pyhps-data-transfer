@@ -76,7 +76,6 @@ def main(
         debug=debug,
         insecure=True,
         token=user_token,
-        auth_type="oidc", # Use OIDC for authentication
     )
 
     client.binary_config.debug = True
