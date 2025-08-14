@@ -522,7 +522,6 @@ class ClientBase:
                 return
             self._unauthorized_num_retry += 1
             token = self.refresh_token_callback()
-            # log.info(f"401 authorization error: new access token: {token}")
             self._bin_config.token = token
             # Update the Authorization header
             response.request.headers.update({"Authorization": f"Bearer {token}"})
