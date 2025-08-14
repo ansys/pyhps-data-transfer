@@ -251,6 +251,16 @@ class ClientBase:
         self._monitor_stop = None
 
     @property
+    def unauthorized_max_retry(self):
+        """Getter for unauthorized_max_retry."""
+        return self._unauthorized_max_retry
+    
+    @unauthorized_max_retry.setter
+    def unauthorized_max_retry(self, value):
+        """Setter for unauthorized_max_retry."""        
+        self._unauthorized_max_retry = value
+
+    @property
     def binary_config(self):
         """Binary configuration."""
         return self._bin_config
@@ -487,7 +497,7 @@ class ClientBase:
         else:
             session = httpx.AsyncClient(
                 transport=httpx.AsyncHTTPTransport(retries=self._retries, verify=verify),
-                event_hooks={"response": [async_raise_for_status]},
+                event_hooks={"response": [self._async_auto_refresh_token, async_raise_for_status]},
                 **args,
             )
         session.base_url = url
@@ -527,6 +537,34 @@ class ClientBase:
             response.request.headers.update({"Authorization": f"Bearer {token}"})
             log.debug("Retrying request with updated access token.")
             retried_response = self._session.send(response.request)
+            log.debug(f"Retried response status: {retried_response.status_code}")
+            # Modify the response body
+            response._content = retried_response.content
+            response.status_code = retried_response.status_code
+            return
+
+        self._unauthorized_num_retry = 0
+        return
+    
+    async def _async_auto_refresh_token(self, response: httpx.Response):
+        """Provide a callback for refreshing an expired token.
+
+        Automatically refreshes the access token and
+        re-sends the request in case of an unauthorized error.
+        """
+        log.debug(f"response status: {response.status_code} for {response.request.method} {response.url}")
+        if response.status_code == 401 and self._unauthorized_num_retry < self._unauthorized_max_retry:
+            log.info("401 authorization error: Trying to get a new access token.")
+            if self.refresh_token_callback is None:
+                log.info("No refresh callback provided, skipping token refresh.")
+                return
+            self._unauthorized_num_retry += 1
+            token = await self.refresh_token_callback()
+            self._bin_config.token = token
+            # Update the Authorization header
+            response.request.headers.update({"Authorization": f"Bearer {token}"})
+            log.debug("Retrying request with updated access token.")
+            retried_response = await self._session.send(response.request)
             log.debug(f"Retried response status: {retried_response.status_code}")
             # Modify the response body
             response._content = retried_response.content
