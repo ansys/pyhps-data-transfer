@@ -254,10 +254,10 @@ class ClientBase:
     def unauthorized_max_retry(self):
         """Getter for unauthorized_max_retry."""
         return self._unauthorized_max_retry
-    
+
     @unauthorized_max_retry.setter
     def unauthorized_max_retry(self, value):
-        """Setter for unauthorized_max_retry."""        
+        """Setter for unauthorized_max_retry."""
         self._unauthorized_max_retry = value
 
     @property
@@ -545,7 +545,7 @@ class ClientBase:
 
         self._unauthorized_num_retry = 0
         return
-    
+
     async def _async_auto_refresh_token(self, response: httpx.Response):
         """Provide a callback for refreshing an expired token.
 
