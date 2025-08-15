@@ -24,7 +24,7 @@
 
 import asyncio
 import atexit
-from collections.abc import Callable
+from collections.abc import Callable, Awaitable
 import logging
 import os
 import platform
@@ -170,6 +170,8 @@ class ClientBase:
         Whether to clean the path to the download directory if the binary is from the development branch.
     check_in_use: bool, default: True
         Whether to check if the binary is in use and skip downloading a new binary.
+    refresh_token_callback: Callable[[], str], default: None
+        Callback function to refresh the access token. This function should return a new access token.
     timeout: float, default: 60.0
         Timeout for the session. This is the maximum time to wait for a response from the server.
     retries: int, default: 1
@@ -568,7 +570,7 @@ class ClientBase:
             log.debug(f"Retried response status: {retried_response.status_code}")
             # Modify the response body
             response._content = retried_response.content
-            response.status_code = retried_response.status_code
+            response.status_code = retried_response.status_code            
             return
 
         self._unauthorized_num_retry = 0
@@ -598,9 +600,13 @@ class AsyncClient(ClientBase):
 
         is_async = True
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self,
+                 *args,
+                 refresh_token_callback: Callable[[], Awaitable[str]] = None,
+                 **kwargs):
         """Initializes the AsyncClient class object."""
         super().__init__(*args, **kwargs)
+        self.refresh_token_callback = refresh_token_callback  # Override the callback
         self._bin_config._on_token_update = self._update_token
 
     async def start(self):
@@ -616,6 +622,9 @@ class AsyncClient(ClientBase):
                 await asyncio.sleep(0.1)
             except Exception as ex:
                 log.warning(f"Failed to send shutdown request: {ex}")
+            finally:
+                await self._session.aclose()  # Ensure the session is closed
+                self._session = None
         super().stop(wait=wait)
         # asyncio_atexit.register(self.stop)
 
@@ -636,7 +645,7 @@ class AsyncClient(ClientBase):
             finally:
                 await asyncio.sleep(backoff.full_jitter(sleep))
 
-    def _update_token(self):
+    async def _update_token(self):
         loop = asyncio.get_running_loop()
         if self._session is None:
             return
@@ -644,7 +653,7 @@ class AsyncClient(ClientBase):
         try:
             self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
             # Make sure the token gets intercepted by the worker
-            loop.run_until_complete(self.session.get("/"))
+            await loop.run_until_complete(self.session.get("/"))
         except Exception as e:
             log.debug(f"Error updating token: {e}")
 

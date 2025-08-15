@@ -37,15 +37,16 @@ import json
 import logging
 import time
 import jwt
+import asyncio
 
 import typer
 from typing_extensions import Annotated
 
-from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
 
 
-def main(
+async def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
@@ -56,21 +57,22 @@ def main(
     log = logging.getLogger()
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG)
 
-    def refresh_token():
+    async def refresh_token():
         user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
         user_token = user_token.get("access_token", None)
         return user_token
 
     # Call refresh_token() once to get the access token
-    user_token = refresh_token()
+    user_token = await refresh_token()
     assert user_token is not None
 
     decoded_token = jwt.decode(user_token, options={"verify_signature": False})
     exp_time = decoded_token.get("exp", None)
     if exp_time:
         log.info(f"Token expiration time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(exp_time))}")
-
-    client = Client(refresh_token_callback=refresh_token)
+    
+    client = AsyncClient(clean=True, refresh_token_callback=refresh_token)
+    
     client.binary_config.update(
         verbosity=3,
         debug=debug,
@@ -79,19 +81,20 @@ def main(
     )
 
     client.binary_config.debug = True
-    client.start()
-    api = DataTransferApi(client)
-    s = api.status(wait=True)
+    await client.start()
+    api = AsyncDataTransferApi(client)
+    s = await api.status(wait=True)
     log.info("Status: %s" % s)
 
     log.info("Available storage:")
     for _ in range(5):
-        for d in api.storages():
+        storages = await api.storages()
+        for d in storages:
             log.info(f"- {json.dumps(d, indent=4)}")
         log.info("Idling for a while...")
         time.sleep(10)
 
-    client.stop()
+    await client.stop()
 
 if __name__ == "__main__":
-    typer.run(main)
+    asyncio.run(main())
