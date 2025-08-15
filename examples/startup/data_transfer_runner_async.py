@@ -70,9 +70,9 @@ async def main(
     exp_time = decoded_token.get("exp", None)
     if exp_time:
         log.info(f"Token expiration time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(exp_time))}")
-    
+
     client = AsyncClient(clean=True, refresh_token_callback=refresh_token)
-    
+
     client.binary_config.update(
         verbosity=3,
         debug=debug,

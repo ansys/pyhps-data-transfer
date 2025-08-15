@@ -24,7 +24,7 @@
 
 import asyncio
 import atexit
-from collections.abc import Callable, Awaitable
+from collections.abc import Awaitable, Callable
 import logging
 import os
 import platform
@@ -570,7 +570,7 @@ class ClientBase:
             log.debug(f"Retried response status: {retried_response.status_code}")
             # Modify the response body
             response._content = retried_response.content
-            response.status_code = retried_response.status_code            
+            response.status_code = retried_response.status_code
             return
 
         self._unauthorized_num_retry = 0
@@ -600,10 +600,7 @@ class AsyncClient(ClientBase):
 
         is_async = True
 
-    def __init__(self,
-                 *args,
-                 refresh_token_callback: Callable[[], Awaitable[str]] = None,
-                 **kwargs):
+    def __init__(self, *args, refresh_token_callback: Callable[[], Awaitable[str]] = None, **kwargs):
         """Initializes the AsyncClient class object."""
         super().__init__(*args, **kwargs)
         self.refresh_token_callback = refresh_token_callback  # Override the callback
