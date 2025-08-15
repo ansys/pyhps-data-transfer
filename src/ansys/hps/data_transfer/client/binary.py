@@ -169,7 +169,6 @@ class BinaryConfig:
     def token(self):
         """Token."""
         return self._token
-        return self._token
 
     @token.setter
     def token(self, value):

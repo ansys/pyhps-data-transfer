@@ -235,9 +235,14 @@ def cleanup_test_storages(binary_config, binary_dir):
 
 
 @pytest.fixture
-def user_client(user_binary_config, binary_dir):
+def user_client(user_binary_config, binary_dir, user_access_token):
     """Start and return the user client."""
-    c = Client(bin_config=user_binary_config, download_dir=binary_dir, clean_dev=False)
+    c = Client(
+        bin_config=user_binary_config,
+        download_dir=binary_dir,
+        clean_dev=False,
+        refresh_token_callback=user_access_token,
+    )
     c.start()
     yield c
     c.stop()
