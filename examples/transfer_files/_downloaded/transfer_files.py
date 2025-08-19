@@ -53,7 +53,7 @@ from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_leve
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 ########################################################################
 # Define a method to transfer files using the data transfer service
