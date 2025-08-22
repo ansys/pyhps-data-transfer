@@ -17,12 +17,12 @@ jobs:
     name: Model generation
     runs-on: public-ubuntu-latest-8-cores
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: ansys-internal/rep-data-transfer
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
