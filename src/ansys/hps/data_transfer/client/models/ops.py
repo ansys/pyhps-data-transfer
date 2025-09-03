@@ -40,10 +40,12 @@ class OperationState(Enum):
 
 class Operation(BaseModel):
     children: list[str] | None = None
+    children_detail: list[Operation] | None = Field(None, description="Used when expanding groups")
     description: str | None = None
     ended_at: str | None = None
     error: str | None = None
     id: str | None = None
+    info: dict[str, Any] | None = Field(None, description="Additional information about the operation")
     messages: list[str] | None = None
     progress: float | None = None
     progress_current: int | None = None
@@ -55,3 +57,6 @@ class Operation(BaseModel):
     state: OperationState | None = None
     succeeded_on: list[str] | None = Field(None, description="Remotes that the operation succeeded on")
     user_id: str | None = None
+
+
+Operation.model_rebuild()
