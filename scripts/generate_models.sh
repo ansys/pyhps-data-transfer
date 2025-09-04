@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 models_dir=src/ansys/hps/data_transfer/client/models
 
 curl --insecure -L https://localhost:8443/hps/dt/swagger/doc.json -o openapi2.json

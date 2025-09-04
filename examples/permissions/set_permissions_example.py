@@ -44,7 +44,7 @@ from keycloak import KeycloakAdmin
 import typer
 from typing_extensions import Annotated
 
-from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 from ansys.hps.data_transfer.client.models.permissions import (
@@ -235,15 +235,14 @@ def permissions(api: DataTransferApi, url: str):
 # ========================
 def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    verbosity: Annotated[int, typer.Option(help="Increase verbosity")] = 1,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
     password: Annotated[
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
     ] = "repadmin",
 ):
-    logging.basicConfig(
-        format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG if debug else logging.INFO
-    )
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"
@@ -256,8 +255,8 @@ def main(
     client = Client(clean=True)
 
     client.binary_config.update(
-        verbosity=3,
-        debug=False,
+        verbosity=verbosity,
+        debug=debug,
         insecure=True,
         token=token,
         data_transfer_url=dt_url,

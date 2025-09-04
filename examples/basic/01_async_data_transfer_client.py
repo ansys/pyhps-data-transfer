@@ -44,23 +44,22 @@ import os
 import typer
 from typing_extensions import Annotated
 
-from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi
+from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
 
-log = logging.getLogger(__name__)
-logger = logging.getLogger()
-logging.basicConfig(format="%(asctime)s %(levelname)8s > %(message)s", level=logging.DEBUG)
-
-
 async def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    verbosity: Annotated[int, typer.Option(help="Increase verbosity")] = 1,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
     password: Annotated[
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
     ] = "repadmin",
 ):
+
+    log = logging.getLogger()
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"
@@ -75,7 +74,7 @@ async def main(
     client = AsyncClient(clean=True)
 
     client.binary_config.update(
-        verbosity=3,
+        verbosity=verbosity,
         debug=debug,
         insecure=True,
         token=token,
@@ -113,7 +112,6 @@ async def main(
 
     op = await api.copy([SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)])
     op = await api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
     files = glob.glob(os.path.join(os.path.dirname(__file__), "*.txt"))
     srcs = [StoragePath(path=file, remote="local") for file in files]
@@ -121,12 +119,10 @@ async def main(
 
     op = await api.copy([SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)])
     op = await api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
     log.info("Listing files ...")
     op = await api.list([StoragePath(path=base_dir)])
     op = await api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
     log.info(f"Files in {base_dir}: {op[0].result}")
 
     log.info("Getting metadata ...")
@@ -138,7 +134,6 @@ async def main(
     log.info("Removing files ...")
     op = await api.rmdir([StoragePath(path=base_dir)])
     op = await api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
     await client.stop()
 

@@ -43,9 +43,10 @@ from typing import Optional
 import typer
 from typing_extensions import Annotated
 
-from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+
 
 log = logging.getLogger(__name__)
 
@@ -55,11 +56,6 @@ log = logging.getLogger(__name__)
 def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional[str] = None):
     if not remote_path:
         remote_path = Path(local_path).parent.name
-
-    log.info("Query storages ...")
-    storages = api.storages()
-    storage_names = [f"{storage['name']}({storage['type']})" for storage in storages]
-    log.info(f"Available storages: {storage_names}")
 
     log.info("Creating a directory ...")
     base_dir = "basic-example"
@@ -73,12 +69,10 @@ def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional
 
     op = api.copy([SrcDst(src=src, dst=dst) for src, dst in zip(srcs, dsts)])
     op = api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
     log.info("Listing files ...")
     op = api.list([StoragePath(path=base_dir)])
     op = api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
     log.info(f"Files in {base_dir}: {op[0].result}")
 
     log.info("Getting metadata ...")
@@ -90,7 +84,6 @@ def file_operations(api: DataTransferApi, local_path: str, remote_path: Optional
     log.info("Removing files ...")
     op = api.rmdir([StoragePath(path=base_dir)])
     op = api.wait_for([op.id])
-    log.info(f"Operation {op[0].state}")
 
 ####################################
 # Define the main function
@@ -99,16 +92,15 @@ def main(
     local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards.")],
     remote_path: Annotated[str, typer.Option(help="Optional path to the remote directory to transfer files to.")] = None,
     debug: Annotated[bool, typer.Option(help="Enable debug logging.")] = False,
+    verbosity: Annotated[int, typer.Option(help="Increase verbosity")] = 1,
     url: Annotated[str, typer.Option(help="HPS URL to connect to.")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with.")] = "repadmin",
     password: Annotated[
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with.")
     ] = "repadmin",
 ):
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
-    logging.basicConfig(
-        format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG if debug else logging.INFO
-    )
 
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"
@@ -121,8 +113,9 @@ def main(
     client = Client(clean=True)
 
     client.binary_config.update(
-        verbosity=3,
-        debug=False,
+        verbosity=verbosity,
+        debug=debug,
+        log=debug,
         insecure=True,
         token=token,
         data_transfer_url=dt_url,
