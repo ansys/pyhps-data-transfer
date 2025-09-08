@@ -26,10 +26,9 @@ import datetime
 import logging
 import time
 
-from dateutil import parser
 import humanfriendly as hf
 
-from ..models.ops import Operation, OperationState
+from ..models import Operation, OperationState
 
 log = logging.getLogger(__name__)
 
@@ -71,14 +70,14 @@ class WaitHandler:
     def _log_op(self, lvl: int, op: Operation):
         """Format the operation description."""
         op_type = "operation" if len(op.children) == 0 else "operation group"
-
-        msg = f"Data transfer {op_type} '{op.description}'({op.id})"
-
         op_done = op.state in self.final
+
+        msg = f"Data transfer {op_type} '{op.description}'({op.id}) done? {op_done}"
+
         try:
-            start = parser.parse(op.started_at)
+            start = op.started_at
             if op_done:
-                end = parser.parse(op.ended_at)
+                end = op.ended_at
             else:
                 end = datetime.datetime.now(start.tzinfo)
             duration = (end - start).seconds

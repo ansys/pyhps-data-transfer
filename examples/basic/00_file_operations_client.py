@@ -45,7 +45,7 @@ from typing_extensions import Annotated
 
 from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
-from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models import SrcDst, StoragePath
 
 
 log = logging.getLogger(__name__)

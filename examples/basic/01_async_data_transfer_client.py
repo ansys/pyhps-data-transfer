@@ -46,7 +46,7 @@ from typing_extensions import Annotated
 
 from ansys.hps.data_transfer.client import AsyncClient, AsyncDataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
-from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models import SrcDst, StoragePath
 
 async def main(
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
