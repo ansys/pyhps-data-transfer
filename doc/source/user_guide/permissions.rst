@@ -81,7 +81,7 @@ Here is an example of how to use the ``set_permissions()`` method:
 
 .. code-block:: python
 
-    from ansys.hps.data_transfer.client.models.permissions import (
+    from ansys.hps.data_transfer.client.models import (
         Resource,
         ResourceType,
         RoleAssignment,

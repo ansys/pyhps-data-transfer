@@ -36,20 +36,22 @@ import backoff
 
 from ..client import Client
 from ..exceptions import TimeoutError
-from ..models.metadata import DataAssignment
-from ..models.msg import (
+from ..models import (
     CheckPermissionsResponse,
+    DataAssignment,
     GetPermissionsResponse,
-    OpIdResponse,
-    OpsResponse,
+    Operation,
+    OperationIdResponse,
+    OperationsResponse,
+    OperationState,
+    RoleAssignment,
+    RoleQuery,
     SetMetadataRequest,
     SrcDst,
-    Status,
+    StatusResponse,
     StorageConfigResponse,
     StoragePath,
 )
-from ..models.ops import Operation, OperationState
-from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
 from .handler import WaitHandler
 from .retry import retry
@@ -89,7 +91,7 @@ class DataTransferApi:
 
             resp = self.client.session.get(url)
             json = resp.json()
-            s = Status(**json)
+            s = StatusResponse(**json)
             if wait and not s.ready:
                 _sleep()
                 continue
@@ -184,7 +186,7 @@ class DataTransferApi:
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
         resp = self.client.session.post(url, json=payload)
         json = resp.json()
-        r = OpIdResponse(**json)
+        r = OperationIdResponse(**json)
         return r
 
     def _operations(self, ids: builtins.list[str], expand: bool = False):
@@ -194,7 +196,7 @@ class DataTransferApi:
             params["expand"] = "true"
         resp = self.client.session.get(url, params=params)
         json = resp.json()
-        return OpsResponse(**json).operations
+        return OperationsResponse(**json).operations
 
     @retry()
     def check_permissions(self, permissions: builtins.list[RoleAssignment]):
@@ -261,7 +263,7 @@ class DataTransferApi:
         payload = {"paths": paths}
         resp = self.client.session.post(url, json=payload)
         json = resp.json()
-        return OpIdResponse(**json)
+        return OperationIdResponse(**json)
 
     @retry()
     def set_metadata(self, asgs: dict[str | StoragePath, DataAssignment]):
@@ -277,11 +279,11 @@ class DataTransferApi:
         req = SetMetadataRequest(metadata=d)
         resp = self.client.session.post(url, json=req.model_dump(mode=self.dump_mode))
         json = resp.json()
-        return OpIdResponse(**json)
+        return OperationIdResponse(**json)
 
     def wait_for(
         self,
-        operation_ids: builtins.list[str | Operation | OpIdResponse],
+        operation_ids: builtins.list[str | Operation | OperationIdResponse],
         timeout: float | None = None,
         interval: float = 0.1,
         cap: float = 2.0,
@@ -292,7 +294,7 @@ class DataTransferApi:
 
         Parameters
         ----------
-        operation_ids: List[str | Operation | OpIdResponse]
+        operation_ids: List[str | Operation | OperationIdResponse]
             List of operation ids.
         timeout: float | None
             Timeout in seconds. Default is None.
@@ -310,7 +312,7 @@ class DataTransferApi:
 
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
-        operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]
+        operation_ids = [op.id if isinstance(op, Operation | OperationIdResponse) else op for op in operation_ids]
         start = time.time()
         attempt = 0
         while True:

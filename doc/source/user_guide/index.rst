@@ -100,7 +100,7 @@ Copy files between storage locations:
 
 .. code-block:: python
 
-    from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+    from ansys.hps.data_transfer.client.models import SrcDst, StoragePath
 
     src = [StoragePath(path=local_path, remote="local")]
     dst = [StoragePath(path=remote_path)]

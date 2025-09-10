@@ -39,20 +39,22 @@ import humanfriendly as hf
 
 from ..client import AsyncClient
 from ..exceptions import TimeoutError
-from ..models.metadata import DataAssignment
-from ..models.msg import (
+from ..models import (
     CheckPermissionsResponse,
+    DataAssignment,
     GetPermissionsResponse,
-    OpIdResponse,
-    OpsResponse,
+    Operation,
+    OperationIdResponse,
+    OperationsResponse,
+    OperationState,
+    RoleAssignment,
+    RoleQuery,
     SetMetadataRequest,
     SrcDst,
-    Status,
+    StatusResponse,
     StorageConfigResponse,
     StoragePath,
 )
-from ..models.ops import Operation, OperationState
-from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
 from .handler import AsyncWaitHandler
 from .retry import retry
@@ -87,7 +89,7 @@ class AsyncDataTransferApi:
 
             resp = await self.client.session.get(url)
             json = resp.json()
-            s = Status(**json)
+            s = StatusResponse(**json)
             if wait and not s.ready:
                 await _sleep()
                 continue
@@ -141,7 +143,7 @@ class AsyncDataTransferApi:
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
-        return OpIdResponse(**json)
+        return OperationIdResponse(**json)
 
     async def _operations(self, ids: builtins.list[str], expand: bool = False):
         url = "/operations"
@@ -150,7 +152,7 @@ class AsyncDataTransferApi:
             params["expand"] = "true"
         resp = await self.client.session.get(url, params=params)
         json = resp.json()
-        return OpsResponse(**json).operations
+        return OperationsResponse(**json).operations
 
     @retry()
     async def check_permissions(self, permissions: builtins.list[RoleAssignment]):
@@ -192,7 +194,7 @@ class AsyncDataTransferApi:
         payload = {"paths": paths}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
-        return OpIdResponse(**json)
+        return OperationIdResponse(**json)
 
     @retry()
     async def set_metadata(self, asgs: dict[str | StoragePath, DataAssignment]):
@@ -202,7 +204,7 @@ class AsyncDataTransferApi:
         req = SetMetadataRequest(metadata=d)
         resp = await self.client.session.post(url, json=req.model_dump(mode=self.dump_mode))
         json = resp.json()
-        return OpIdResponse(**json)
+        return OperationIdResponse(**json)
 
     async def wait_for(
         self,
@@ -235,7 +237,7 @@ class AsyncDataTransferApi:
 
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
-        operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]
+        operation_ids = [op.id if isinstance(op, Operation | OperationIdResponse) else op for op in operation_ids]
         start = time.time()
         attempt = 0
         op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")
