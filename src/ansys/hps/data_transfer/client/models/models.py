@@ -58,16 +58,16 @@ class BuildInfo(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    architecture: str
-    branch: str
-    go_version: str
-    mode: str
-    operating_system: str
-    revision: str
-    short_revision: str
-    timestamp: str
-    version: str
-    version_hash: str
+    architecture: str | None = None
+    branch: str | None = None
+    go_version: str | None = None
+    mode: str | None = None
+    operating_system: str | None = None
+    revision: str | None = None
+    short_revision: str | None = None
+    timestamp: str | None = None
+    version: str | None = None
+    version_hash: str | None = None
 
 
 class CheckPermissionsResponse(BaseModel):
@@ -190,12 +190,12 @@ class Features(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    auth_types: list[str] | None
-    compression_plugins: list[str] | None
-    metadata_plugins: list[str] | None
-    operation_plugins: list[str] | None
-    permissions_plugins: list[str] | None
-    storage_plugins: list[str] | None
+    auth_types: list[str] | None = None
+    compression_plugins: list[str] | None = None
+    metadata_plugins: list[str] | None = None
+    operation_plugins: list[str] | None = None
+    permissions_plugins: list[str] | None = None
+    storage_plugins: list[str] | None = None
 
 
 class FileDownloadTokenResponseBody(BaseModel):
@@ -305,10 +305,10 @@ class StatusResponse(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    build_info: BuildInfo = Field(..., description="Information about the build")
-    features: Features = Field(..., description="List of features and plugins available in the server")
-    ready: bool = Field(..., description="Indicates if the server is ready to accept requests")
-    time: str = Field(..., description="Current server time")
+    build_info: BuildInfo | None = Field(None, description="Information about the build")
+    features: Features | None = Field(None, description="List of features and plugins available in the server")
+    ready: bool | None = Field(None, description="Indicates if the server is ready to accept requests")
+    time: str | None = Field(None, description="Current server time")
 
 
 class StorageConfigResponse(BaseModel):
@@ -377,10 +377,10 @@ class WorkerConfig(BaseModel):
     model_config = ConfigDict(
         extra="forbid",
     )
-    auth: dict[str, Any]
-    compression: dict[str, Any]
-    metadata: dict[str, Any]
-    permissions: dict[str, Any]
+    auth: dict[str, Any] | None = None
+    compression: dict[str, Any] | None = None
+    metadata: dict[str, Any] | None = None
+    permissions: dict[str, Any] | None = None
     storage: list[Any] | None = None
     user_id: str | None = None
 
