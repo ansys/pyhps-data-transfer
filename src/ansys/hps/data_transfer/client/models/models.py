@@ -33,20 +33,20 @@ from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field, conint
 class AuthRedirectRequestBody(BaseModel):
     pass
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
 
 
 class AuthTokenResponseBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     token: str
 
 
 class BinaryInfo(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     name: str
     platform: str
@@ -56,7 +56,7 @@ class BinaryInfo(BaseModel):
 
 class BuildInfo(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     architecture: str | None = None
     branch: str | None = None
@@ -72,14 +72,14 @@ class BuildInfo(BaseModel):
 
 class CheckPermissionsResponse(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     allowed: bool = Field(..., description="Indicates if the check was successful")
 
 
 class CompatBackend(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     name: str
     obj_type: str
@@ -91,7 +91,7 @@ class CompatBackend(BaseModel):
 
 class CompatBuildInfo(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     branch: str
     revision: str
@@ -102,21 +102,21 @@ class CompatBuildInfo(BaseModel):
 
 class CompatCopyRequestBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     destination: str
 
 
 class CompatCopyResponseBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     checksum: str
 
 
 class CompatHealthResponseBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     ansft: bool
     build: CompatBuildInfo
@@ -124,21 +124,21 @@ class CompatHealthResponseBody(BaseModel):
 
 class CompatStorageResponseBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     backends: list[CompatBackend] | None
 
 
 class CompatUploadResponseBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     checksum: str
 
 
 class DataAssignment(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     compressed_size: conint(ge=0) | None = None
     compression: str | None = None
@@ -148,39 +148,39 @@ class DataAssignment(BaseModel):
 
 class ErrorDetail(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     location: str | None = Field(
-        None,
+        default=None,
         description="Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id'",
     )
-    message: str | None = Field(None, description="Error message text")
-    value: Any | None = Field(None, description="The value at the given location")
+    message: str | None = Field(default=None, description="Error message text")
+    value: Any | None = Field(default=None, description="The value at the given location")
 
 
 class ErrorModel(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     detail: str | None = Field(
-        None,
+        default=None,
         description="A human-readable explanation specific to this occurrence of the problem.",
         examples=["Property foo is required but is missing."],
     )
-    errors: list[ErrorDetail] | None = Field(None, description="Optional list of individual error details")
+    errors: list[ErrorDetail] | None = Field(default=None, description="Optional list of individual error details")
     instance: AnyUrl | None = Field(
-        None,
+        default=None,
         description="A URI reference that identifies the specific occurrence of the problem.",
         examples=["https://example.com/error-log/abc123"],
     )
-    status: int | None = Field(None, description="HTTP status code", examples=[400])
+    status: int | None = Field(default=None, description="HTTP status code", examples=[400])
     title: str | None = Field(
-        None,
+        default=None,
         description="A short, human-readable summary of the problem type. This value should not change between occurrences of the error.",
         examples=["Bad Request"],
     )
     type: AnyUrl | None = Field(
-        "about:blank",
+        default="about:blank",
         description="A URI reference to human-readable documentation for the error.",
         examples=["https://example.com/errors/example"],
     )
@@ -188,7 +188,7 @@ class ErrorModel(BaseModel):
 
 class Features(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     auth_types: list[str] | None = None
     compression_plugins: list[str] | None = None
@@ -200,14 +200,14 @@ class Features(BaseModel):
 
 class FileDownloadTokenResponseBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     token: str
 
 
 class ListBinariesResponseBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     available: list[BinaryInfo] | None
 
@@ -222,7 +222,7 @@ class State(Enum):
 
 class Operation(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     children: list[str] | None
     children_detail: list[Operation] | None = None
@@ -246,7 +246,7 @@ class Operation(BaseModel):
 
 class OperationIdResponse(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     id: str = Field(..., description="ID of the operation", examples=["2diK2kCkpgeHAQSNthIZ1JYyPte"])
     location: str = Field(
@@ -258,21 +258,21 @@ class OperationIdResponse(BaseModel):
 
 class OperationsRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     ids: list[str] | None = Field(..., description="List of operation IDs to retrieve")
 
 
 class OperationsResponse(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     operations: list[Operation] | None
 
 
 class PlainSrcDst(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     dst: str
     src: str
@@ -280,7 +280,7 @@ class PlainSrcDst(BaseModel):
 
 class RemoveMetadataRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     paths: list[str] | None = Field(..., description="Paths to remove metadata for")
     recursive: bool = Field(..., description="Whether to remove metadata recursively")
@@ -288,7 +288,7 @@ class RemoveMetadataRequest(BaseModel):
 
 class Resource(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     path: str = Field(..., examples=["my/path/to/data/file.txt"])
     type: str = Field(..., examples=["document"])
@@ -296,31 +296,31 @@ class Resource(BaseModel):
 
 class SetMetadataRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     metadata: dict[str, DataAssignment] = Field(..., description="Per-path metadata to set")
 
 
 class StatusResponse(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
-    build_info: BuildInfo | None = Field(None, description="Information about the build")
-    features: Features | None = Field(None, description="List of features and plugins available in the server")
-    ready: bool | None = Field(None, description="Indicates if the server is ready to accept requests")
-    time: str | None = Field(None, description="Current server time")
+    build_info: BuildInfo | None = Field(default=None, description="Information about the build")
+    features: Features | None = Field(default=None, description="List of features and plugins available in the server")
+    ready: bool | None = Field(default=None, description="Indicates if the server is ready to accept requests")
+    time: str | None = Field(default=None, description="Current server time")
 
 
 class StorageConfigResponse(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     storage: list[Any] | None = None
 
 
 class StoragePath(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     path: str
     remote: str = "any"
@@ -328,7 +328,7 @@ class StoragePath(BaseModel):
 
 class Subject(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     id: str = Field(..., examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
     type: str = Field(..., examples=["user"])
@@ -336,7 +336,7 @@ class Subject(BaseModel):
 
 class TokenRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     other: dict[str, Any] | None = None
     read: list[str] | None
@@ -347,7 +347,7 @@ class TokenRequest(BaseModel):
 
 class UserCredentials(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     name: str
     password: str
@@ -355,7 +355,7 @@ class UserCredentials(BaseModel):
 
 class UserInfo(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     account_id: str
     groups: list[str] | None
@@ -368,14 +368,14 @@ class UserInfo(BaseModel):
 
 class WhoamiResponse(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     user: UserInfo
 
 
 class WorkerConfig(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     auth: dict[str, Any] | None = None
     compression: dict[str, Any] | None = None
@@ -387,14 +387,14 @@ class WorkerConfig(BaseModel):
 
 class WorkerResetResponseBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     message: str
 
 
 class WorkerTokenResponseBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     expires_at: AwareDatetime
     token: str
@@ -402,14 +402,14 @@ class WorkerTokenResponseBody(BaseModel):
 
 class AuthTokenRequestBody(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     credentials: UserCredentials
 
 
 class CopyMetadataRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     recursive: bool = Field(..., description="Whether to copy metadata recursively")
     src_dst: list[PlainSrcDst] | None = Field(..., description="Sources and destinations for the copy")
@@ -417,15 +417,15 @@ class CopyMetadataRequest(BaseModel):
 
 class GetMetadataRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
-    operations: list[StoragePath] | None = Field(None, description="Deprecated as of 2024.09.10")
-    paths: list[str] | None = Field(None, description="Paths to retrieve metadata for")
+    operations: list[StoragePath] | None = Field(default=None, description="Deprecated as of 2024.09.10")
+    paths: list[str] | None = Field(default=None, description="Paths to retrieve metadata for")
 
 
 class MoveMetadataRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     recursive: bool = Field(..., description="Whether to move metadata recursively")
     src_dst: list[PlainSrcDst] | None = Field(..., description="Sources and destinations for the move")
@@ -433,14 +433,14 @@ class MoveMetadataRequest(BaseModel):
 
 class PathOperations(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     operations: list[StoragePath] | None
 
 
 class RoleAssignment(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     resource: Resource
     role: str = Field(..., examples=["reader"])
@@ -449,23 +449,23 @@ class RoleAssignment(BaseModel):
 
 class RoleQuery(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     resource: Resource
-    role: str | None = Field(None, examples=["reader"])
+    role: str | None = Field(default=None, examples=["reader"])
     subject: Subject
 
 
 class SetPermissionsRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     permissions: list[RoleAssignment] | None = Field(..., description="Permission definitions to set")
 
 
 class SrcDst(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     dst: StoragePath
     src: StoragePath
@@ -473,35 +473,35 @@ class SrcDst(BaseModel):
 
 class SrcDstOperations(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     operations: list[SrcDst] | None
 
 
 class CheckPermissionsRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     permissions: list[RoleAssignment] | None = Field(..., description="Permission to check for")
 
 
 class GetPermissionsRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     permissions: list[RoleQuery] | None = Field(..., description="Permission query to perform")
 
 
 class GetPermissionsResponse(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     permissions: list[RoleAssignment] | None = Field(..., description="Permissions retrieved from the system")
 
 
 class RemovePermissionsRequest(BaseModel):
     model_config = ConfigDict(
-        extra="forbid",
+        extra="allow",
     )
     permissions: list[RoleAssignment] | None = Field(..., description="Permission to remove")
 
