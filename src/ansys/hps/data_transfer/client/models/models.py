@@ -276,7 +276,7 @@ class StoragePath(BaseModel):
         extra="allow",
     )
     path: str = Field(..., examples=["my/path/to/data"])
-    remote: str = "any"
+    remote: str | None = "any"
 
 
 class TokenRequest(BaseModel):

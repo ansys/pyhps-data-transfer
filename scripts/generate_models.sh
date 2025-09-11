@@ -27,7 +27,7 @@ fi
 
 
 pushd $models_dir
-$sed_cmd -i 's/remote: str/remote: str = "any"/' models.py
+# $sed_cmd -i 's/remote: str/remote: str = "any"/' models.py
 popd
 
 for i in {1..5}
