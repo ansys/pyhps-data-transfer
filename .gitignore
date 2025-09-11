@@ -185,3 +185,5 @@ build_info.*
 doc/source/api/_autosummary
 test_run/
 **/dt_download/worker/**
+
+docker-compose-artifact
