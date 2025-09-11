@@ -129,11 +129,7 @@ class CompatStorageResponseBody(BaseModel):
     backends: list[CompatBackend] | None
 
 
-class CompatUploadResponseBody(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    checksum: str
+CompatUploadResponseBody = CompatCopyResponseBody
 
 
 class DataAssignment(BaseModel):
@@ -198,11 +194,7 @@ class Features(BaseModel):
     storage_plugins: list[str] | None = None
 
 
-class FileDownloadTokenResponseBody(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    token: str
+FileDownloadTokenResponseBody = AuthTokenResponseBody
 
 
 class ListBinariesResponseBody(BaseModel):
@@ -468,7 +460,7 @@ class RoleQuery(BaseModel):
         extra="allow",
     )
     resource: Resource
-    role: str | None = Field(default=None, examples=["reader"])
+    role: RoleType | None = Field(default=None, examples=["reader"])
     subject: Subject
 
 
