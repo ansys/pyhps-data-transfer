@@ -1,0 +1,137 @@
+
+
+
+
+
+
+The ``client`` package
+==========================
+
+.. py:module:: ansys.hps.data_transfer.client
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: client
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.api`
+            - PyHPS data transfer API subpackage.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models`
+            - 
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.utils`
+            - PyHPS data transfer utilities subpackage.
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.authenticate`
+            - Provides authentication for the user with a password or refresh token.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.binary`
+            - Provides utilities for managing binary files.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.client`
+            - Provides the Python client to the HPS data transfer APIs.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.exceptions`
+            - Provides the base class for all client and server HPS-related errors.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.token`
+            - Provides a utility function for handling authentication tokens.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> api</api/ansys/hps/data_transfer/client/api/index>
+    <span class="nf nf-md-package"></span> models</api/ansys/hps/data_transfer/client/models/index>
+    <span class="nf nf-md-package"></span> utils</api/ansys/hps/data_transfer/client/utils/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> authenticate</api/ansys/hps/data_transfer/client/authenticate/index>
+    <span class="nf nf-fa-file"></span> binary</api/ansys/hps/data_transfer/client/binary/index>
+    <span class="nf nf-fa-file"></span> client</api/ansys/hps/data_transfer/client/client/index>
+    <span class="nf nf-fa-file"></span> exceptions</api/ansys/hps/data_transfer/client/exceptions/index>
+    <span class="nf nf-fa-file"></span> token</api/ansys/hps/data_transfer/client/token/index>
+
+
+
+
+
+
+
+
+Description
+-----------
+
+
+PyHPS Data Transfer is a Python client for Ansys HPC Platform Services (HPS) data transfer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+

@@ -1,0 +1,177 @@
+
+
+
+
+
+
+The ``models`` package
+==========================
+
+.. py:module:: ansys.hps.data_transfer.client.models
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: models
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models.models`
+            - 
+
+
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~OperationState`
+            - Alias for models.State to maintain backward compatibility.
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> models</api/ansys/hps/data_transfer/client/models/models/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: OperationState(*args, **kwds)
+
+
+
+   
+   Alias for models.State to maintain backward compatibility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: OperationState
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~Unknown`
+            - 
+          * - :py:attr:`~Queued`
+            - 
+          * - :py:attr:`~Running`
+            - 
+          * - :py:attr:`~Succeeded`
+            - 
+          * - :py:attr:`~Failed`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models import OperationState
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: Unknown
+
+.. py:attribute:: Queued
+
+.. py:attribute:: Running
+
+.. py:attribute:: Succeeded
+
+.. py:attribute:: Failed
+
+
+
+
+
+
+
+
