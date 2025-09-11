@@ -39,11 +39,11 @@ dependencies = [
 
 [project.optional-dependencies]
 tests = [
-    "pytest==8.4.1",
-    "pytest-cov==6.2.1",
+    "pytest==8.4.2",
+    "pytest-cov==7.0.0",
     "pytest-timeout==2.4.0",
     "pytest-mock-resources[redis]==2.12.2",
-    "pytest-rerunfailures==15.1",
+    "pytest-rerunfailures==16.0.1",
     "pytest-asyncio==1.1.0",
     "python-keycloak==5.8.1",
     "python-slugify>=8.0.4",
