@@ -212,12 +212,12 @@ class ListBinariesResponseBody(BaseModel):
     available: list[BinaryInfo] | None
 
 
-class State(Enum):
-    unknown = "unknown"
-    queued = "queued"
-    running = "running"
-    succeeded = "succeeded"
-    failed = "failed"
+class OperationState(Enum):
+    Unknown = "unknown"
+    Queued = "queued"
+    Running = "running"
+    Succeeded = "succeeded"
+    Failed = "failed"
 
 
 class Operation(BaseModel):
@@ -239,7 +239,7 @@ class Operation(BaseModel):
     rate: str
     result: Any
     started_at: AwareDatetime
-    state: State
+    state: OperationState
     succeeded_on: list[str] | None
     user_id: str
 
@@ -286,12 +286,16 @@ class RemoveMetadataRequest(BaseModel):
     recursive: bool = Field(..., description="Whether to remove metadata recursively")
 
 
+class ResourceType(Enum):
+    Document = "document"
+
+
 class Resource(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
     path: str = Field(..., examples=["my/path/to/data/file.txt"])
-    type: str = Field(..., examples=["document"])
+    type: ResourceType = Field(..., examples=["document"])
 
 
 class SetMetadataRequest(BaseModel):
@@ -326,12 +330,18 @@ class StoragePath(BaseModel):
     remote: str = "any"
 
 
+class SubjectType(Enum):
+    User = "user"
+    Group = "group"
+    Any = "any"
+
+
 class Subject(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
     id: str = Field(..., examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
-    type: str = Field(..., examples=["user"])
+    type: SubjectType = Field(..., examples=["user"])
 
 
 class TokenRequest(BaseModel):

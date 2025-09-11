@@ -25,29 +25,3 @@
 import enum
 
 from .models import *  # noqa: F403, F401
-
-# from .models import State as OperationState
-
-
-# Create an alias for model.State to maintain backward compatibility
-# OperationState = enum.Enum("OperationState", {k.title(): v for k, v in models.State._member_map_.items()})
-class OperationState(enum.Enum):
-    """Alias for models.State to maintain backward compatibility."""
-
-    Unknown = models.State.unknown.value  # noqa: F405
-    Queued = models.State.queued.value  # noqa: F405
-    Running = models.State.running.value  # noqa: F405
-    Succeeded = models.State.succeeded.value  # noqa: F405
-    Failed = models.State.failed.value  # noqa: F405
-
-    def __repr__(self):
-        return f"<State.{self.name.lower()}: '{self.name.lower()}'>"
-
-    def __str__(self):
-        return f"State.{self.name.lower()}"
-
-    def __hash__(self):
-        return models.State.__hash__()  # noqa: F405
-
-    def __eq__(self, other):
-        return self.value == other.value
