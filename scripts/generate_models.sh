@@ -38,6 +38,11 @@ $sed_cmd -i 's/any =/Any =/' models.py
 
 $sed_cmd -i 's/document =/Document =/' models.py
 
+$sed_cmd -i 's/RoleAssignmentRole/RoleType/' models.py
+$sed_cmd -i 's/reader =/Reader =/' models.py
+$sed_cmd -i 's/writer =/Writer =/' models.py
+$sed_cmd -i 's/admin =/Admin =/' models.py
+
 popd
 
 for i in {1..5}

@@ -298,6 +298,12 @@ class Resource(BaseModel):
     type: ResourceType = Field(..., examples=["document"])
 
 
+class RoleType(Enum):
+    Reader = "reader"
+    Writer = "writer"
+    Admin = "admin"
+
+
 class SetMetadataRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -453,7 +459,7 @@ class RoleAssignment(BaseModel):
         extra="allow",
     )
     resource: Resource
-    role: str = Field(..., examples=["reader"])
+    role: RoleType = Field(..., examples=["reader"])
     subject: Subject
 
 
