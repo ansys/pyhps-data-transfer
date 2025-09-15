@@ -190,12 +190,12 @@ class Features(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    auth_types: list[str] | None = None
-    compression_plugins: list[str] | None = None
-    metadata_plugins: list[str] | None = None
-    operation_plugins: list[str] | None = None
-    permissions_plugins: list[str] | None = None
-    storage_plugins: list[str] | None = None
+    auth_types: list[str] | None
+    compression_plugins: list[str] | None
+    metadata_plugins: list[str] | None
+    operation_plugins: list[str] | None
+    permissions_plugins: list[str] | None
+    storage_plugins: list[str] | None
 
 
 class FileDownloadTokenResponseBody(BaseModel):
@@ -260,8 +260,8 @@ class StatusResponse(BaseModel):
     )
     build_info: BuildInfo | None = Field(default=None, description="Information about the build")
     features: Features | None = Field(default=None, description="List of features and plugins available in the server")
-    ready: bool | None = Field(default=None, description="Indicates if the server is ready to accept requests")
-    time: str | None = Field(default=None, description="Current server time")
+    ready: bool = Field(..., description="Indicates if the server is ready to accept requests")
+    time: str = Field(..., description="Current server time")
 
 
 class StorageConfigResponse(BaseModel):
