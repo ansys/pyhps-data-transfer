@@ -212,38 +212,6 @@ class ListBinariesResponseBody(BaseModel):
     available: list[BinaryInfo] | None
 
 
-class State(Enum):
-    unknown = "unknown"
-    queued = "queued"
-    running = "running"
-    succeeded = "succeeded"
-    failed = "failed"
-
-
-class Operation(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    children: list[str] | None
-    children_detail: list[Operation] | None = None
-    description: str
-    ended_at: AwareDatetime
-    error: str
-    id: str
-    info: dict[str, Any] | None = None
-    messages: list[str] | None
-    progress: float
-    progress_current: conint(ge=0)
-    progress_total: conint(ge=0)
-    queued_at: AwareDatetime
-    rate: str
-    result: Any
-    started_at: AwareDatetime
-    state: State
-    succeeded_on: list[str] | None
-    user_id: str
-
-
 class OperationIdResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -263,13 +231,6 @@ class OperationsRequest(BaseModel):
     ids: list[str] | None = Field(..., description="List of operation IDs to retrieve")
 
 
-class OperationsResponse(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    operations: list[Operation] | None
-
-
 class PlainSrcDst(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -284,14 +245,6 @@ class RemoveMetadataRequest(BaseModel):
     )
     paths: list[str] | None = Field(..., description="Paths to remove metadata for")
     recursive: bool = Field(..., description="Whether to remove metadata recursively")
-
-
-class Resource(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    path: str = Field(..., examples=["my/path/to/data/file.txt"])
-    type: str = Field(..., examples=["document"])
 
 
 class SetMetadataRequest(BaseModel):
@@ -322,16 +275,8 @@ class StoragePath(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    path: str
-    remote: str = "any"
-
-
-class Subject(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    id: str = Field(..., examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
-    type: str = Field(..., examples=["user"])
+    path: str = Field(..., examples=["my/path/to/data"])
+    remote: str | None = "any"
 
 
 class TokenRequest(BaseModel):
@@ -400,6 +345,30 @@ class WorkerTokenResponseBody(BaseModel):
     token: str
 
 
+class OperationState(Enum):
+    Unknown = "unknown"
+    Queued = "queued"
+    Running = "running"
+    Succeeded = "succeeded"
+    Failed = "failed"
+
+
+class ResourceType(Enum):
+    Document = "document"
+
+
+class RoleType(Enum):
+    Reader = "reader"
+    Writer = "writer"
+    Admin = "admin"
+
+
+class SubjectType(Enum):
+    User = "user"
+    Group = "group"
+    Any = "any"
+
+
 class AuthTokenRequestBody(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -431,6 +400,37 @@ class MoveMetadataRequest(BaseModel):
     src_dst: list[PlainSrcDst] | None = Field(..., description="Sources and destinations for the move")
 
 
+class Operation(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    children: list[str] | None
+    children_detail: list[Operation] | None = None
+    description: str
+    ended_at: AwareDatetime
+    error: str
+    id: str
+    info: dict[str, Any] | None = None
+    messages: list[str] | None
+    progress: float
+    progress_current: conint(ge=0)
+    progress_total: conint(ge=0)
+    queued_at: AwareDatetime
+    rate: str
+    result: Any
+    started_at: AwareDatetime
+    state: OperationState
+    succeeded_on: list[str] | None
+    user_id: str
+
+
+class OperationsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    operations: list[Operation] | None
+
+
 class PathOperations(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -438,29 +438,12 @@ class PathOperations(BaseModel):
     operations: list[StoragePath] | None
 
 
-class RoleAssignment(BaseModel):
+class Resource(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    resource: Resource
-    role: str = Field(..., examples=["reader"])
-    subject: Subject
-
-
-class RoleQuery(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    resource: Resource
-    role: str | None = Field(default=None, examples=["reader"])
-    subject: Subject
-
-
-class SetPermissionsRequest(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    permissions: list[RoleAssignment] | None = Field(..., description="Permission definitions to set")
+    path: str = Field(..., examples=["my/path/to/data/file.txt"])
+    type: ResourceType = Field(..., examples=["document"])
 
 
 class SrcDst(BaseModel):
@@ -476,6 +459,39 @@ class SrcDstOperations(BaseModel):
         extra="allow",
     )
     operations: list[SrcDst] | None
+
+
+class Subject(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    id: str = Field(..., examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
+    type: SubjectType = Field(..., examples=["user"])
+
+
+class RoleAssignment(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    resource: Resource
+    role: RoleType
+    subject: Subject
+
+
+class RoleQuery(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    resource: Resource
+    role: RoleType | None = None
+    subject: Subject
+
+
+class SetPermissionsRequest(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    permissions: list[RoleAssignment] | None = Field(..., description="Permission definitions to set")
 
 
 class CheckPermissionsRequest(BaseModel):
