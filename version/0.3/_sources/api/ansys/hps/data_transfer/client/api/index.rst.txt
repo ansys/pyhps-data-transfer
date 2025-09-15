@@ -1,0 +1,99 @@
+
+
+
+
+
+
+The ``api`` package
+=======================
+
+.. py:module:: ansys.hps.data_transfer.client.api
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: api
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.api.api`
+            - Provides the core API functionality for interacting with the Ansys HPS data transfer client.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.api.async_api`
+            - Provides asynchronous API functionality for interacting with the Ansys HPS data transfer client.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.api.retry`
+            - Provides utilities for implementing retry mechanisms in the Ansys HPS data transfer client.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> api</api/ansys/hps/data_transfer/client/api/api/index>
+    <span class="nf nf-fa-file"></span> async_api</api/ansys/hps/data_transfer/client/api/async_api/index>
+    <span class="nf nf-fa-file"></span> retry</api/ansys/hps/data_transfer/client/api/retry/index>
+
+
+
+
+
+
+
+
+Description
+-----------
+
+
+PyHPS data transfer API subpackage.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
