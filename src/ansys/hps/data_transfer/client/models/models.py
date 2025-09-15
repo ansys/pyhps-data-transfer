@@ -58,16 +58,16 @@ class BuildInfo(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    architecture: str
-    branch: str
-    go_version: str
-    mode: str
-    operating_system: str
-    revision: str
-    short_revision: str
-    timestamp: str
-    version: str
-    version_hash: str
+    architecture: str | None = None
+    branch: str | None = None
+    go_version: str | None = None
+    mode: str | None = None
+    operating_system: str | None = None
+    revision: str | None = None
+    short_revision: str | None = None
+    timestamp: str | None = None
+    version: str | None = None
+    version_hash: str | None = None
 
 
 class CheckPermissionsResponse(BaseModel):
@@ -258,8 +258,8 @@ class StatusResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    build_info: BuildInfo = Field(..., description="Information about the build")
-    features: Features = Field(..., description="List of features and plugins available in the server")
+    build_info: BuildInfo | None = Field(default=None, description="Information about the build")
+    features: Features | None = Field(default=None, description="List of features and plugins available in the server")
     ready: bool = Field(..., description="Indicates if the server is ready to accept requests")
     time: str = Field(..., description="Current server time")
 
