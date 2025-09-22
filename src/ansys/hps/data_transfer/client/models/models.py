@@ -37,13 +37,6 @@ class AuthRedirectRequestBody(BaseModel):
     )
 
 
-class AuthTokenResponseBody(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    token: str
-
-
 class BinaryInfo(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -290,14 +283,6 @@ class TokenRequest(BaseModel):
     write: list[str] | None
 
 
-class UserCredentials(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    name: str
-    password: str
-
-
 class UserInfo(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -367,13 +352,6 @@ class OperationState(Enum):
     Running = "running"
     Succeeded = "succeeded"
     Failed = "failed"
-
-
-class AuthTokenRequestBody(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    credentials: UserCredentials
 
 
 class CopyMetadataRequest(BaseModel):
@@ -465,7 +443,7 @@ class Subject(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    id: str | None = Field(default=None, examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
+    id: str = Field(..., examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
     type: SubjectType = Field(..., examples=["user"])
 
 
