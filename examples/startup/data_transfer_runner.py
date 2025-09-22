@@ -36,7 +36,6 @@ Example usage:
 import json
 import logging
 import time
-import jwt
 
 import typer
 from typing_extensions import Annotated
@@ -50,28 +49,20 @@ def main(
     verbosity: Annotated[int, typer.Option(help="Increase verbosity")] = 1,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
-    password: Annotated[str, typer.Option(help="Password to authenticate with")] = "repadmin",
+    password: Annotated[
+        str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
+    ] = "repadmin",
 ):
 
     auth_url = f"{url}/auth/realms/rep"
     log = logging.getLogger()
     logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
-    def refresh_token():
-        user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
-        user_token = user_token.get("access_token", None)
-        return user_token
-
-    # Call refresh_token() once to get the access token
-    user_token = refresh_token()
+    user_token = authenticate(username=username, password=password, verify=False, url=auth_url)
+    user_token = user_token.get("access_token", None)
     assert user_token is not None
 
-    decoded_token = jwt.decode(user_token, options={"verify_signature": False})
-    exp_time = decoded_token.get("exp", None)
-    if exp_time:
-        log.info(f"Token expiration time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(exp_time))}")
-
-    client = Client(refresh_token_callback=refresh_token)
+    client = Client()
     client.binary_config.update(
         insecure=True,
         token=user_token,
@@ -93,14 +84,17 @@ def main(
     for k, v in s.features.__dict__.items():
         log.info(f"  {k}: {v}")
     log.info("Available storage:")
-    for _ in range(5):
-        for d in api.storages():
-            log.info(f"- {json.dumps(d, indent=4)}")
+    for d in api.storages():
+        log.info(f"  name={d['name']} type={d['type']} priority={d['priority']}")
+
+    log.info("--- Idling for a while ---")
+    for i in range(5):
         log.info("Idling for a while...")
-        time.sleep(10)
+        time.sleep(2)
 
     log.info("--- Stopping ---")
     client.stop()
+
 
 if __name__ == "__main__":
     typer.run(main)
