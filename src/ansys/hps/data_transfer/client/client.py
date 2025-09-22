@@ -238,6 +238,8 @@ class ClientBase:
         self._monitor_state = MonitorState()
 
         self.progress_interval = 5.0  # seconds
+        self._unauthorized_max_retry = 1
+        self._unauthorized_num_retry = 0
 
     def __getstate__(self):
         """Return pickled state of the object."""
