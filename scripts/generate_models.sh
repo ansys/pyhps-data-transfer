@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 echo "CWD: $(pwd)"
 
 models_dir=src/ansys/hps/data_transfer/client/models
@@ -26,9 +24,9 @@ if [ "$(uname)" == "Darwin" ]; then
 fi
 
 
-pushd $models_dir
+#pushd $models_dir
 # $sed_cmd -i 's/remote: str/remote: str = "any"/' models.py
-popd
+#popd
 
 for i in {1..5}
 do
@@ -36,6 +34,7 @@ do
     pre-commit run --all-files
     if [ $? -eq 0 ]
     then
+        echo "All done"
         break
     fi
 done
