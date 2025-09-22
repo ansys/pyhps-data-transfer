@@ -1,9 +1,32 @@
-import pytest
-from unittest.mock import MagicMock, patch
-import httpx
-from ansys.hps.data_transfer.client.client import Client
+# Copyright (C) 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from unittest.mock import AsyncMock, MagicMock
-from ansys.hps.data_transfer.client.client import AsyncClient
+
+import httpx
+import pytest
+
+from ansys.hps.data_transfer.client.client import AsyncClient, Client
+
 
 @pytest.fixture
 def mock_client():
@@ -16,6 +39,7 @@ def mock_client():
     client.refresh_token_callback = MagicMock(return_value="new_token")
     return client
 
+
 def test_auto_refresh_token_success(mock_client):
     """Test _auto_refresh_token when token refresh is successful."""
     response = MagicMock(spec=httpx.Response)
@@ -24,7 +48,7 @@ def test_auto_refresh_token_success(mock_client):
     response.request.headers = {}
     response.request.method = "GET"
     response.request.url = "https://example.com"
-    
+
     retried_response = MagicMock(spec=httpx.Response)
     retried_response.status_code = 200
     retried_response.content = b"retried content"
@@ -41,6 +65,7 @@ def test_auto_refresh_token_success(mock_client):
     # Verify the retried response content and status code were updated
     assert response._content == b"retried content"
     assert response.status_code == 200
+
 
 def test_auto_refresh_token_no_callback(mock_client):
     """Test _auto_refresh_token when no refresh callback is provided."""
@@ -62,6 +87,7 @@ def test_auto_refresh_token_no_callback(mock_client):
     assert response.status_code == 401
     assert "_content" not in response.__dict__
 
+
 def test_auto_refresh_token_exceeds_retry_limit(mock_client):
     """Test _auto_refresh_token when retry limit is exceeded."""
     mock_client._unauthorized_num_retry = 2  # Set retries to max
@@ -82,6 +108,7 @@ def test_auto_refresh_token_exceeds_retry_limit(mock_client):
     assert response.status_code == 401
     assert "_content" not in response.__dict__
 
+
 def test_auto_refresh_token_non_401_response(mock_client):
     """Test _auto_refresh_token when response status is not 401."""
     response = MagicMock(spec=httpx.Response)
@@ -100,6 +127,7 @@ def test_auto_refresh_token_non_401_response(mock_client):
     assert response.status_code == 200
     assert "_content" not in response.__dict__
 
+
 @pytest.fixture
 def mock_async_client():
     """Fixture to create a mock AsyncClient instance."""
@@ -111,6 +139,7 @@ def mock_async_client():
     client.refresh_token_callback = AsyncMock(return_value="new_async_token")
     return client
 
+
 @pytest.mark.asyncio
 async def test_async_auto_refresh_token_success(mock_async_client):
     """Test _async_auto_refresh_token when token refresh is successful."""
@@ -120,7 +149,7 @@ async def test_async_auto_refresh_token_success(mock_async_client):
     response.request.headers = {}
     response.request.method = "GET"
     response.request.url = "https://example.com"
-    
+
     retried_response = MagicMock(spec=httpx.Response)
     retried_response.status_code = 200
     retried_response.content = b"retried async content"
@@ -137,6 +166,7 @@ async def test_async_auto_refresh_token_success(mock_async_client):
     # Verify the retried response content and status code were updated
     assert response._content == b"retried async content"
     assert response.status_code == 200
+
 
 @pytest.mark.asyncio
 async def test_async_auto_refresh_token_no_callback(mock_async_client):
@@ -159,6 +189,7 @@ async def test_async_auto_refresh_token_no_callback(mock_async_client):
     assert response.status_code == 401
     assert "_content" not in response.__dict__
 
+
 @pytest.mark.asyncio
 async def test_async_auto_refresh_token_exceeds_retry_limit(mock_async_client):
     """Test _async_auto_refresh_token when retry limit is exceeded."""
@@ -179,6 +210,7 @@ async def test_async_auto_refresh_token_exceeds_retry_limit(mock_async_client):
     # Verify no changes were made to the response
     assert response.status_code == 401
     assert "_content" not in response.__dict__
+
 
 @pytest.mark.asyncio
 async def test_async_auto_refresh_token_non_401_response(mock_async_client):
