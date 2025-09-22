@@ -25,8 +25,7 @@ using the Data Transfer API and Async Data Transfer API from the Ansys HPS Data 
 """
 
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
-from ansys.hps.data_transfer.client.models.msg import StoragePath
-from ansys.hps.data_transfer.client.models.ops import OperationState
+from ansys.hps.data_transfer.client.models import OperationState, StoragePath
 
 
 def test_mkdir(storage_path, client):

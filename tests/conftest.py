@@ -34,7 +34,10 @@ from slugify import slugify
 from ansys.hps.data_transfer.client import AsyncClient, Client, DataTransferApi
 from ansys.hps.data_transfer.client.authenticate import authenticate
 from ansys.hps.data_transfer.client.binary import BinaryConfig
-from ansys.hps.data_transfer.client.models.msg import StoragePath
+from ansys.hps.data_transfer.client.models import StoragePath
+
+log = logging.getLogger()
+logging.basicConfig(format="%(levelname)8s > %(message)s", level=logging.DEBUG)
 
 log = logging.getLogger(__name__)
 

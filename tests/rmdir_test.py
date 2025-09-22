@@ -28,8 +28,7 @@ import os
 import tempfile
 
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
-from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
-from ansys.hps.data_transfer.client.models.ops import OperationState
+from ansys.hps.data_transfer.client.models import OperationState, SrcDst, StoragePath
 
 
 def test_rmdir(storage_path, client):

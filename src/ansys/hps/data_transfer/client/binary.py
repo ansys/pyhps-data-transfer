@@ -51,6 +51,20 @@ level_map = {
     "panic": logging.CRITICAL,
 }
 
+verbosity_map = {
+    0: logging.WARNING,
+    1: logging.INFO,
+    2: logging.DEBUG,
+    3: logging.DEBUG,
+}
+
+
+def get_log_level(verbosity: int, debug: bool = False) -> int:
+    """Get the log level based on verbosity and debug flag."""
+    if debug:
+        return logging.DEBUG
+    return verbosity_map.get(verbosity, logging.INFO)
+
 
 class PrepareSubprocess:
     """Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
@@ -73,6 +87,39 @@ class PrepareSubprocess:
         if self.disable_vfork:
             subprocess._USE_VFORK = self._orig_use_vfork
             subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
+
+
+def default_log_message(debug: bool, data: dict[str, any]):
+    """Default log message handler.
+
+    Parameters
+    ----------
+    data : dict
+        Data to log.
+    """
+    # log.warning(f"Worker: {d}")
+
+    level = data.pop("level", "info")
+    data.pop("time", None)
+    if not debug:
+        data.pop("caller", None)
+        data.pop("mode", None)
+    msg = data.pop("message", None)
+
+    if msg is None:
+        return
+
+    msg = msg.capitalize()
+    level_no = level_map.get(level, logging.INFO)
+    other = ""
+    for k, v in data.items():
+        formatted_value = f'"{v}"' if isinstance(v, str) and " " in v else v
+        other += f"{k}={formatted_value} "
+    other = other.strip()
+    if other:
+        msg += f" {other}"
+    msg = msg.encode("ascii", errors="ignore").decode().strip()
+    log.log(level_no, f"{msg}")
 
 
 class BinaryConfig:
@@ -107,8 +154,9 @@ class BinaryConfig:
         # Required
         data_transfer_url: str = "https://localhost:8443/hps/dt/api/v1",
         # Process related settings
-        log: bool = True,
+        # log: bool = True,
         log_to_file: bool = False,
+        log_message: callable = default_log_message,
         monitor_interval: float = 0.5,
         # TODO: Remove path? not used anywhere
         path=None,
@@ -116,7 +164,7 @@ class BinaryConfig:
         token: str = None,
         host: str = "127.0.0.1",
         port: int = None,
-        verbosity: int = 1,
+        verbosity: int = 3,
         insecure: bool = False,
         debug: bool = False,
         auth_type: str = None,
@@ -126,8 +174,9 @@ class BinaryConfig:
         self.data_transfer_url = data_transfer_url
 
         # Process related settings
-        self.log = log
+        self.log = debug
         self.log_to_file = log_to_file
+        self._log_message = log_message
         self.monitor_interval = monitor_interval
         self.path = path
 
@@ -154,6 +203,8 @@ class BinaryConfig:
                 setattr(self, key, value)
             else:
                 raise AttributeError(f"Unknown attribute {key}")
+        if self.debug:
+            self.log = True
 
     @property
     def port(self):
@@ -197,6 +248,18 @@ class BinaryConfig:
         if not isinstance(value, dict):
             raise TypeError("Environment variables must be a dictionary.")
         self._env = value
+
+    @property
+    def log_message(self):
+        """Get the log message handler."""
+        return self._log_message
+
+    @log_message.setter
+    def log_message(self, value):
+        """Set the log message handler."""
+        if not callable(value):
+            raise TypeError("Log message handler must be a callable.")
+        self._log_message = value
 
 
 class Binary:
@@ -262,7 +325,7 @@ class Binary:
 
         # Mark binary as executable
         if not os.access(bin_path, os.X_OK):
-            log.debug(f"Marking binary as executable: {bin_path}")
+            # log.debug(f"Marking binary as executable: {bin_path}")
             st = os.stat(bin_path)
             os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
 
@@ -279,20 +342,20 @@ class Binary:
             t.start()
 
         if not self._prepared.wait(timeout=5.0):
-            log.warning("Worker did not prepare in time.")
+            log.warning("Worker preparation is taking longer than expected ...")
 
     def stop(self, wait=5.0):
         """Stop the worker binary."""
         if self._process is None:
             return
 
-        log.debug("Stopping worker ...")
         self._stop.set()
         self._prepared.clear()
 
         start = time.time()
         while True:
             if self._process.poll() is not None:
+                log.debug("Worker stopped.")
                 break
             if time.time() - start > wait:
                 log.warning("Worker did not stop in time, killing ...")
@@ -301,6 +364,8 @@ class Binary:
             time.sleep(wait * 0.1)
 
     def _log_output(self):
+        log_message = self._config._log_message
+
         while not self._stop.is_set():
             if self._process is None or self._process.stdout is None:
                 time.sleep(1)
@@ -310,41 +375,16 @@ class Binary:
                 if not line:
                     break
                 line = line.decode(errors="strip").strip()
-                # log.info("Worker: %s" % line)
-                self._log_line(line)
+                if log_message is not None:
+                    d = json.loads(line)
+                    log_message(self._config.debug, d)
             except json.decoder.JSONDecodeError:
                 pass
             except Exception as e:
                 if self._config.debug:
                     log.debug(f"Error reading worker output: {e}")
                 time.sleep(1)
-        log.debug("Worker log output stopped")
-
-    def _log_line(self, line):
-        d = json.loads(line)
-        # log.warning(f"Worker: {d}")
-
-        level = d.pop("level", "info")
-        d.pop("time", None)
-        if not self._config.debug:
-            d.pop("caller", None)
-            d.pop("mode", None)
-        msg = d.pop("message", None)
-
-        if msg is None:
-            return
-
-        msg = msg.capitalize()
-        level_no = level_map.get(level, logging.INFO)
-        other = ""
-        for k, v in d.items():
-            formatted_value = f'"{v}"' if isinstance(v, str) and " " in v else v
-            other += f"{k}={formatted_value} "
-        other = other.strip()
-        if other:
-            msg += f" {other}"
-        msg = msg.encode("ascii", errors="ignore").decode().strip()
-        log.log(level_no, f"{msg}")
+        # log.debug("Worker log output stopped")
 
     def _monitor(self):
         while not self._stop.is_set():
@@ -362,13 +402,13 @@ class Binary:
                     env.update(self._config.env)
                     env_str = ",".join([k for k in self._config.env.keys() if k != "PATH"])
 
-                log.debug(f"Starting worker: {redacted}")
+                log.debug(f"Command: {redacted}")
                 if self._config.debug:
-                    log.debug(f"Worker environment: {env_str}")
+                    log.debug(f"Environment: {env_str}")
 
                 with PrepareSubprocess():
                     self._process = subprocess.Popen(
-                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
+                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
                     )
             else:
                 ret_code = self._process.poll()
@@ -384,7 +424,7 @@ class Binary:
                 #     log.debug(f"Worker running ...")
 
             time.sleep(self._config.monitor_interval)
-        log.debug("Worker monitor stopped")
+        # log.debug("Worker monitor stopped")
 
     def _prepare(self):
         if self._config._selected_port is None:
@@ -422,17 +462,15 @@ class Binary:
             [
                 "--dt-url",
                 self._config.data_transfer_url,
-                "--log-types",
-                "console",
             ]
         )
 
-        self._args.extend(
-            [
-                "-v",
-                str(self._config.verbosity),
-            ]
-        )
+        # self._args.extend(
+        #     [
+        #         "-v",
+        #         str(self._config.verbosity),
+        #     ]
+        # )
 
         if self._config.insecure:
             self._args.append("--insecure")

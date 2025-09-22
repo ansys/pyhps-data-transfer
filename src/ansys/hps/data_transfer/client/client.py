@@ -39,6 +39,7 @@ import traceback
 import backoff
 import filelock
 import httpx
+import humanfriendly as hf
 import psutil
 import urllib3
 
@@ -48,7 +49,7 @@ from ansys.hps.data_transfer.client.token import prepare_token
 
 urllib3.disable_warnings()
 
-for n in ["httpx", "httpcore", "requests", "urllib3"]:
+for n in ["httpx", "httpcore", "requests", "urllib3", "filelock"]:
     logger = logging.getLogger(n)
     logger.setLevel(logging.CRITICAL)
 
@@ -236,8 +237,7 @@ class ClientBase:
         self._monitor_stop = None
         self._monitor_state = MonitorState()
 
-        self._unauthorized_max_retry = 1
-        self._unauthorized_num_retry = 0
+        self.progress_interval = 5.0  # seconds
 
     def __getstate__(self):
         """Return pickled state of the object."""
@@ -377,7 +377,9 @@ class ClientBase:
         return f"{plat}-{arch}"
 
     def _prepare_bin_path(self, build_info):
-        log.debug(f"Server version: {build_info}")
+        log.debug("Server build info:")
+        for k, v in build_info.items():
+            log.debug(f"  {k}: {v}")
         version_hash = build_info["version_hash"]
 
         # Figure out binary download path
@@ -456,17 +458,37 @@ class ClientBase:
                         log.warning(f"Failed to create directory {bin_dir}: {ex}")
 
                 platform_str = self._platform()
-                log.debug(
-                    f"Downloading binary for platform '{platform_str}' from {dt_url} to {bin_path}, reason: {reason}"
+                log.info(
+                    f"Downloading data transfer worker for platform '{platform_str}' from {dt_url}, reason: {reason}"
                 )
+                log.debug(f"Binary download path: {bin_path}")
                 url = f"/binaries/worker/{platform_str}/hpsdata{bin_ext}"
                 try:
+                    start = time.time()
+                    last_progress = start
+                    written = 0
                     with open(bin_path, "wb") as f, session.stream("GET", url) as resp:
                         resp.read()
                         if resp.status_code != 200:
                             raise BinaryError(f"Failed to download binary: {resp.text}")
+
                         for chunk in resp.iter_bytes():
-                            f.write(chunk)
+                            now = time.time()
+                            written += f.write(chunk)
+
+                            since_last_progress = now - last_progress
+                            if since_last_progress > self.progress_interval:
+                                msg = f"Downloading binary, {hf.format_timespan(now - start)} so far ..."
+                                content_length = resp.headers.get("Content-Length", None)
+                                if content_length is not None:
+                                    content_length = int(content_length)
+                                    prog = float(written) / float(content_length) * 100.0
+                                    msg += f" {prog:.1f}%, {hf.format_size(written)}/{hf.format_size(content_length)}"
+                                else:
+                                    msg += f" {hf.format_size(written)} downloaded"
+                                log.info(msg)
+                                last_progress = now
+
                     self._bin_config.path = bin_path
                 except Exception as ex:
                     if self._bin_config.debug:
@@ -475,16 +497,16 @@ class ClientBase:
                     os.remove(bin_path)
 
                 st = os.stat(bin_path)
-                log.debug(f"Marking binary as executable: {bin_path}")
+                # log.debug(f"Marking binary as executable: {bin_path}")
                 os.chmod(bin_path, st.st_mode | stat.S_IEXEC)
-                if self._bin_config.debug:
-                    log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
+                # if self._bin_config.debug:
+                # log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
         except filelock.Timeout as ex:
             raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}") from ex
 
     def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
-        log.debug("Creating session for %s with verify=%s", url, verify)
+        # log.debug("Creating session for %s with verify=%s", url, verify)
 
         args = {
             "timeout": httpx.Timeout(self._timeout),
@@ -605,11 +627,24 @@ class AsyncClient(ClientBase):
         super().__init__(*args, **kwargs)
         self.refresh_token_callback = refresh_token_callback  # Override the callback
         self._bin_config._on_token_update = self._update_token
+        self._monitor_task = None
+
+    def __getstate__(self):
+        """Return pickled state of the object."""
+        state = super().__getstate__()
+        del state["_monitor_task"]
+        return state
+
+    def __setstate__(self, state):
+        """Restore state from pickled state."""
+        super().__setstate__(state)
+        self.__dict__.update(state)
+        self._monitor_task = None
 
     async def start(self):
         """Start the async binary worker."""
         super().start()
-        asyncio.create_task(self._monitor())
+        self._monitor_task = asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
         """Stop the async binary worker."""
@@ -617,6 +652,8 @@ class AsyncClient(ClientBase):
             try:
                 await self._session.post(self.base_api_url + "/shutdown")
                 await asyncio.sleep(0.1)
+                if self._monitor_task is not None:
+                    self._monitor_task.cancel()
             except Exception as ex:
                 log.warning(f"Failed to send shutdown request: {ex}")
             finally:
@@ -655,18 +692,21 @@ class AsyncClient(ClientBase):
             log.debug(f"Error updating token: {e}")
 
     async def _monitor(self):
-        while not self._monitor_stop.is_set():
-            await asyncio.sleep(self._monitor_state.sleep_for)
-
-            if self._session is None or self.binary is None:
-                continue
+        while True:
             try:
+                await asyncio.sleep(self._monitor_state.sleep_for)
+                if self._session is None or self.binary is None:
+                    continue
+
                 resp = await self._session.get(self.base_api_url)
 
                 if resp.status_code == 200:
                     ready = resp.json().get("ready", False)
                     self._monitor_state.mark_ready(ready)
                     continue
+            except asyncio.CancelledError:
+                log.debug("Monitor task cancelled")
+                return
             except Exception as ex:
                 if self.binary_config.debug:
                     log.debug("URL: %s", self.base_api_url)
@@ -675,7 +715,6 @@ class AsyncClient(ClientBase):
                 continue
 
             self._monitor_state.report(self.binary)
-        log.debug("Worker status monitor stopped")
 
 
 class Client(ClientBase):

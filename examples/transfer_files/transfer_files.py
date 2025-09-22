@@ -49,11 +49,11 @@ from humanfriendly import format_size
 import typer
 from typing_extensions import Annotated
 
-from ansys.hps.data_transfer.client import Client, DataTransferApi
+from ansys.hps.data_transfer.client import Client, DataTransferApi, get_log_level
 from ansys.hps.data_transfer.client.authenticate import authenticate
-from ansys.hps.data_transfer.client.models.msg import SrcDst, StoragePath
+from ansys.hps.data_transfer.client.models import SrcDst, StoragePath
 
-log = logging.getLogger(__name__)
+log = logging.getLogger()
 
 ########################################################################
 # Define a method to transfer files using the data transfer service
@@ -70,7 +70,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     log.info("== Removing remote directory if it exists ...")
     op = api.rmdir([StoragePath(path=remote_path)])
     op = api.wait_for([op.id])
-    log.debug(f"Operation {op[0].state}")
+
 
     log.info("== Creating remote directory ...")
     mkdir_op = api.mkdir([StoragePath(path=remote_path)])
@@ -92,18 +92,18 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     op = api.copy(copy_args)
     op = api.wait_for([op.id])
     t1 = perf_counter()
-    log.debug(f"Operation {op[0].state}")
+
 
     log.info(f"== Querying files and metadata in {remote_path} ...")
     op = api.list([StoragePath(path=remote_path)])
     op = api.wait_for([op.id])
-    log.debug(f"Operation {op[0].state}")
+
     log.debug(f"Files in {remote_path}: {op[0].result}")
     fnames = op[0].result[f"any:{remote_path}"]
 
     op = api.get_metadata([StoragePath(path=f"{remote_path}/{fname}") for fname in fnames])
     op = api.wait_for(op.id)
-    log.debug(f"Operation {op[0].state}")
+
     log.debug(f"Metadata for {remote_path}: {op[0].result}")
 
     log.info("== List of uploaded files:")
@@ -131,7 +131,7 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
     op = api.copy(copy_args)
     op = api.wait_for([op.id])
     t1 = perf_counter()
-    log.debug(f"Operation {op[0].state}")
+
 
     log.info("== Download performance:")
     log.info(f"- Total time: {t1-t0:.5f} s")
@@ -151,15 +151,14 @@ def main(
     local_path: Annotated[str, typer.Option(help="Path to the files or directory to transfer. Supports wildcards")],
     remote_path: Annotated[str, typer.Option(help="Optional path to the remote directory to transfer files to")] = None,
     debug: Annotated[bool, typer.Option(help="Enable debug logging")] = False,
+    verbosity: Annotated[int, typer.Option(help="Increase verbosity")] = 1,
     url: Annotated[str, typer.Option(help="HPS URL to connect to")] = "https://localhost:8443/hps",
     username: Annotated[str, typer.Option(help="Username to authenticate with")] = "repadmin",
     password: Annotated[
         str, typer.Option(prompt=True, hide_input=True, help="Password to authenticate with")
     ] = "repadmin",
 ):
-    logging.basicConfig(
-        format="[%(asctime)s | %(levelname)s] %(message)s", level=logging.DEBUG if debug else logging.INFO
-    )
+    logging.basicConfig(format="%(levelname)8s > %(message)s", level=get_log_level(verbosity, debug))
 
     dt_url = f"{url}/dt/api/v1"
     auth_url = f"{url}/auth/realms/rep"
@@ -174,8 +173,8 @@ def main(
     client = Client(clean=True)
 
     client.binary_config.update(
-        verbosity=3,
-        debug=False,
+        verbosity=verbosity,
+        debug=debug,
         insecure=True,
         token=token,
         data_transfer_url=dt_url,
