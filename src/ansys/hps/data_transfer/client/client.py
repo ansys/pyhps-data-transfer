@@ -182,13 +182,13 @@ class ClientBase:
     Create a client object and connect to HPS data transfer with an access token.
 
     >>> from ansys.hps.data_transfer.client import Client
-    >>> def refresh_token():
+    >>> def refresh_token_cb():
             # Function to refresh the token
-            token = authenticate(username=username, self.password, verify=False, url=auth_url)
+            token = authenticate(username=username, password, verify=False, url=auth_url)
             token = token.get("access_token", None)
             return token
     >>> client = Client(clean=True)
-    >>> client.refresh_token_callback = refresh_token
+    >>> client.refresh_token_callback = refresh_token_cb
     >>> client.binary_config.update(
             verbosity=3,
             debug=False,
