@@ -345,14 +345,6 @@ class WorkerTokenResponseBody(BaseModel):
     token: str
 
 
-class OperationState(Enum):
-    Unknown = "unknown"
-    Queued = "queued"
-    Running = "running"
-    Succeeded = "succeeded"
-    Failed = "failed"
-
-
 class ResourceType(Enum):
     Document = "document"
 
@@ -367,6 +359,14 @@ class SubjectType(Enum):
     User = "user"
     Group = "group"
     Any = "any"
+
+
+class OperationState(Enum):
+    Unknown = "unknown"
+    Queued = "queued"
+    Running = "running"
+    Succeeded = "succeeded"
+    Failed = "failed"
 
 
 class AuthTokenRequestBody(BaseModel):
@@ -465,7 +465,7 @@ class Subject(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    id: str = Field(..., examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
+    id: str | None = Field(default=None, examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
     type: SubjectType = Field(..., examples=["user"])
 
 
