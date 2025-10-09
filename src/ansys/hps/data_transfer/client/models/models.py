@@ -37,13 +37,6 @@ class AuthRedirectRequestBody(BaseModel):
     )
 
 
-class AuthTokenResponseBody(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    token: str
-
-
 class BinaryInfo(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -144,6 +137,13 @@ class DataAssignment(BaseModel):
     compression: str | None = None
     custom: dict[str, Any] | None = None
     uncompressed_size: conint(ge=0) | None = None
+
+
+class Debug(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    panic_file: str | None = Field(default=None, description="Path to the panic file if panic logging is enabled")
 
 
 class ErrorDetail(BaseModel):
@@ -259,6 +259,7 @@ class StatusResponse(BaseModel):
         extra="allow",
     )
     build_info: BuildInfo | None = Field(default=None, description="Information about the build")
+    debug: Debug | None = Field(default=None, description="Debugging information")
     features: Features | None = Field(default=None, description="List of features and plugins available in the server")
     ready: bool = Field(..., description="Indicates if the server is ready to accept requests")
     time: str = Field(..., description="Current server time")
@@ -288,14 +289,6 @@ class TokenRequest(BaseModel):
     recursive: bool
     type: str
     write: list[str] | None
-
-
-class UserCredentials(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    name: str
-    password: str
 
 
 class UserInfo(BaseModel):
@@ -367,13 +360,6 @@ class OperationState(Enum):
     Running = "running"
     Succeeded = "succeeded"
     Failed = "failed"
-
-
-class AuthTokenRequestBody(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    credentials: UserCredentials
 
 
 class CopyMetadataRequest(BaseModel):
