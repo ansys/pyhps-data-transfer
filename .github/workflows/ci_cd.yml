@@ -110,8 +110,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           check-links: false
-          sphinxopts: "-j auto --color --keep-going"
-          use-uv: false
+          sphinxopts: "-j auto --color --keep-going -vv"
 
   smoke-tests:
     name: Build and Smoke tests
