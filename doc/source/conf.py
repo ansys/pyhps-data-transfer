@@ -168,6 +168,8 @@ exclude_patterns = [
     "api/client/__version__/index.rst",
 ]
 
+autoapi_dirs = ["../src/ansys/hps/data_transfer"]
+
 BUILD_API = True
 if not BUILD_API:
     exclude_patterns.append("autoapi")
