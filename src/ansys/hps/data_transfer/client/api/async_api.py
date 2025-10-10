@@ -32,27 +32,31 @@ from collections.abc import Awaitable, Callable
 import logging
 import textwrap
 import time
+import traceback
 
 import backoff
 import humanfriendly as hf
 
 from ..client import AsyncClient
 from ..exceptions import TimeoutError
-from ..models.metadata import DataAssignment
-from ..models.msg import (
+from ..models import (
     CheckPermissionsResponse,
+    DataAssignment,
     GetPermissionsResponse,
-    OpIdResponse,
-    OpsResponse,
+    Operation,
+    OperationIdResponse,
+    OperationsResponse,
+    OperationState,
+    RoleAssignment,
+    RoleQuery,
     SetMetadataRequest,
     SrcDst,
-    Status,
+    StatusResponse,
     StorageConfigResponse,
     StoragePath,
 )
-from ..models.ops import Operation, OperationState
-from ..models.permissions import RoleAssignment, RoleQuery
 from ..utils.jitter import get_expo_backoff
+from .handler import AsyncWaitHandler
 from .retry import retry
 
 log = logging.getLogger(__name__)
@@ -65,6 +69,7 @@ class AsyncDataTransferApi:
         """Initialize the async data transfer API with the client object."""
         self.dump_mode = "json"
         self.client = client
+        self.wait_handler_factory = AsyncWaitHandler
 
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
@@ -84,16 +89,16 @@ class AsyncDataTransferApi:
 
             resp = await self.client.session.get(url)
             json = resp.json()
-            s = Status(**json)
+            s = StatusResponse(**json)
             if wait and not s.ready:
                 await _sleep()
                 continue
             return s
 
     @retry()
-    async def operations(self, ids: list[str]):
+    async def operations(self, ids: list[str], expand: bool = False):
         """Provides an async interface to get a list of operations by their IDs."""
-        return await self._operations(ids)
+        return await self._operations(ids, expand=expand)
 
     async def storages(self):
         """Provides an async interface to get the list of storage configurations."""
@@ -138,13 +143,16 @@ class AsyncDataTransferApi:
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
-        return OpIdResponse(**json)
+        return OperationIdResponse(**json)
 
-    async def _operations(self, ids: builtins.list[str]):
+    async def _operations(self, ids: builtins.list[str], expand: bool = False):
         url = "/operations"
-        resp = await self.client.session.get(url, params={"ids": ids})
+        params = {"ids": ids}
+        if expand:
+            params["expand"] = "true"
+        resp = await self.client.session.get(url, params=params)
         json = resp.json()
-        return OpsResponse(**json).operations
+        return OperationsResponse(**json).operations
 
     @retry()
     async def check_permissions(self, permissions: builtins.list[RoleAssignment]):
@@ -186,7 +194,7 @@ class AsyncDataTransferApi:
         payload = {"paths": paths}
         resp = await self.client.session.post(url, json=payload)
         json = resp.json()
-        return OpIdResponse(**json)
+        return OperationIdResponse(**json)
 
     @retry()
     async def set_metadata(self, asgs: dict[str | StoragePath, DataAssignment]):
@@ -196,7 +204,7 @@ class AsyncDataTransferApi:
         req = SetMetadataRequest(metadata=d)
         resp = await self.client.session.post(url, json=req.model_dump(mode=self.dump_mode))
         json = resp.json()
-        return OpIdResponse(**json)
+        return OperationIdResponse(**json)
 
     async def wait_for(
         self,
@@ -205,7 +213,7 @@ class AsyncDataTransferApi:
         interval: float = 0.1,
         cap: float = 2.0,
         raise_on_error: bool = False,
-        progress_handler: Callable[[str, float], Awaitable[None]] = None,
+        handler: Callable[[builtins.list[Operation]], Awaitable[None]] = None,
     ):
         """Provides an async interface to wait for a list of operations to complete.
 
@@ -221,13 +229,15 @@ class AsyncDataTransferApi:
             The maximum backoff value used to calculate the next wait time. Default is 2.0.
         raise_on_error: bool
             Raise an exception if an error occurs. Default is False.
-        progress_handler: Callable[[str, float], None]
-            A async function to handle progress updates. Default is None.
-
+        operation_handler: Callable[[builtins.list[Operation]], None]
+            A callable that will be called with the list of operations when they are fetched.
         """
+        if handler is None:
+            handler = self.wait_handler_factory()
+
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
-        operation_ids = [op.id if isinstance(op, Operation | OpIdResponse) else op for op in operation_ids]
+        operation_ids = [op.id if isinstance(op, Operation | OperationIdResponse) else op for op in operation_ids]
         start = time.time()
         attempt = 0
         op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")
@@ -235,23 +245,15 @@ class AsyncDataTransferApi:
         while True:
             attempt += 1
             try:
-                ops = await self._operations(operation_ids)
-                so_far = hf.format_timespan(time.time() - start)
-                log.debug(f"Waiting for {len(operation_ids)} operations to complete, {so_far} so far")
-                if self.client.binary_config.debug:
-                    for op in ops:
-                        fields = [
-                            f"id={op.id}",
-                            f"state={op.state}",
-                            f"start={op.started_at}",
-                            f"succeeded_on={op.succeeded_on}",
-                        ]
-                        if op.progress > 0:
-                            fields.append(f"progress={op.progress:.3f}")
-                        log.debug(f"- Operation '{op.description}' {' '.join(fields)}")
-                if progress_handler is not None:
-                    for op in ops:
-                        await progress_handler(op.id, op.progress)
+                expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
+                ops = await self._operations(operation_ids, expand=expand)
+                if handler is not None:
+                    try:
+                        await handler(ops)
+                    except Exception as e:
+                        log.warning(f"Handler error: {e}")
+                        log.debug(traceback.format_exc())
+
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except Exception as e:
@@ -264,8 +266,8 @@ class AsyncDataTransferApi:
 
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=cap, jitter=True)
-            if self.client.binary_config.debug:
-                log.debug(f"Next check in {hf.format_timespan(duration)} ...")
+            # if self.client.binary_config.debug:
+            #     log.debug(f"Next check in {hf.format_timespan(duration)} ...")
             await asyncio.sleep(duration)
 
         duration = hf.format_timespan(time.time() - start)
