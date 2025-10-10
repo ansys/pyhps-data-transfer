@@ -47,7 +47,7 @@ tests = [
     "pytest-asyncio==1.1.0",
     "python-keycloak==5.8.1",
     "python-slugify>=8.0.4",
-    "tox==4.30.2",
+    "tox==4.31.0",
 ]
 doc = [
     "ansys-sphinx-theme==1.6.1",
