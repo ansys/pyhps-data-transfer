@@ -388,6 +388,8 @@ class Binary:
         # log.debug("Worker log output stopped")
 
     def _monitor(self):
+        restart_count = 0  # Initialize a counter for restarts
+        max_restarts = 5  # Set the maximum number of restarts
         while not self._stop.is_set():
             if self._process is None:
                 self._prepare()
@@ -414,6 +416,11 @@ class Binary:
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
+                    restart_count += 1  # Increment the restart counter
+                    if restart_count > max_restarts:
+                        log.error(f"Worker exceeded maximum restart attempts ({max_restarts}). Stopping...")
+                        break  # Exit the loop after exceeding the restart limit
+
                     log.warning(f"Worker exited with code {ret_code}, restarting ...")
                     self._process = None
                     self._prepared.clear()
@@ -425,7 +432,7 @@ class Binary:
                 #     log.debug(f"Worker running ...")
 
             time.sleep(self._config.monitor_interval)
-        # log.debug("Worker monitor stopped")
+        log.debug("Worker monitor stopped")
 
     def _prepare(self):
         if self._config._selected_port is None:

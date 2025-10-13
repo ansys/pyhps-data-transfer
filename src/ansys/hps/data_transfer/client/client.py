@@ -220,6 +220,7 @@ class ClientBase:
 
         self._session = None
         self.binary = None
+        self.panic_file = None
 
         self._features = None
         self._api_key = None
@@ -538,6 +539,30 @@ class ClientBase:
             }
             self._bin_config.env.update({k: v for k, v in env.items() if k not in os.environ})
 
+    def _panic_file_contents(self):
+        # if the file exists and the size of the file is > 0,
+        # read and log its content
+        if self.panic_file and os.path.exists(self.panic_fil):
+            try:
+                if os.path.getsize(self.panic_file) > 0:
+                    with open(self.panic_file) as f:
+                        # Read the file line by line
+                        lines = f.readlines()
+                        message = []
+                        for line in lines:
+                            # Check for empty lines to split the message
+                            if line.strip() == "":
+                                log.error(f"Worker panic file content:\n{''.join(message)}")
+                                message = []  # Reset the message buffer
+                            else:
+                                message.append(line)
+
+                        # Log any remaining content after the last empty line
+                        if message:
+                            log.error(f"Worker panic file content:\n{''.join(message)}")
+            except Exception as panic_ex:
+                log.debug(f"Failed to read panic file: {panic_ex}")
+
 
 class AsyncClient(ClientBase):
     """Provides an async interface to the Python client to the HPS data transfer APIs."""
@@ -568,6 +593,11 @@ class AsyncClient(ClientBase):
     async def start(self):
         """Start the async binary worker."""
         super().start()
+        # grab location of panic file
+        resp = self.session.get("status")
+        if resp.status_code == 200:
+            self.panic_file = resp.json().get("debug", {}).get("panic_file", None)
+            log.debug(f"Worker panic file: {self.panic_file}")
         self._monitor_task = asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
@@ -632,6 +662,8 @@ class AsyncClient(ClientBase):
                 if self.binary_config.debug:
                     log.debug("URL: %s", self.base_api_url)
                     log.debug(traceback.format_exc())
+                # Before marking it as failed check if there is a panic file
+                self._panic_file_contents()
                 self._monitor_state.mark_failed(exc=ex, binary=self.binary)
                 continue
 
@@ -675,6 +707,11 @@ class Client(ClientBase):
         self._monitor_thread = threading.Thread(
             target=self._monitor, args=(), daemon=True, name="worker_status_monitor"
         )
+        # grab location of panic file
+        resp = self.session.get("status")
+        if resp.status_code == 200:
+            self.panic_file = resp.json().get("debug", {}).get("panic_file", None)
+            log.debug(f"Worker panic file: {self.panic_file}")
         self._monitor_thread.start()
 
     def stop(self, wait=5.0):
@@ -733,6 +770,8 @@ class Client(ClientBase):
                 if self.binary_config.debug:
                     log.debug("URL: %s", self.base_api_url)
                     log.debug(traceback.format_exc())
+                # Before marking it as failed check if there is a panic file
+                self._panic_file_contents()
                 self._monitor_state.mark_failed(exc=ex, binary=self.binary)
                 continue
 
