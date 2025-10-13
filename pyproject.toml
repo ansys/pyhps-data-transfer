@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
 name = "ansys-hps-data-transfer-client"
-version = "0.3.0"
+version = "0.3.1"
 description = "Python client library for hps data transfer service"
 readme = "README.rst"
 requires-python = ">=3.10,<4.0"
@@ -27,7 +27,7 @@ classifiers = [
 ]
 dependencies = [
     "pydantic>=2.7.1",
-    "httpx>=0.27.0,<0.28.0",
+    "httpx>=0.27.0",
     "backoff>=2.2.1",
     "humanfriendly>=10.0",
     "requests>=2.21.0",
