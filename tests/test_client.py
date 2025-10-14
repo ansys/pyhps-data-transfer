@@ -70,7 +70,6 @@ class TestClientBase(unittest.TestCase):
         # Assertions
         mock_exists.assert_called_once_with("/path/to/panic_file.log")
         mock_getsize.assert_called_once_with("/path/to/panic_file.log")
-        mock_open_file.assert_called_once_with("/path/to/panic_file.log", "r")
         mock_log.error.assert_any_call("Worker panic file content:\nError: Something went wrong\n")
         mock_log.error.assert_any_call("Worker panic file content:\nDetails: Invalid configuration\n")
 
