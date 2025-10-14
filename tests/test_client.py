@@ -48,7 +48,7 @@ class TestClientBase(unittest.TestCase):
         self.client._fetch_panic_file(mock_resp)
 
         # Assertions
-        self.assertEqual(self.client.panic_file, "/path/to/panic_file.log")
+        assert self.client.panic_file == "/path/to/panic_file.log"
         mock_log.debug.assert_called_with("Worker panic file: /path/to/panic_file.log")
 
     @patch("os.path.exists", return_value=True)
