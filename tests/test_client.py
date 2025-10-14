@@ -23,7 +23,8 @@
 """This module contains tests for verifying the functionality of the Client class"""
 
 import unittest
-from unittest.mock import MagicMock, patch, mock_open
+from unittest.mock import MagicMock, mock_open, patch
+
 from ansys.hps.data_transfer.client.client import ClientBase
 
 
@@ -41,11 +42,7 @@ class TestClientBase(unittest.TestCase):
         # Mock the response object
         mock_resp = MagicMock()
         mock_resp.status_code = 200
-        mock_resp.json.return_value = {
-            "debug": {
-                "panic_file": "/path/to/panic_file.log"
-            }
-        }
+        mock_resp.json.return_value = {"debug": {"panic_file": "/path/to/panic_file.log"}}
 
         # Call the method
         self.client._fetch_panic_file(mock_resp)
@@ -56,7 +53,11 @@ class TestClientBase(unittest.TestCase):
 
     @patch("os.path.exists", return_value=True)
     @patch("os.path.getsize", return_value=100)
-    @patch("builtins.open", new_callable=mock_open, read_data="Error: Something went wrong\n\nDetails: Invalid configuration\n\n")
+    @patch(
+        "builtins.open",
+        new_callable=mock_open,
+        read_data="Error: Something went wrong\n\nDetails: Invalid configuration\n\n",
+    )
     @patch("ansys.hps.data_transfer.client.client.log")
     def test_panic_file_contents(self, mock_log, mock_open_file, mock_getsize, mock_exists):
         """Test the _panic_file_contents method."""
