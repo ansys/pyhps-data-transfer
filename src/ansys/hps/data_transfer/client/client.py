@@ -594,7 +594,7 @@ class AsyncClient(ClientBase):
         """Start the async binary worker."""
         super().start()
         # grab location of panic file
-        resp = await self.session.get("status")
+        resp = await self.session.get("/")
         if resp.status_code == 200:
             self.panic_file = resp.json().get("debug", {}).get("panic_file", None)
             log.debug(f"Worker panic file: {self.panic_file}")
