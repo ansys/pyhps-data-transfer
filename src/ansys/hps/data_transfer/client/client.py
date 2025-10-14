@@ -549,7 +549,7 @@ class ClientBase:
         """Read and log the contents of the panic file if it exists."""
         # if the file exists and the size of the file is > 0,
         # read and log its content
-        if self.panic_file and os.path.exists(self.panic_fil):
+        if self.panic_file and os.path.exists(self.panic_file):
             try:
                 if os.path.getsize(self.panic_file) > 0:
                     with open(self.panic_file) as f:
