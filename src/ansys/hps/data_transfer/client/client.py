@@ -708,7 +708,7 @@ class Client(ClientBase):
             target=self._monitor, args=(), daemon=True, name="worker_status_monitor"
         )
         # grab location of panic file
-        resp = self.session.get("status")
+        resp = self.session.get("/")
         if resp.status_code == 200:
             self.panic_file = resp.json().get("debug", {}).get("panic_file", None)
             log.debug(f"Worker panic file: {self.panic_file}")
