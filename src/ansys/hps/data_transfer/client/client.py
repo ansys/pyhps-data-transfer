@@ -539,7 +539,14 @@ class ClientBase:
             }
             self._bin_config.env.update({k: v for k, v in env.items() if k not in os.environ})
 
+    def _fetch_panic_file(self, resp):
+        """Extract and log the panic file location from the response."""
+        if resp.status_code == 200:
+            self.panic_file = resp.json().get("debug", {}).get("panic_file", None)
+            log.debug(f"Worker panic file: {self.panic_file}")
+
     def _panic_file_contents(self):
+        """Read and log the contents of the panic file if it exists."""
         # if the file exists and the size of the file is > 0,
         # read and log its content
         if self.panic_file and os.path.exists(self.panic_fil):
@@ -595,9 +602,7 @@ class AsyncClient(ClientBase):
         super().start()
         # grab location of panic file
         resp = await self.session.get("/")
-        if resp.status_code == 200:
-            self.panic_file = resp.json().get("debug", {}).get("panic_file", None)
-            log.debug(f"Worker panic file: {self.panic_file}")
+        self._fetch_panic_file(resp)
         self._monitor_task = asyncio.create_task(self._monitor())
 
     async def stop(self, wait=5.0):
@@ -709,9 +714,7 @@ class Client(ClientBase):
         )
         # grab location of panic file
         resp = self.session.get("/")
-        if resp.status_code == 200:
-            self.panic_file = resp.json().get("debug", {}).get("panic_file", None)
-            log.debug(f"Worker panic file: {self.panic_file}")
+        self._fetch_panic_file(resp)
         self._monitor_thread.start()
 
     def stop(self, wait=5.0):
