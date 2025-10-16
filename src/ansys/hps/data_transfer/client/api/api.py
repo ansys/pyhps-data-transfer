@@ -322,7 +322,7 @@ class DataTransferApi:
                 ops = self._operations(operation_ids, expand=expand)
                 if handler is not None:
                     try:
-                        handler(ops)
+                        handler(ops if ops is None else [])
                     except Exception as e:
                         log.warning(f"Handler error: {e}")
                         log.debug(traceback.format_exc())
