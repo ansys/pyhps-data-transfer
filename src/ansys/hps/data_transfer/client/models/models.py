@@ -143,7 +143,7 @@ class Debug(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    panic_file: str | None = Field(default=None, description="Path to the panic file if panic logging is enabled")
+    panic_file: str = Field(..., description="Path to the panic file if panic logging is enabled")
 
 
 class ErrorDetail(BaseModel):
@@ -390,7 +390,7 @@ class Operation(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    children: list[str] | None
+    children: list[str] | None = None
     children_detail: list[Operation] | None = None
     description: str
     ended_at: AwareDatetime
@@ -402,11 +402,11 @@ class Operation(BaseModel):
     progress_current: conint(ge=0)
     progress_total: conint(ge=0)
     queued_at: AwareDatetime
-    rate: str
+    rate: str | None = None
     result: Any
     started_at: AwareDatetime
     state: OperationState
-    succeeded_on: list[str] | None
+    succeeded_on: list[str] | None = None
     user_id: str
 
 
