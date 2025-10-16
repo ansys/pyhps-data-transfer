@@ -37,6 +37,13 @@ class AuthRedirectRequestBody(BaseModel):
     )
 
 
+class AuthTokenResponseBody(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    token: str
+
+
 class BinaryInfo(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -291,6 +298,14 @@ class TokenRequest(BaseModel):
     write: list[str] | None
 
 
+class UserCredentials(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    name: str
+    password: str
+
+
 class UserInfo(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -362,6 +377,13 @@ class OperationState(Enum):
     Failed = "failed"
 
 
+class AuthTokenRequestBody(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    credentials: UserCredentials
+
+
 class CopyMetadataRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -390,7 +412,7 @@ class Operation(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    children: list[str] | None
+    children: list[str] | None = None
     children_detail: list[Operation] | None = None
     description: str
     ended_at: AwareDatetime
@@ -402,11 +424,11 @@ class Operation(BaseModel):
     progress_current: conint(ge=0)
     progress_total: conint(ge=0)
     queued_at: AwareDatetime
-    rate: str
+    rate: str | None = None
     result: Any
     started_at: AwareDatetime
     state: OperationState
-    succeeded_on: list[str] | None
+    succeeded_on: list[str] | None = None
     user_id: str
 
 
