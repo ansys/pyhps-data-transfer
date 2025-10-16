@@ -58,10 +58,11 @@ class WaitHandler:
         # so_far = time.time() - self.start
         num_running = 0
         for op in ops:
-            for ch in op.children_detail or []:
-                if ch.state not in self.final:
-                    num_running += 1
-                self._log_op(logging.DEBUG, ch)
+            if op.children_detail is not None and self.Meta.expand_group:
+                for ch in op.children_detail or []:
+                    if ch.state not in self.final:
+                        num_running += 1
+                    self._log_op(logging.DEBUG, ch)
 
             if op.state not in self.final:
                 num_running += 1
@@ -69,7 +70,7 @@ class WaitHandler:
 
     def _log_op(self, lvl: int, op: Operation):
         """Format the operation description."""
-        op_type = "operation" if len(op.children) == 0 else "operation group"
+        op_type = "operation" if op.children is None or len(op.children) == 0 else "operation group"
         op_done = op.state in self.final
 
         msg = f"Data transfer {op_type} '{op.description}'({op.id}) done? {op_done}"
