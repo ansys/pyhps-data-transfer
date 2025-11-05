@@ -396,7 +396,7 @@ class Binary:
         restart_count = 0  # Initialize a counter for restarts
         while not self._stop.is_set():
             if self._process is None:
-                log.info(f"Data Transfer worker is not running")
+                log.info(f"Data Transfer is starting on restart counter {restart_count}")
                 self._prepare()
                 args = " ".join(self._args)
 
@@ -415,15 +415,15 @@ class Binary:
                     log.debug(f"Environment: {env_str}")
 
                 with PrepareSubprocess():
-                    log.info(f"Launching data transfer worker")
+                    log.info(f"Launching data transfer worker") 
                     self._process = subprocess.Popen(
-                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
+                        args, shell=True, stdout=subprocess.PIPE, env=env
                     )
                     log.info(f"Data transfer worker is running with PID: {self._process.pid}")
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
-                    restart_count += 1  # Increment the restart counter
+                    restart_count += 1  # Increment the restart counter 
                     if restart_count > self.config.max_restarts:
                         log.error(f"Worker exceeded maximum restart attempts ({self.config.max_restarts}). Stopping...")
                         break  # Exit the loop after exceeding the restart limit
