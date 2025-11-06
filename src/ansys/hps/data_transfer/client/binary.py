@@ -414,7 +414,7 @@ class Binary:
                     log.debug(f"Environment: {env_str}")
 
                 with PrepareSubprocess():
-                    log.info("Launching data transfer worker") 
+                    log.info("Launching data transfer worker")
                     self._process = subprocess.Popen(
                         args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
                     )
