@@ -33,7 +33,6 @@ import stat
 import subprocess
 import threading
 import time
-import psutil
 
 import portend
 
@@ -417,7 +416,7 @@ class Binary:
                 with PrepareSubprocess():
                     log.info(f"Launching data transfer worker") 
                     self._process = subprocess.Popen(
-                        args, shell=True, stdout=subprocess.PIPE, env=env
+                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
                     )
                     log.info(f"Data transfer worker is running with PID: {self._process.pid}")
             else:
