@@ -406,11 +406,9 @@ class Operation(BaseModel):
     progress_current: conint(ge=0) | None = None
     progress_total: conint(ge=0) | None = None
     queued_at: AwareDatetime | None = None
-    rate: str | None = None
     result: Any | None = None
     started_at: AwareDatetime | None = None
     state: OperationState | None = None
-    succeeded_on: list[str] | None = None
     user_id: str | None = None
 
 
