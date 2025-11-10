@@ -260,6 +260,8 @@ class AsyncDataTransferApi:
                 log.debug(f"Error getting operations: {e}")
                 if raise_on_error:
                     raise
+                else:
+                    break
 
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for operations to complete")

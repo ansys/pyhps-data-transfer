@@ -206,8 +206,8 @@ class ClientBase:
         clean=False,
         clean_dev=True,
         check_in_use=True,
-        timeout=60.0,
-        retries=10,
+        timeout=5.0,
+        retries=4,
     ):
         """Initializes the Client class object."""
         self._bin_config = bin_config or BinaryConfig()
@@ -248,6 +248,13 @@ class ClientBase:
     def binary_config(self):
         """Binary configuration."""
         return self._bin_config
+
+    @property
+    def pid(self):
+        """Process ID of the worker binary."""
+        if self.binary is None or self.binary._process is None:
+            return None
+        return self.binary._process.pid
 
     @property
     def base_api_url(self):
@@ -500,6 +507,7 @@ class ClientBase:
                 event_hooks={"response": [raise_for_status]},
                 **args,
             )
+            session._transport.verify = False
         else:
             session = httpx.AsyncClient(
                 transport=httpx.AsyncHTTPTransport(retries=self._retries, verify=verify),
@@ -519,6 +527,8 @@ class ClientBase:
 
     def _on_port_changed(self, port):
         log.debug(f"Port changed to {port}")
+        if self._session is not None:
+            self._session.close()
         self._session = None
 
     def _on_process_died(self, ret_code):

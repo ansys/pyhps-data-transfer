@@ -194,7 +194,7 @@ class DataTransferApi:
         params = {"ids": ids}
         if expand:
             params["expand"] = "true"
-        resp = self.client.session.get(url, params=params)
+        resp = self.client.session.get(url, params=params, timeout=1)
         json = resp.json()
         return OperationsResponse(**json).operations
 
@@ -328,11 +328,14 @@ class DataTransferApi:
                         log.debug(traceback.format_exc())
 
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
+                    log.debug("All operations have completed.")
                     break
             except Exception as e:
                 log.debug(f"Error getting operations: {e}")
                 if raise_on_error:
                     raise
+                else:
+                    break
 
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for operations to complete")
