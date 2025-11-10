@@ -229,6 +229,7 @@ class ClientBase:
         self._monitor_stop = None
         self._monitor_state = MonitorState()
 
+        self._interuppt_wait = None
         self.progress_interval = 5.0  # seconds
 
     def __getstate__(self):
@@ -236,6 +237,8 @@ class ClientBase:
         state = self.__dict__.copy()
         del state["_session"]
         del state["_monitor_stop"]
+        # Add Interuppt wait here
+        del state["_interuppt_wait"]
         return state
 
     def __setstate__(self, state):
@@ -243,6 +246,8 @@ class ClientBase:
         self.__dict__.update(state)
         self._session = None
         self._monitor_stop = None
+         # Add Interuppt wait here
+        self._interuppt_wait = None
 
     @property
     def binary_config(self):
@@ -296,6 +301,8 @@ class ClientBase:
                 shutil.rmtree(self._download_dir)
             except Exception as ex:
                 log.debug(f"Failed to remove directory {self._download_dir}: {ex}")
+
+        self._interuppt_wait = threading.Event()
 
         self._monitor_stop = threading.Event()
         self._monitor_state.reset()
@@ -491,7 +498,8 @@ class ClientBase:
         # log.debug("Creating session for %s with verify=%s", url, verify)
 
         args = {
-            "timeout": httpx.Timeout(self._timeout),
+            #"timeout": httpx.Timeout(self._timeout),
+           "timeout": self._timeout,
         }
 
         if sync:
@@ -520,6 +528,7 @@ class ClientBase:
     def _on_port_changed(self, port):
         log.debug(f"Port changed to {port}")
         self._session = None
+        self._interuppt_wait.set() 
 
     def _on_process_died(self, ret_code):
         self._monitor_state.reset()
