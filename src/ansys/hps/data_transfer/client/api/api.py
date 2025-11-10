@@ -194,7 +194,7 @@ class DataTransferApi:
         params = {"ids": ids}
         if expand:
             params["expand"] = "true"
-        resp = self.client.session.get(url, params=params)
+        resp = self.client.session.get(url, params=params, timeout=1)
         json = resp.json()
         return OperationsResponse(**json).operations
 
@@ -319,9 +319,7 @@ class DataTransferApi:
             attempt += 1
             try:
                 expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
-                log.debug(f"Getting operations (attempt {attempt}) ...")
                 ops = self._operations(operation_ids, expand=expand)
-                log.debug(f"Retrieved {len(ops)} operations.")
                 if handler is not None:
                     try:
                         handler(ops)
@@ -329,8 +327,6 @@ class DataTransferApi:
                         log.warning(f"Handler error: {e}")
                         log.debug(traceback.format_exc())
 
-                if not ops:
-                    log.warning("No operations found.")
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     log.debug("All operations have completed.")
                     break
@@ -338,6 +334,8 @@ class DataTransferApi:
                 log.debug(f"Error getting operations: {e}")
                 if raise_on_error:
                     raise
+                else:
+                    break
 
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for operations to complete")

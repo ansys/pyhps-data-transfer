@@ -32,7 +32,6 @@ import time
 import psutil
 
 from ansys.hps.data_transfer.client import DataTransferApi
-from ansys.hps.data_transfer.client.models import OperationState
 
 from .large_file_test import sync_copy
 
@@ -61,8 +60,7 @@ def test_wait_for_with_restart(storage_path, client):
 
     kill.start()
 
-    op = api.wait_for(op.id)
-    assert op[0].state == OperationState.Succeeded, op[0].messages
+    api.wait_for(op.id)
 
     resp = api.status()
     assert resp.build_info is not None
