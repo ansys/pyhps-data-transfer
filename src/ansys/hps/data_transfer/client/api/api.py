@@ -327,7 +327,10 @@ class DataTransferApi:
                         log.warning(f"Handler error: {e}")
                         log.debug(traceback.format_exc())
 
+                if not ops:
+                    log.warning("No operations found.")
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
+                    log.debug("All operations have completed.")
                     break
             except Exception as e:
                 log.debug(f"Error getting operations: {e}")

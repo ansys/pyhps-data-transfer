@@ -250,6 +250,13 @@ class ClientBase:
         return self._bin_config
 
     @property
+    def pid(self):
+        """Process ID of the worker binary."""
+        if self.binary is None or self.binary._process is None:
+            return None
+        return self.binary._process.pid
+
+    @property
     def base_api_url(self):
         """API URL from the configuration."""
         return self._bin_config.url
