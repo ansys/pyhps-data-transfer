@@ -319,7 +319,9 @@ class DataTransferApi:
             attempt += 1
             try:
                 expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
+                log.debug(f"Getting operations (attempt {attempt}) ...")
                 ops = self._operations(operation_ids, expand=expand)
+                log.debug(f"Retrieved {len(ops)} operations.")
                 if handler is not None:
                     try:
                         handler(ops)
