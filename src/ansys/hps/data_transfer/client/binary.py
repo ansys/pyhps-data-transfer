@@ -147,6 +147,8 @@ class BinaryConfig:
         Whether to ignore SSL certificate verification.
     debug: bool, default: False
         Whether to enable debug logging.
+    max_restarts: int, default: 5
+        Maximum number of times to restart the worker if it crashes.
     """
 
     def __init__(
@@ -169,6 +171,7 @@ class BinaryConfig:
         debug: bool = False,
         auth_type: str = None,
         env: dict | None = None,
+        max_restarts: int = 5,
     ):
         """Initialize the BinaryConfig class object."""
         self.data_transfer_url = data_transfer_url
@@ -191,6 +194,7 @@ class BinaryConfig:
         self._env = env or {}
         self.insecure = insecure
         self.auth_type = auth_type
+        self.max_restarts = max_restarts
 
         self._on_token_update = None
         self._on_process_died = None
@@ -388,8 +392,10 @@ class Binary:
         # log.debug("Worker log output stopped")
 
     def _monitor(self):
+        restart_count = 0  # Initialize a counter for restarts
         while not self._stop.is_set():
             if self._process is None:
+                log.info(f"Data Transfer is starting on restart counter {restart_count}")
                 self._prepare()
                 args = " ".join(self._args)
 
@@ -408,12 +414,19 @@ class Binary:
                     log.debug(f"Environment: {env_str}")
 
                 with PrepareSubprocess():
+                    log.info("Launching data transfer worker")
                     self._process = subprocess.Popen(
-                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
+                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
                     )
+                    log.info(f"Data transfer worker is running with PID: {self._process.pid}")
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
+                    restart_count += 1  # Increment the restart counter
+                    if restart_count > self.config.max_restarts:
+                        log.error(f"Worker exceeded maximum restart attempts ({self.config.max_restarts}). Stopping...")
+                        break  # Exit the loop after exceeding the restart limit
+
                     log.warning(f"Worker exited with code {ret_code}, restarting ...")
                     self._process = None
                     self._prepared.clear()
@@ -421,11 +434,11 @@ class Binary:
                         self.config._on_process_died(ret_code)
                     time.sleep(1.0)
                     continue
-                # elif self._config.debug:
-                #     log.debug(f"Worker running ...")
+            # Reset restart_count if the worker is running successfully
+            restart_count = 0
 
             time.sleep(self._config.monitor_interval)
-        # log.debug("Worker monitor stopped")
+        log.debug("Worker monitor stopped")
 
     def _prepare(self):
         if self._config._selected_port is None:
