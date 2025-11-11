@@ -49,6 +49,7 @@ class WaitHandler:
         self.report_threshold = 2.0  # seconds
         self.min_progress_interval = 3.0  # seconds
         self.last_progress = self.start
+        self.completed_ids = []
 
     def __call__(self, ops: list[Operation]):
         """Handle operations after they are fetched."""
@@ -60,9 +61,15 @@ class WaitHandler:
         for op in ops:
             if op.children_detail is not None and self.Meta.expand_group:
                 for ch in op.children_detail or []:
+                    # For ops with lots of children, avoid logging completed children on every loop interation
+                    # If there are 29 small files and 1 large file in the group, we dont want to log 29 files 
+                    # are done 1000 times while the large file copies.
+                    if ch.id not in self.completed_ids:
+                        self._log_op(logging.DEBUG, ch)
                     if ch.state not in self.final:
                         num_running += 1
-                    self._log_op(logging.DEBUG, ch)
+                    elif ch.id not in self.completed_ids:
+                        self.completed_ids.append(ch.id)
 
             if op.state not in self.final:
                 num_running += 1

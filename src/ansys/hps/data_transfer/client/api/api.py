@@ -73,6 +73,7 @@ class DataTransferApi:
         self.dump_mode = "json"
         self.client = client
         self.wait_handler_factory = WaitHandler
+        self.request_timeout = (10.0, 10.0, 10.0, 10.0) # connect, read, write, pool timeouts
 
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
@@ -89,7 +90,7 @@ class DataTransferApi:
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for worker to be ready")
 
-            resp = self.client.session.get(url)
+            resp = self.client.session.get(url, timeout=self.request_timeout)
             json = resp.json()
             s = StatusResponse(**json)
             if wait and not s.ready:
@@ -184,7 +185,7 @@ class DataTransferApi:
     ):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
-        resp = self.client.session.post(url, json=payload)
+        resp = self.client.session.post(url, json=payload, timeout=self.request_timeout)
         json = resp.json()
         r = OperationIdResponse(**json)
         return r
@@ -194,7 +195,7 @@ class DataTransferApi:
         params = {"ids": ids}
         if expand:
             params["expand"] = "true"
-        resp = self.client.session.get(url, params=params, timeout=1)
+        resp = self.client.session.get(url, params=params, timeout=self.request_timeout)
         json = resp.json()
         return OperationsResponse(**json).operations
 
@@ -208,7 +209,7 @@ class DataTransferApi:
         """
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
-        resp = self.client.session.post(url, json=payload)
+        resp = self.client.session.post(url, json=payload, timeout=self.request_timeout)
         json = resp.json()
         return CheckPermissionsResponse(**json)
 
@@ -222,7 +223,7 @@ class DataTransferApi:
         """
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
-        resp = self.client.session.post(url, json=payload)
+        resp = self.client.session.post(url, json=payload, timeout=self.request_timeout)
         json = resp.json()
         return GetPermissionsResponse(**json)
 
@@ -236,7 +237,7 @@ class DataTransferApi:
         """
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
-        self.client.session.post(url, json=payload)
+        self.client.session.post(url, json=payload, timeout=self.request_timeout)
 
     @retry()
     def set_permissions(self, permissions: builtins.list[RoleAssignment]):
@@ -248,7 +249,7 @@ class DataTransferApi:
         """
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
-        self.client.session.post(url, json=payload)
+        self.client.session.post(url, json=payload, timeout=self.request_timeout)
 
     @retry()
     def get_metadata(self, paths: builtins.list[str | StoragePath]):
@@ -261,7 +262,7 @@ class DataTransferApi:
         url = "/metadata:get"
         paths = [p if isinstance(p, str) else p.path for p in paths]
         payload = {"paths": paths}
-        resp = self.client.session.post(url, json=payload)
+        resp = self.client.session.post(url, json=payload, timeout=self.request_timeout)
         json = resp.json()
         return OperationIdResponse(**json)
 
@@ -277,7 +278,7 @@ class DataTransferApi:
         url = "/metadata:set"
         d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}
         req = SetMetadataRequest(metadata=d)
-        resp = self.client.session.post(url, json=req.model_dump(mode=self.dump_mode))
+        resp = self.client.session.post(url, json=req.model_dump(mode=self.dump_mode), timeout=self.request_timeout)
         json = resp.json()
         return OperationIdResponse(**json)
 

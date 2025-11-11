@@ -70,6 +70,7 @@ class AsyncDataTransferApi:
         self.dump_mode = "json"
         self.client = client
         self.wait_handler_factory = AsyncWaitHandler
+        self.request_timeout = (10.0, 10.0, 10.0, 10.0) # connect, read, write, pool timeouts
 
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
@@ -87,7 +88,7 @@ class AsyncDataTransferApi:
             if timeout is not None and (time.time() - start) > timeout:
                 raise TimeoutError("Timeout waiting for worker to be ready")
 
-            resp = await self.client.session.get(url)
+            resp = await self.client.session.get(url, timeout=self.request_timeout)
             json = resp.json()
             s = StatusResponse(**json)
             if wait and not s.ready:
@@ -103,7 +104,7 @@ class AsyncDataTransferApi:
     async def storages(self):
         """Provides an async interface to get the list of storage configurations."""
         url = "/storage"
-        resp = await self.client.session.get(url)
+        resp = await self.client.session.get(url, timeout=self.request_timeout)
         json = resp.json()
         return StorageConfigResponse(**json).storage
 
@@ -141,7 +142,7 @@ class AsyncDataTransferApi:
     ):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
-        resp = await self.client.session.post(url, json=payload)
+        resp = await self.client.session.post(url, json=payload, timeout=self.request_timeout)
         json = resp.json()
         return OperationIdResponse(**json)
 
@@ -150,7 +151,7 @@ class AsyncDataTransferApi:
         params = {"ids": ids}
         if expand:
             params["expand"] = "true"
-        resp = await self.client.session.get(url, params=params)
+        resp = await self.client.session.get(url, params=params, timeout=self.request_timeout)
         json = resp.json()
         return OperationsResponse(**json).operations
 
@@ -159,7 +160,7 @@ class AsyncDataTransferApi:
         """Provides an async interface to check permissions of a list of ``RoleAssignment`` objects."""
         url = "/permissions:check"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
-        resp = await self.client.session.post(url, json=payload)
+        resp = await self.client.session.post(url, json=payload, timeout=self.request_timeout)
         json = resp.json()
         return CheckPermissionsResponse(**json)
 
@@ -168,7 +169,7 @@ class AsyncDataTransferApi:
         """Provides an async interface to get permissions of a list of ``RoleQuery`` objects."""
         url = "/permissions:get"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
-        resp = await self.client.session.post(url, json=payload)
+        resp = await self.client.session.post(url, json=payload, timeout=self.request_timeout)
         json = resp.json()
         return GetPermissionsResponse(**json)
 
@@ -177,14 +178,14 @@ class AsyncDataTransferApi:
         """Provides an async interface to remove permissions of a list of ``RoleAssignment`` objects."""
         url = "/permissions:remove"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
-        await self.client.session.post(url, json=payload)
+        await self.client.session.post(url, json=payload, timeout=self.request_timeout)
 
     @retry()
     async def set_permissions(self, permissions: builtins.list[RoleAssignment]):
         """Provides an async interface to set permissions of a list of ``RoleAssignment`` objects."""
         url = "/permissions:set"
         payload = {"permissions": [permission.model_dump(mode=self.dump_mode) for permission in permissions]}
-        await self.client.session.post(url, json=payload)
+        await self.client.session.post(url, json=payload, timeout=self.request_timeout)
 
     @retry()
     async def get_metadata(self, paths: builtins.list[str | StoragePath]):
@@ -192,7 +193,7 @@ class AsyncDataTransferApi:
         url = "/metadata:get"
         paths = [p if isinstance(p, str) else p.path for p in paths]
         payload = {"paths": paths}
-        resp = await self.client.session.post(url, json=payload)
+        resp = await self.client.session.post(url, json=payload, timeout=self.request_timeout)
         json = resp.json()
         return OperationIdResponse(**json)
 
@@ -202,7 +203,7 @@ class AsyncDataTransferApi:
         url = "/metadata:set"
         d = {k if isinstance(k, str) else k.path: v for k, v in asgs.items()}
         req = SetMetadataRequest(metadata=d)
-        resp = await self.client.session.post(url, json=req.model_dump(mode=self.dump_mode))
+        resp = await self.client.session.post(url, json=req.model_dump(mode=self.dump_mode), timeout=self.request_timeout)
         json = resp.json()
         return OperationIdResponse(**json)
 
