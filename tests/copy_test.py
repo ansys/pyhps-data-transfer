@@ -103,3 +103,38 @@ def test_copy_empty_file(storage_path, client):
     assert op.id is not None
     op = api.wait_for(op.id)
     assert op[0].state == OperationState.Succeeded, op[0].messages
+
+
+def test_multi_copy_parent_progress(storage_path, client):
+    """Test progress of parent operation when copying multiple files."""
+
+    api = DataTransferApi(client)
+    api.status(wait=True)
+
+    operations = []
+
+    for _ in range(3):
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_file:
+            temp_file.write("Mock file")
+        temp_file_name = os.path.basename(temp_file.name)
+
+        src = StoragePath(path=temp_file.name, remote="local")
+        dst = StoragePath(path=f"{storage_path}/{temp_file_name}")
+        operations.append(SrcDst(src=src, dst=dst))
+
+    op = api.copy(operations)
+
+    assert op.id is not None
+
+    # test progress handler
+    progress_history = []
+
+    def handler(ops):
+        for o in ops:
+            if o.id == op.id:
+                progress_history.append(o.progress)
+
+    op = api.wait_for(op.id, interval=0.05, handler=handler)
+    assert op[0].state == OperationState.Succeeded, op[0].messages
+
+    assert None not in progress_history, f"{progress_history=}"
