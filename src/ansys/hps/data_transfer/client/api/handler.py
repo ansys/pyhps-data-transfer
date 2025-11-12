@@ -95,7 +95,7 @@ class WaitHandler:
             duration = 0
             duration_str = "unknown"
 
-        # Initialize last progress time if not set, set it back in time 
+        # Initialize last progress time if not set, set it back in time
         # so it logs right away (report threshold) the first time.
         if self.last_progress.get(op.id, None) is None:
             self.last_progress[op.id] = time.time() - self.min_progress_interval
