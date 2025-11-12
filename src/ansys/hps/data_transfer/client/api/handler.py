@@ -61,7 +61,7 @@ class WaitHandler:
         for op in ops:
             if op.children_detail is not None and self.Meta.expand_group:
                 for ch in op.children_detail or []:
-                    # For ops with lots of children, avoid logging completed children on every loop interation
+                    # For ops with lots of children, avoid logging completed children on every loop iteration
                     # If there are 29 small files and 1 large file in the group, we dont want to log 29 files
                     # are done 1000 times while the large file copies.
                     if ch.id not in self.completed_ids:
@@ -95,7 +95,8 @@ class WaitHandler:
             duration = 0
             duration_str = "unknown"
 
-        # Initialize last progress time if not set, set it back in time so it logs right away (report threshold) the first time.
+        # Initialize last progress time if not set, set it back in time 
+        # so it logs right away (report threshold) the first time.
         if self.last_progress.get(op.id, None) is None:
             self.last_progress[op.id] = time.time() - self.min_progress_interval
 
