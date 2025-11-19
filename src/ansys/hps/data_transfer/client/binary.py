@@ -84,6 +84,7 @@ class PrepareSubprocess:
         if hasattr(subprocess, "_USE_VFORK"):
             self._orig_use_vfork = subprocess._USE_VFORK
             subprocess._USE_VFORK = False
+            
         if hasattr(subprocess, "_USE_POSIX_SPAWN):
             self._orig_use_pspawn = getattr(subprocess, "_USE_POSIX_SPAWN", False)
             subprocess._USE_POSIX_SPAWN = False
@@ -92,11 +93,12 @@ class PrepareSubprocess:
         """Restore original values of _USE_VFORK and _USE_POSIX_SPAWN."""
         if not self.disable_vfork:
             return
+            
         if self._orig_use_vfork is not None:
             subprocess._USE_VFORK = self._orig_use_vfork
+        
         if self._orig_use_pspawn is not None:
             subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
-
 
 def default_log_message(debug: bool, data: dict[str, any]):
     """Default log message handler.
