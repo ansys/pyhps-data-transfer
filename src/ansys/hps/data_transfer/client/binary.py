@@ -85,7 +85,7 @@ class PrepareSubprocess:
             self._orig_use_vfork = subprocess._USE_VFORK
             subprocess._USE_VFORK = False
             
-        if hasattr(subprocess, "_USE_POSIX_SPAWN):
+        if hasattr(subprocess, "_USE_POSIX_SPAWN"):
             self._orig_use_pspawn = getattr(subprocess, "_USE_POSIX_SPAWN", False)
             subprocess._USE_POSIX_SPAWN = False
 
