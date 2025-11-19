@@ -73,19 +73,31 @@ class PrepareSubprocess:
         """Initialize the PrepareSubprocess class object."""
         # Check if not Windows
         self.disable_vfork = os.name != "nt" and platform.system() != "Windows"
+        self._orig_use_vfork = None
+        self._orig_use_pspawn = None
 
     def __enter__(self):
         """Disable vfork and posix_spawn in subprocess."""
-        if self.disable_vfork:
+        if not self.disable_vfork:
+            return
+
+        if hasattr(subprocess, "_USE_VFORK"):
             self._orig_use_vfork = subprocess._USE_VFORK
-            self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
             subprocess._USE_VFORK = False
+
+        if hasattr(subprocess, "_USE_POSIX_SPAWN"):
+            self._orig_use_pspawn = getattr(subprocess, "_USE_POSIX_SPAWN", False)
             subprocess._USE_POSIX_SPAWN = False
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Restore original values of _USE_VFORK and _USE_POSIX_SPAWN."""
-        if self.disable_vfork:
+        if not self.disable_vfork:
+            return
+
+        if self._orig_use_vfork is not None:
             subprocess._USE_VFORK = self._orig_use_vfork
+
+        if self._orig_use_pspawn is not None:
             subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
 
 
