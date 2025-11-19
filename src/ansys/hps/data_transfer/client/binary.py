@@ -77,8 +77,8 @@ class PrepareSubprocess:
     def __enter__(self):
         """Disable vfork and posix_spawn in subprocess."""
         if self.disable_vfork:
-            self._orig_use_vfork = subprocess._USE_VFORK
-            self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
+            self._orig_use_vfork = getattr(subprocess, "_USE_VFORK", False)
+            self._orig_use_pspawn = getattr(subprocess, "_USE_POSIX_SPAWN", False)
             subprocess._USE_VFORK = False
             subprocess._USE_POSIX_SPAWN = False
 
