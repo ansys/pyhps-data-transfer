@@ -102,14 +102,14 @@ class WaitHandler:
 
         state = op.state.value
         if op_done:
-            msg += f"{state} after {duration_str}"
+            msg += f"{state.title()} after {duration_str}"
             msg += self._info_str(op)
             # if op.messages:
             # msg += f', messages="{"; ".join(op.messages)}"'
             log.log(lvl, msg)
         elif duration > self.report_threshold and time.time() - self.last_progress[op.id] > self.min_progress_interval:
             self.last_progress[op.id] = time.time()
-            msg += f"{state} for {duration_str}"
+            msg += f"{state.title()} for {duration_str}"
             if op.progress and op.progress > 0.0:
                 msg += f", progress {op.progress * 100.0:.1f}%"
             msg += self._info_str(op)
