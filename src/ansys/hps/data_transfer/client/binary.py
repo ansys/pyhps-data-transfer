@@ -428,7 +428,7 @@ class Binary:
                 with PrepareSubprocess():
                     log.info("Launching data transfer worker")
                     self._process = subprocess.Popen(
-                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
+                        args, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env
                     )
                     log.info(f"Data transfer worker is running with PID: {self._process.pid}")
             else:
