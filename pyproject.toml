@@ -50,11 +50,11 @@ tests = [
     "tox==4.32.0",
 ]
 doc = [
-    "ansys-sphinx-theme==1.6.1",
+    "ansys-sphinx-theme==1.6.3",
     "autodoc_pydantic==2.2.0",
     "jupyter_sphinx==0.5.3",
-    "nbsphinx==0.9.7",
-    "numpydoc==1.8.0",
+    "nbsphinx==0.9.8",
+    "numpydoc==1.9.0",
     "Sphinx==8.1.3",
     "sphinx-autoapi==3.6.1",
     "sphinx-autodoc-typehints==3.0.1",
