@@ -131,7 +131,7 @@ def default_log_message(debug: bool, data: dict[str, any]):
     if other:
         msg += f" {other}"
     msg = msg.encode("ascii", errors="ignore").decode().strip()
-    log.log(level_no, f"{msg}")
+    log.log(level_no, f"DTWorker: {msg}")
 
 
 class BinaryConfig:
