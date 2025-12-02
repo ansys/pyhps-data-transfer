@@ -353,11 +353,6 @@ class Binary:
         t.daemon = True
         t.start()
 
-        if self._config.log:
-            t = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
-            t.daemon = True
-            t.start()
-
         if not self._prepared.wait(timeout=5.0):
             log.warning("Worker preparation is taking longer than expected ...")
 
@@ -431,6 +426,12 @@ class Binary:
                         args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
                     )
                     log.info(f"Data transfer worker is running with PID: {self._process.pid}")
+
+                    # When the process restarts, we need to start a new thread to read its new stdout/stderr
+                    if self._config.log:
+                        t = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
+                        t.daemon = True
+                        t.start()
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
