@@ -300,6 +300,7 @@ class Binary:
         self._stop = None
         self._prepared = None
         self._process = None
+        self._log_thread = None
 
     def __getstate__(self):
         """Return state of the object."""
@@ -420,6 +421,11 @@ class Binary:
                 if self._config.debug:
                     log.debug(f"Environment: {env_str}")
 
+                if self._config.log and self._log_thread is not None:
+                    log.info("Waiting for previous DT log thread to finish...")
+                    self._log_thread.join()
+                    self._log_thread = None
+
                 with PrepareSubprocess():
                     log.info("Launching data transfer worker")
                     self._process = subprocess.Popen(
@@ -427,11 +433,10 @@ class Binary:
                     )
                     log.info(f"Data transfer worker is running with PID: {self._process.pid}")
 
-                    # When the process restarts, we need to start a new thread to read its new stdout/stderr
                     if self._config.log:
-                        t = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
-                        t.daemon = True
-                        t.start()
+                        self._log_thread = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
+                        self._log_thread.daemon = True
+                        self._log_thread.start()
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
