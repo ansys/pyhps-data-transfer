@@ -40,7 +40,12 @@ log = logging.getLogger(__name__)
 
 def delayed_kill(delay: int, pid: int):
     time.sleep(delay)
-    log.info(f"Killing process with pid {pid} ...")
+    log.info(f"Killing process and children for pid {pid} ...")
+    processes = psutil.Process(pid).children(recursive=True)
+    for process in processes:
+        log.info(f"Killing child process with pid {process.pid} ...")
+        process.kill()
+    log.info(f"Killing process {pid} ...")
     psutil.Process(pid).kill()
 
 

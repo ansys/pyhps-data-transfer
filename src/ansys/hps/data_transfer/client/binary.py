@@ -378,14 +378,21 @@ class Binary:
 
     def _log_output(self):
         log_message = self._config._log_message
-
+        # Keep track of the first time the process is present,
+        # if it disappears, we stop reading, it means the process has ended
+        started = False
         while not self._stop.is_set():
             if self._process is None or self._process.stdout is None:
+                if started:
+                    log.debug("Log thread found the process stdout missing, reading stopped.")
+                    break
                 time.sleep(1)
                 continue
             try:
+                started = True
                 line = self._process.stdout.readline()
                 if not line:
+                    log.debug("Log thread stdout ended normally, reading stopped.")
                     break
                 # If we dont need to log it, it still needs to be read to prevent hangs from full buffers
                 if not self.config.log:
@@ -424,11 +431,6 @@ class Binary:
                 if self._config.debug:
                     log.debug(f"Environment: {env_str}")
 
-                if self._log_thread is not None:
-                    log.info("Waiting for previous DT log thread to finish...")
-                    self._log_thread.join()
-                    self._log_thread = None
-
                 with PrepareSubprocess():
                     log.info("Launching data transfer worker")
                     self._process = subprocess.Popen(
@@ -452,6 +454,11 @@ class Binary:
                     self._prepared.clear()
                     if self.config._on_process_died is not None:
                         self.config._on_process_died(ret_code)
+
+                    if self._log_thread is not None:
+                        log.info("Waiting for log thread to finish ...")
+                        self._log_thread.join()
+                        self._log_thread = None
                     time.sleep(1.0)
                     continue
             # Reset restart_count if the worker is running successfully
