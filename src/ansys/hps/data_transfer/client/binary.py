@@ -387,6 +387,9 @@ class Binary:
                 line = self._process.stdout.readline()
                 if not line:
                     break
+                # If we dont need to log it, it still needs to be read to prevent hangs from full buffers
+                if not self.config.log:
+                    continue
                 line = line.decode(errors="strip").strip()
                 if log_message is not None:
                     d = json.loads(line)
@@ -421,7 +424,7 @@ class Binary:
                 if self._config.debug:
                     log.debug(f"Environment: {env_str}")
 
-                if self._config.log and self._log_thread is not None:
+                if self._log_thread is not None:
                     log.info("Waiting for previous DT log thread to finish...")
                     self._log_thread.join()
                     self._log_thread = None
@@ -433,10 +436,9 @@ class Binary:
                     )
                     log.info(f"Data transfer worker is running with PID: {self._process.pid}")
 
-                    if self._config.log:
-                        self._log_thread = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
-                        self._log_thread.daemon = True
-                        self._log_thread.start()
+                    self._log_thread = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
+                    self._log_thread.daemon = True
+                    self._log_thread.start()
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
