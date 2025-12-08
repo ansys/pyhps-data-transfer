@@ -39,7 +39,7 @@ dependencies = [
 
 [project.optional-dependencies]
 tests = [
-    "pytest==9.0.1",
+    "pytest==9.0.2",
     "pytest-cov==7.0.0",
     "pytest-timeout==2.4.0",
     "pytest-mock-resources[redis]==2.12.4",
