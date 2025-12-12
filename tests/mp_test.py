@@ -36,16 +36,16 @@ from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
 log = logging.getLogger(__name__)
 
 
-def _check_storage(dt_api, clt, bin):
+def _check_storage(dt_api):
     log.info(dt_api.storages())
 
 
-def _async_check_storage(dt_api, clt, bin):
+def _async_check_storage(dt_api):
     s = asyncio.run(dt_api.storages())
     log.info(s)
 
 
-def test_mp_support(client):
+def _test_mp_support(ctx, client):
     """Test multiprocessing support."""
     api = DataTransferApi(client)
     api.status(wait=True)
@@ -56,7 +56,7 @@ def test_mp_support(client):
         time.sleep(1)
     time.sleep(5)
 
-    p = mp.Process(target=_check_storage, args=(api, client, client.binary))
+    p = ctx.Process(target=_check_storage, args=(api,))
     p.start()
     p.join()
 
@@ -65,7 +65,8 @@ def test_mp_support(client):
     concurrent.futures.wait([f])
 
 
-async def test_async_mp_support(async_client):
+async def _test_async_mp_support(ctx, async_client):
+    mp.set_start_method("spawn", force=True)
     """Test multiprocessing support using the async API."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
@@ -76,10 +77,30 @@ async def test_async_mp_support(async_client):
         asyncio.sleep(1)
     asyncio.sleep(5)
 
-    p = mp.Process(target=_async_check_storage, args=(api, async_client, async_client.binary))
+    p = ctx.Process(target=_async_check_storage, args=(api,))
     p.start()
     p.join()
 
     pool = concurrent.futures.ProcessPoolExecutor()
     f = pool.submit(_async_check_storage, api)
     concurrent.futures.wait([f])
+
+
+def test_mp_default_support(client):
+    ctx = mp.get_context()
+    _test_mp_support(ctx, client)
+
+
+def test_mp_spawn_support(client):
+    ctx = mp.get_context("spawn")
+    _test_mp_support(ctx, client)
+
+
+def test_async_mp_default_support(async_client):
+    ctx = mp.get_context()
+    asyncio.run(_test_async_mp_support(ctx, async_client))
+
+
+def test_async_mp_spawn_support(async_client):
+    ctx = mp.get_context("spawn")
+    asyncio.run(_test_async_mp_support(ctx, async_client))
