@@ -50,7 +50,9 @@ def test_mp_support(client):
     api = DataTransferApi(client)
     api.status(wait=True)
 
-    time.Sleep(5)
+    while client.binary._log_thread is None:
+        log.info("Waiting for logging thread to start...")
+        time.Sleep(1)
 
     p = mp.Process(target=_check_storage, args=(api,))
     p.start()
@@ -66,7 +68,9 @@ async def test_async_mp_support(async_client):
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 
-    asyncio.sleep(5)
+    while async_client.binary._log_thread is None:
+        log.info("Waiting for logging thread to start...")
+        asyncio.sleep(5)
 
     p = mp.Process(target=_async_check_storage, args=(api,))
     p.start()
