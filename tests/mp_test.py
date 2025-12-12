@@ -36,11 +36,11 @@ from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
 log = logging.getLogger(__name__)
 
 
-def _check_storage(dt_api):
+def _check_storage(dt_api, clt, bin):
     log.info(dt_api.storages())
 
 
-def _async_check_storage(dt_api):
+def _async_check_storage(dt_api, clt, bin):
     s = asyncio.run(dt_api.storages())
     log.info(s)
 
@@ -50,12 +50,13 @@ def test_mp_support(client):
     api = DataTransferApi(client)
     api.status(wait=True)
 
+    # Brute force wait for logging thread to start ... github was too slow ...
     while client.binary._log_thread is None:
         log.info("Waiting for logging thread to start...")
-        time.Sleep(1)
-    time.Sleep(5)
+        time.sleep(1)
+    time.sleep(5)
 
-    p = mp.Process(target=_check_storage, args=(api,))
+    p = mp.Process(target=_check_storage, args=(api, client, client.binary))
     p.start()
     p.join()
 
@@ -69,11 +70,13 @@ async def test_async_mp_support(async_client):
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
 
+    # Brute force wait for logging thread to start ... github was too slow ...
     while async_client.binary._log_thread is None:
         log.info("Waiting for logging thread to start...")
-        asyncio.sleep(5)
+        asyncio.sleep(1)
+    asyncio.sleep(5)
 
-    p = mp.Process(target=_async_check_storage, args=(api,))
+    p = mp.Process(target=_async_check_storage, args=(api, async_client, async_client.binary))
     p.start()
     p.join()
 
