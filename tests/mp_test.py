@@ -29,6 +29,7 @@ import asyncio
 import concurrent.futures
 import logging
 import multiprocessing as mp
+import time
 
 from ansys.hps.data_transfer.client import AsyncDataTransferApi, DataTransferApi
 
@@ -49,6 +50,8 @@ def test_mp_support(client):
     api = DataTransferApi(client)
     api.status(wait=True)
 
+    time.Sleep(5)
+
     p = mp.Process(target=_check_storage, args=(api,))
     p.start()
     p.join()
@@ -62,6 +65,8 @@ async def test_async_mp_support(async_client):
     """Test multiprocessing support using the async API."""
     api = AsyncDataTransferApi(async_client)
     await api.status(wait=True)
+
+    asyncio.sleep(5)
 
     p = mp.Process(target=_async_check_storage, args=(api,))
     p.start()
