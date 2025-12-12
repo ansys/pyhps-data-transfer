@@ -54,7 +54,6 @@ def _test_mp_support(ctx, client):
     while client.binary._log_thread is None:
         log.info("Waiting for logging thread to start...")
         time.sleep(1)
-    time.sleep(5)
 
     p = ctx.Process(target=_check_storage, args=(api,))
     p.start()
@@ -75,7 +74,6 @@ async def _test_async_mp_support(ctx, async_client):
     while async_client.binary._log_thread is None:
         log.info("Waiting for logging thread to start...")
         asyncio.sleep(1)
-    asyncio.sleep(5)
 
     p = ctx.Process(target=_async_check_storage, args=(api,))
     p.start()

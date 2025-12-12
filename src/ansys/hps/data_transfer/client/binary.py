@@ -308,7 +308,7 @@ class Binary:
         del state["_stop"]
         del state["_prepared"]
         del state["_process"]
-        # del state["_log_thread"]
+        del state["_log_thread"]
         return state
 
     @property
