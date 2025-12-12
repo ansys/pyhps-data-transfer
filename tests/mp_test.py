@@ -53,6 +53,7 @@ def test_mp_support(client):
     while client.binary._log_thread is None:
         log.info("Waiting for logging thread to start...")
         time.Sleep(1)
+    time.Sleep(5)
 
     p = mp.Process(target=_check_storage, args=(api,))
     p.start()
