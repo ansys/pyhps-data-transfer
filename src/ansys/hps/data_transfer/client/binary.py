@@ -73,19 +73,31 @@ class PrepareSubprocess:
         """Initialize the PrepareSubprocess class object."""
         # Check if not Windows
         self.disable_vfork = os.name != "nt" and platform.system() != "Windows"
+        self._orig_use_vfork = None
+        self._orig_use_pspawn = None
 
     def __enter__(self):
         """Disable vfork and posix_spawn in subprocess."""
-        if self.disable_vfork:
+        if not self.disable_vfork:
+            return
+
+        if hasattr(subprocess, "_USE_VFORK"):
             self._orig_use_vfork = subprocess._USE_VFORK
-            self._orig_use_pspawn = subprocess._USE_POSIX_SPAWN
             subprocess._USE_VFORK = False
+
+        if hasattr(subprocess, "_USE_POSIX_SPAWN"):
+            self._orig_use_pspawn = getattr(subprocess, "_USE_POSIX_SPAWN", False)
             subprocess._USE_POSIX_SPAWN = False
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Restore original values of _USE_VFORK and _USE_POSIX_SPAWN."""
-        if self.disable_vfork:
+        if not self.disable_vfork:
+            return
+
+        if self._orig_use_vfork is not None:
             subprocess._USE_VFORK = self._orig_use_vfork
+
+        if self._orig_use_pspawn is not None:
             subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
 
 
@@ -119,7 +131,7 @@ def default_log_message(debug: bool, data: dict[str, any]):
     if other:
         msg += f" {other}"
     msg = msg.encode("ascii", errors="ignore").decode().strip()
-    log.log(level_no, f"{msg}")
+    log.log(level_no, f"File Transfer: {msg}")
 
 
 class BinaryConfig:
@@ -147,6 +159,8 @@ class BinaryConfig:
         Whether to ignore SSL certificate verification.
     debug: bool, default: False
         Whether to enable debug logging.
+    max_restarts: int, default: 5
+        Maximum number of times to restart the worker if it crashes.
     """
 
     def __init__(
@@ -169,6 +183,7 @@ class BinaryConfig:
         debug: bool = False,
         auth_type: str = None,
         env: dict | None = None,
+        max_restarts: int = 5,
     ):
         """Initialize the BinaryConfig class object."""
         self.data_transfer_url = data_transfer_url
@@ -191,6 +206,7 @@ class BinaryConfig:
         self._env = env or {}
         self.insecure = insecure
         self.auth_type = auth_type
+        self.max_restarts = max_restarts
 
         self._on_token_update = None
         self._on_process_died = None
@@ -283,6 +299,7 @@ class Binary:
         self._stop = None
         self._prepared = None
         self._process = None
+        self._log_thread = None
 
     def __getstate__(self):
         """Return state of the object."""
@@ -290,6 +307,7 @@ class Binary:
         del state["_stop"]
         del state["_prepared"]
         del state["_process"]
+        del state["_log_thread"]
         return state
 
     @property
@@ -336,11 +354,6 @@ class Binary:
         t.daemon = True
         t.start()
 
-        if self._config.log:
-            t = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
-            t.daemon = True
-            t.start()
-
         if not self._prepared.wait(timeout=5.0):
             log.warning("Worker preparation is taking longer than expected ...")
 
@@ -365,15 +378,25 @@ class Binary:
 
     def _log_output(self):
         log_message = self._config._log_message
-
+        # Keep track of the first time the process is present,
+        # if it disappears, we stop reading, it means the process has ended
+        started = False
         while not self._stop.is_set():
             if self._process is None or self._process.stdout is None:
+                if started:
+                    log.debug("Log thread found the process stdout missing, reading stopped.")
+                    break
                 time.sleep(1)
                 continue
             try:
+                started = True
                 line = self._process.stdout.readline()
                 if not line:
+                    log.debug("Log thread stdout ended normally, reading stopped.")
                     break
+                # If we dont need to log it, it still needs to be read to prevent hangs from full buffers
+                if not self.config.log:
+                    continue
                 line = line.decode(errors="strip").strip()
                 if log_message is not None:
                     d = json.loads(line)
@@ -387,8 +410,10 @@ class Binary:
         # log.debug("Worker log output stopped")
 
     def _monitor(self):
+        restart_count = 0  # Initialize a counter for restarts
         while not self._stop.is_set():
             if self._process is None:
+                log.info(f"Data Transfer is starting on restart counter {restart_count}")
                 self._prepare()
                 args = " ".join(self._args)
 
@@ -407,24 +432,40 @@ class Binary:
                     log.debug(f"Environment: {env_str}")
 
                 with PrepareSubprocess():
+                    log.info("Launching data transfer worker")
                     self._process = subprocess.Popen(
-                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env
+                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
                     )
+                    log.info(f"Data transfer worker is running with PID: {self._process.pid}")
+
+                    self._log_thread = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
+                    self._log_thread.daemon = True
+                    self._log_thread.start()
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
+                    restart_count += 1  # Increment the restart counter
+                    if restart_count > self.config.max_restarts:
+                        log.error(f"Worker exceeded maximum restart attempts ({self.config.max_restarts}). Stopping...")
+                        break  # Exit the loop after exceeding the restart limit
+
                     log.warning(f"Worker exited with code {ret_code}, restarting ...")
                     self._process = None
                     self._prepared.clear()
                     if self.config._on_process_died is not None:
                         self.config._on_process_died(ret_code)
+
+                    if self._log_thread is not None:
+                        log.info("Waiting for log thread to finish ...")
+                        self._log_thread.join()
+                        self._log_thread = None
                     time.sleep(1.0)
                     continue
-                # elif self._config.debug:
-                #     log.debug(f"Worker running ...")
+            # Reset restart_count if the worker is running successfully
+            restart_count = 0
 
             time.sleep(self._config.monitor_interval)
-        # log.debug("Worker monitor stopped")
+        log.debug("Worker monitor stopped")
 
     def _prepare(self):
         if self._config._selected_port is None:

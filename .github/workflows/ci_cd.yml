@@ -82,10 +82,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [doc-style]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -110,7 +110,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           check-links: false
-          sphinxopts: "-j auto --color --keep-going"
+          sphinxopts: "-j auto --color --keep-going -vv"
 
   smoke-tests:
     name: Build and Smoke tests
@@ -166,7 +166,7 @@ jobs:
       library_version: ${{ steps.version.outputs.library_version }}
     steps:
       - name: "Install Git and clone project"
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - uses: extractions/netrc@v2
         with:
@@ -208,7 +208,7 @@ jobs:
     needs: [package, library-version]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: ansys-hps-data-transfer-client-artifacts
           path: /tmp/artifacts
@@ -254,7 +254,7 @@ jobs:
       contents: write
     steps:
       - name: "Download the library artifacts from build-library step"
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v7
         with:
           name: ${{ env.PACKAGE_NAME }}-artifacts
           path: ${{ env.PACKAGE_NAME }}-artifacts
