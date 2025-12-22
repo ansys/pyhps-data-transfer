@@ -20,14 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import unittest
 from unittest.mock import AsyncMock, MagicMock, mock_open, patch
 
 import httpx
 import pytest
 
-import unittest
-
-from ansys.hps.data_transfer.client.client import ClientBase, AsyncClient, Client
+from ansys.hps.data_transfer.client.client import AsyncClient, Client, ClientBase
 
 
 @pytest.fixture
@@ -232,8 +231,9 @@ async def test_async_auto_refresh_token_non_401_response(mock_async_client):
     # Verify no changes were made to the response
     assert response.status_code == 200
     assert "_content" not in response.__dict__
-"""This module contains tests for verifying the functionality of the Client class"""
 
+
+"""This module contains tests for verifying the functionality of the Client class"""
 
 
 class TestClientBase(unittest.TestCase):
