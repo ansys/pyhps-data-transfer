@@ -213,7 +213,7 @@ class ClientBase:
         clean=False,
         clean_dev=True,
         check_in_use=True,
-        refresh_token_callback: Callable[[], str] = None,
+        refresh_token_callback: Callable[[], str | Awaitable[str]] = None,
         timeout=5.0,
         retries=4,
     ):
@@ -666,10 +666,9 @@ class AsyncClient(ClientBase):
 
         is_async = True
 
-    def __init__(self, *args, refresh_token_callback: Callable[[], Awaitable[str]] = None, **kwargs):
+    def __init__(self, *args, **kwargs):
         """Initializes the AsyncClient class object."""
         super().__init__(*args, **kwargs)
-        self.refresh_token_callback = refresh_token_callback  # Override the callback
         self._bin_config._on_token_update = self._update_token
         self._monitor_task = None
 
@@ -726,7 +725,7 @@ class AsyncClient(ClientBase):
             finally:
                 await asyncio.sleep(backoff.full_jitter(sleep))
 
-    async def _update_token(self):
+    def _update_token(self):
         loop = asyncio.get_running_loop()
         if self._session is None:
             return
@@ -734,7 +733,7 @@ class AsyncClient(ClientBase):
         try:
             self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
             # Make sure the token gets intercepted by the worker
-            await loop.run_until_complete(self.session.get("/"))
+            loop.run_until_complete(self.session.get("/"))
         except Exception as e:
             log.debug(f"Error updating token: {e}")
 
