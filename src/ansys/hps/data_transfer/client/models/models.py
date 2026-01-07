@@ -1,4 +1,4 @@
-# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -31,7 +31,6 @@ from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field, conint
 
 
 class AuthRedirectRequestBody(BaseModel):
-    pass
     model_config = ConfigDict(
         extra="allow",
     )
@@ -212,6 +211,36 @@ class ListBinariesResponseBody(BaseModel):
     available: list[BinaryInfo] | None = None
 
 
+class State(Enum):
+    Unknown = "unknown"
+    Queued = "queued"
+    Running = "running"
+    Succeeded = "succeeded"
+    Failed = "failed"
+
+
+class Operation(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    children: list[str] | None = None
+    children_detail: list[Operation] | None = None
+    description: str | None = None
+    ended_at: AwareDatetime | None = None
+    error: str | None = None
+    id: str | None = None
+    info: dict[str, Any] | None = None
+    messages: list[str] | None = None
+    progress: float | None = None
+    progress_current: conint(ge=0) | None = None
+    progress_total: conint(ge=0) | None = None
+    queued_at: AwareDatetime | None = None
+    result: Any | None = None
+    started_at: AwareDatetime | None = None
+    state: State | None = None
+    user_id: str | None = None
+
+
 class OperationIdResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -235,6 +264,13 @@ class OperationsRequest(BaseModel):
     ids: list[str] | None = Field(default=None, description="List of operation IDs to retrieve")
 
 
+class OperationsResponse(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    operations: list[Operation] | None = None
+
+
 class PlainSrcDst(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -249,6 +285,18 @@ class RemoveMetadataRequest(BaseModel):
     )
     paths: list[str] | None = Field(default=None, description="Paths to remove metadata for")
     recursive: bool | None = Field(default=None, description="Whether to remove metadata recursively")
+
+
+class Type(Enum):
+    Document = "document"
+
+
+class Resource(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    path: str | None = Field(default=None, examples=["my/path/to/data/file.txt"])
+    type: Type | None = Field(default=None, examples=["document"])
 
 
 class SetMetadataRequest(BaseModel):
@@ -282,6 +330,20 @@ class StoragePath(BaseModel):
     )
     path: str | None = Field(default=None, examples=["my/path/to/data"])
     remote: str | None = "any"
+
+
+class Type1(Enum):
+    User = "user"
+    Group = "group"
+    Any = "any"
+
+
+class Subject(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    id: str | None = Field(default=None, examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
+    type: Type1 | None = Field(default=None, examples=["user"])
 
 
 class TokenRequest(BaseModel):
@@ -378,7 +440,9 @@ class GetMetadataRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    operations: list[StoragePath] | None = Field(default=None, description="Deprecated as of 2024.09.10")
+    operations: list[StoragePath] | None = Field(
+        default=None, deprecated=True, description="Deprecated as of 2024.09.10"
+    )
     paths: list[str] | None = Field(default=None, description="Paths to retrieve metadata for")
 
 
@@ -390,71 +454,11 @@ class MoveMetadataRequest(BaseModel):
     src_dst: list[PlainSrcDst] | None = Field(default=None, description="Sources and destinations for the move")
 
 
-class Operation(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    children: list[str] | None = None
-    children_detail: list[Operation] | None = None
-    description: str | None = None
-    ended_at: AwareDatetime | None = None
-    error: str | None = None
-    id: str | None = None
-    info: dict[str, Any] | None = None
-    messages: list[str] | None = None
-    progress: float | None = None
-    progress_current: conint(ge=0) | None = None
-    progress_total: conint(ge=0) | None = None
-    queued_at: AwareDatetime | None = None
-    result: Any | None = None
-    started_at: AwareDatetime | None = None
-    state: OperationState | None = None
-    user_id: str | None = None
-
-
-class OperationsResponse(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    operations: list[Operation] | None = None
-
-
 class PathOperations(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
     operations: list[StoragePath] | None = None
-
-
-class Resource(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    path: str | None = Field(default=None, examples=["my/path/to/data/file.txt"])
-    type: ResourceType | None = Field(default=None, examples=["document"])
-
-
-class SrcDst(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    dst: StoragePath | None = None
-    src: StoragePath | None = None
-
-
-class SrcDstOperations(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    operations: list[SrcDst] | None = None
-
-
-class Subject(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-    id: str | None = Field(default=None, examples=["946991ec-828c-4de4-acbe-962ada8bc441"])
-    type: SubjectType | None = Field(default=None, examples=["user"])
 
 
 class RoleAssignment(BaseModel):
@@ -480,6 +484,21 @@ class SetPermissionsRequest(BaseModel):
         extra="allow",
     )
     permissions: list[RoleAssignment] | None = Field(default=None, description="Permission definitions to set")
+
+
+class SrcDst(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    dst: StoragePath | None = None
+    src: StoragePath | None = None
+
+
+class SrcDstOperations(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    operations: list[SrcDst] | None = None
 
 
 class CheckPermissionsRequest(BaseModel):
