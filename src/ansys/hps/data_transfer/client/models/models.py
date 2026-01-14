@@ -1,4 +1,4 @@
-# Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -31,7 +31,6 @@ from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field, conint
 
 
 class AuthRedirectRequestBody(BaseModel):
-    pass
     model_config = ConfigDict(
         extra="allow",
     )
@@ -378,7 +377,9 @@ class GetMetadataRequest(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
-    operations: list[StoragePath] | None = Field(default=None, description="Deprecated as of 2024.09.10")
+    operations: list[StoragePath] | None = Field(
+        default=None, deprecated=True, description="Deprecated as of 2024.09.10"
+    )
     paths: list[str] | None = Field(default=None, description="Paths to retrieve metadata for")
 
 
@@ -401,12 +402,15 @@ class Operation(BaseModel):
     error: str | None = None
     id: str | None = None
     info: dict[str, Any] | None = None
+    labels: list[str] | None = None
+    max_retries: int | None = None
     messages: list[str] | None = None
     progress: float | None = None
     progress_current: conint(ge=0) | None = None
     progress_total: conint(ge=0) | None = None
     queued_at: AwareDatetime | None = None
     result: Any | None = None
+    retries: int | None = None
     started_at: AwareDatetime | None = None
     state: OperationState | None = None
     user_id: str | None = None
