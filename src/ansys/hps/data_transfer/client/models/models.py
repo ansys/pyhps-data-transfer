@@ -145,6 +145,15 @@ class Debug(BaseModel):
     panic_file: str | None = Field(default=None, description="Path to the panic file if panic logging is enabled")
 
 
+class DetailedError(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    code: int | None = None
+    errors: list[str] | None = None
+    message: str | None = None
+
+
 class ErrorDetail(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -400,6 +409,7 @@ class Operation(BaseModel):
     description: str | None = None
     ended_at: AwareDatetime | None = None
     error: str | None = None
+    error_detail: DetailedError | None = None
     id: str | None = None
     info: dict[str, Any] | None = None
     labels: list[str] | None = None
