@@ -50,7 +50,7 @@ tests = [
     "tox==4.44.0",
 ]
 doc = [
-    "ansys-sphinx-theme==1.7.0",
+    "ansys-sphinx-theme==1.7.1",
     "autodoc_pydantic==2.2.0",
     "numpydoc==1.10.0",
     "Sphinx==8.1.3",
