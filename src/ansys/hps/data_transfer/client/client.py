@@ -39,7 +39,7 @@ import traceback
 import backoff
 import filelock
 import httpx
-import humanfriendly as hf
+import humanize as hz
 import psutil
 import urllib3
 
@@ -488,14 +488,14 @@ class ClientBase:
 
                             since_last_progress = now - last_progress
                             if since_last_progress > self.progress_interval:
-                                msg = f"Downloading binary, {hf.format_timespan(now - start)} so far ..."
+                                msg = f"Downloading binary, {hz.precisedelta(now - start)} so far ..."
                                 content_length = resp.headers.get("Content-Length", None)
                                 if content_length is not None:
                                     content_length = int(content_length)
                                     prog = float(written) / float(content_length) * 100.0
-                                    msg += f" {prog:.1f}%, {hf.format_size(written)}/{hf.format_size(content_length)}"
+                                    msg += f" {prog:.1f}%, {hz.naturalsize(written)}/{hz.naturalsize(content_length)}"
                                 else:
-                                    msg += f" {hf.format_size(written)} downloaded"
+                                    msg += f" {hz.naturalsize(written)} downloaded"
                                 log.info(msg)
                                 last_progress = now
 
