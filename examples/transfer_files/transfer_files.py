@@ -45,7 +45,7 @@ from pathlib import Path
 from time import perf_counter
 from typing import Optional
 
-from humanfriendly import format_size
+from humanize import naturalsize
 import typer
 from typing_extensions import Annotated
 
@@ -112,12 +112,12 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
         size = op[0].result[f"{remote_path}/{fname}"].get("size", 0)
         total_size += size
         checksum = op[0].result[f"{remote_path}/{fname}"].get("checksum")
-        log.info(f"- name={fname} size={format_size(size)} checksum={checksum if checksum else 'n/a'}")
+        log.info(f"- name={fname} size={naturalsize(size)} checksum={checksum if checksum else 'n/a'}")
 
     log.info("== Upload performance:")
     log.info(f"- Total time: {t1-t0:.5f} s")
-    log.info(f"- Total size: {format_size(total_size)}")
-    log.info(f"- Throughput: {format_size(total_size / (t1 - t0) )}/s")
+    log.info(f"- Total size: {naturalsize(total_size)}")
+    log.info(f"- Throughput: {naturalsize(total_size / (t1 - t0) )}/s")
 
     log.info("== Downloading files again")
     copy_args = [
@@ -135,8 +135,8 @@ def transfer_files(api: DataTransferApi, local_path: str, remote_path: Optional[
 
     log.info("== Download performance:")
     log.info(f"- Total time: {t1-t0:.5f} s")
-    log.info(f"- Total size: {format_size(total_size)}")
-    log.info(f"- Throughput: {format_size(total_size / (t1 - t0) )}/s")
+    log.info(f"- Total size: {naturalsize(total_size)}")
+    log.info(f"- Throughput: {naturalsize(total_size / (t1 - t0) )}/s")
 
     log.info("== Comparing files ...")
     for fname in fnames:
