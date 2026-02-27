@@ -1,0 +1,676 @@
+
+
+
+
+
+
+The ``binary.py`` module
+========================
+
+.. py:module:: ansys.hps.data_transfer.client.binary
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: binary
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~PrepareSubprocess`
+            - Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess.
+
+
+          * - :py:obj:`~BinaryConfig`
+            - Provides for configuring the worker binary connection to the HPS data transfer client.
+
+
+          * - :py:obj:`~Binary`
+            - Provides for starting, stopping, and monitoring the worker binary.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~log`
+            - 
+
+
+          * - :py:obj:`~level_map`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides utilities for managing binary files.
+
+This module also handles processes related to the Ansys HPS data transfer client.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: PrepareSubprocess
+
+   
+   Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PrepareSubprocess
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~disable_vfork`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.binary import PrepareSubprocess
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: disable_vfork
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: BinaryConfig(data_transfer_url: str = 'https://localhost:8443/hps/dt/api/v1', log: bool = True, log_to_file: bool = False, monitor_interval: float = 0.5, path=None, token: str = None, host: str = '127.0.0.1', port: int = None, verbosity: int = 1, insecure: bool = False, debug: bool = False, auth_type: str = None, env: dict | None = None)
+
+   
+   Provides for configuring the worker binary connection to the HPS data transfer client.
+
+
+   :Parameters:
+
+       **data_transfer_url: str, default: `https://localhost:8443/hps/dt/api/v1`**
+           Data transfer URL.
+
+       **log: bool, default: True**
+           Whether to enable logging.
+
+       **log_to_file: bool, default: False**
+           Whether to enable logging to a file.
+
+       **monitor_interval: float, default: 0.5**
+           Duration for waiting before the next monitor check on the binary.
+
+       **token: str**
+           Worker configuration setting of the access token credential.
+
+       **host: str, default: `127.0.0.1`**
+           Host IP to talk to the data transfer service.
+
+       **port: int**
+           Host port to talk to the data transfer service.
+
+       **verbosity: int, default: 1**
+           Verbosity level of the worker. The higher the number, the more verbose the logging.
+
+       **insecure: bool, default: False**
+           Whether to ignore SSL certificate verification.
+
+       **debug: bool, default: False**
+           Whether to enable debug logging.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BinaryConfig
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update`
+            - Update worker configuration settings.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~port`
+            - Port.
+          * - :py:attr:`~token`
+            - Token.
+          * - :py:attr:`~url`
+            - URL.
+          * - :py:attr:`~env`
+            - Get additional environment variables that will be passed to the child process.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~data_transfer_url`
+            - 
+          * - :py:attr:`~log`
+            - 
+          * - :py:attr:`~log_to_file`
+            - 
+          * - :py:attr:`~monitor_interval`
+            - 
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~debug`
+            - 
+          * - :py:attr:`~verbosity`
+            - 
+          * - :py:attr:`~host`
+            - 
+          * - :py:attr:`~insecure`
+            - 
+          * - :py:attr:`~auth_type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.binary import BinaryConfig
+
+Property detail
+---------------
+
+.. py:property:: port
+
+   
+   Port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: token
+
+   
+   Token.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: url
+
+   
+   URL.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: env
+
+   
+   Get additional environment variables that will be passed to the child process.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: data_transfer_url
+   :value: 'https://localhost:8443/hps/dt/api/v1'
+
+
+.. py:attribute:: log
+   :value: True
+
+
+.. py:attribute:: log_to_file
+   :value: False
+
+
+.. py:attribute:: monitor_interval
+   :value: 0.5
+
+
+.. py:attribute:: path
+   :value: None
+
+
+.. py:attribute:: debug
+   :value: False
+
+
+.. py:attribute:: verbosity
+   :value: 1
+
+
+.. py:attribute:: host
+   :value: '127.0.0.1'
+
+
+.. py:attribute:: insecure
+   :value: False
+
+
+.. py:attribute:: auth_type
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: update(**kwargs)
+
+   
+   Update worker configuration settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: Binary(config: BinaryConfig | None = None)
+
+   
+   Provides for starting, stopping, and monitoring the worker binary.
+
+
+   :Parameters:
+
+       **config: BinaryConfig**
+           Binary configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Binary
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~start`
+            - Start the worker binary.
+          * - :py:attr:`~stop`
+            - Stop the worker binary.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~config`
+            - Configuration.
+          * - :py:attr:`~is_started`
+            - Flag indicating if the binary is up and running.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.binary import Binary
+
+Property detail
+---------------
+
+.. py:property:: config
+
+   
+   Configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_started
+
+   
+   Flag indicating if the binary is up and running.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: start()
+
+   
+   Start the worker binary.
+
+   This method checks for the binary in a set path, marks the binary as an executable,
+   and then starts the executable.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: stop(wait=5.0)
+
+   
+   Stop the worker binary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+.. py:data:: log
+
+.. py:data:: level_map
+
+
+

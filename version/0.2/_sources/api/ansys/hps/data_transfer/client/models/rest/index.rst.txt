@@ -1,0 +1,153 @@
+
+
+
+
+
+
+The ``rest.py`` module
+======================
+
+.. py:module:: ansys.hps.data_transfer.client.models.rest
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: rest
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~CompatCopyRequest`
+            - Provides the request schema for the copy operation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the Pydantic model for a schema related to a copy operation.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: CompatCopyRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for the copy operation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CompatCopyRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~destination`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.rest import CompatCopyRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: destination
+   :type:  str | None
+   :value: None
+
+
+
+
+
+
+
+
+

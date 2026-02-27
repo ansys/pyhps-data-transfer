@@ -1,0 +1,45 @@
+
+
+.. _sphx_glr_examples_permissions:
+
+Set and query permissions
+==========================
+
+This example shows how to set and query permissions on files stored in the remote backend.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example script sets and queries permissions on files and directories using the data transfer service.">
+
+.. only:: html
+
+  .. image:: /examples/permissions/images/thumb/sphx_glr_set_permissions_example_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_permissions_set_permissions_example.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Set and query permissions</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/permissions/set_permissions_example
+
