@@ -61,6 +61,10 @@ doc = [
     "sphinx-gallery==0.20.0",
 ]
 
+example = [
+    "typer>=0.9.0",
+]
+
 build = [
     "build==1.4.0",
     "twine==6.2.0",

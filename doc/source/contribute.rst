@@ -51,7 +51,7 @@ Installing PyHPS Data Transfer in developer mode allows you to modify and enhanc
    .. code:: bash
 
       python -m pip install -U pip setuptools tox
-      python -m pip install --editable .[tests,doc]
+      python -m pip install --editable .[tests,doc,example]
 
 #. Verify your development installation:
 
