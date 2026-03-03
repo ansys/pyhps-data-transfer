@@ -26,7 +26,7 @@ import datetime
 import logging
 import time
 
-import humanfriendly as hf
+import humanize as hz
 
 from ..models import Operation, OperationState
 
@@ -89,7 +89,7 @@ class WaitHandler:
             else:
                 end = datetime.datetime.now(start.tzinfo)
             duration = (end - start).seconds
-            duration_str = hf.format_timespan(end - start)
+            duration_str = hz.precisedelta(end - start)
         except Exception as ex:
             log.debug(f"Failed to parse operation duration: {ex}")
             duration = 0

@@ -35,7 +35,7 @@ import time
 import traceback
 
 import backoff
-import humanfriendly as hf
+import humanize as hz
 
 from ..client import AsyncClient
 from ..exceptions import TimeoutError
@@ -268,10 +268,8 @@ class AsyncDataTransferApi:
 
             # TODO: Adjust based on transfer speed and file size
             duration = get_expo_backoff(interval, attempts=attempt, cap=cap, jitter=True)
-            # if self.client.binary_config.debug:
-            #     log.debug(f"Next check in {hf.format_timespan(duration)} ...")
             await asyncio.sleep(duration)
 
-        duration = hf.format_timespan(time.time() - start)
+        duration = hz.naturalsize(time.time() - start)
         log.debug(f"Operations completed after {duration}: {op_str}")
         return ops
