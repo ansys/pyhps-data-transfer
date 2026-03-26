@@ -90,7 +90,7 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
@@ -136,7 +136,7 @@ jobs:
             python-version: '3.13'
 
     steps:
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
@@ -169,7 +169,7 @@ jobs:
       - name: "Install Git and clone project"
         uses: actions/checkout@v6
 
-      - uses: extractions/netrc@v2
+      - uses: extractions/netrc@v3
         with:
           machine: github.com
           username: pyansys-ci-bot
