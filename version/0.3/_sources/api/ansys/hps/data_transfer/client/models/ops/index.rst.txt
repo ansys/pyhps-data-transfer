@@ -1,0 +1,428 @@
+
+
+
+
+
+
+The ``ops.py`` module
+=====================
+
+.. py:module:: ansys.hps.data_transfer.client.models.ops
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ops
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~Operation`
+            - !!! abstract "Usage Documentation"
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~OperationState`
+            - Create a collection of name/value pairs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: Operation(/, **data: Any)
+
+
+
+   
+   !!! abstract "Usage Documentation"
+       [Models](../concepts/models.md)
+
+   A base class for creating Pydantic models.
+
+   Attributes:
+       __class_vars__: The names of the class variables defined on the model.
+       __private_attributes__: Metadata about the private attributes of the model.
+       __signature__: The synthesized `__init__` [`Signature`][inspect.Signature] of the model.
+
+       __pydantic_complete__: Whether model building is completed, or if there are still undefined fields.
+       __pydantic_core_schema__: The core schema of the model.
+       __pydantic_custom_init__: Whether the model has a custom `__init__` function.
+       __pydantic_decorators__: Metadata containing the decorators defined on the model.
+           This replaces `Model.__validators__` and `Model.__root_validators__` from Pydantic V1.
+       __pydantic_generic_metadata__: Metadata for generic models; contains data used for a similar purpose to
+           __args__, __origin__, __parameters__ in typing-module generics. May eventually be replaced by these.
+       __pydantic_parent_namespace__: Parent namespace of the model, used for automatic rebuilding of models.
+       __pydantic_post_init__: The name of the post-init method for the model, if defined.
+       __pydantic_root_model__: Whether the model is a [`RootModel`][pydantic.root_model.RootModel].
+       __pydantic_serializer__: The `pydantic-core` `SchemaSerializer` used to dump instances of the model.
+       __pydantic_validator__: The `pydantic-core` `SchemaValidator` used to validate instances of the model.
+
+       __pydantic_fields__: A dictionary of field names and their corresponding [`FieldInfo`][pydantic.fields.FieldInfo] objects.
+       __pydantic_computed_fields__: A dictionary of computed field names and their corresponding [`ComputedFieldInfo`][pydantic.fields.ComputedFieldInfo] objects.
+
+       __pydantic_extra__: A dictionary containing extra values, if [`extra`][pydantic.config.ConfigDict.extra]
+           is set to `'allow'`.
+       __pydantic_fields_set__: The names of fields explicitly set during instantiation.
+       __pydantic_private__: Values of private attributes set on the model instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Operation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~children`
+            - 
+          * - :py:attr:`~description`
+            - 
+          * - :py:attr:`~ended_at`
+            - 
+          * - :py:attr:`~error`
+            - 
+          * - :py:attr:`~id`
+            - 
+          * - :py:attr:`~messages`
+            - 
+          * - :py:attr:`~progress`
+            - 
+          * - :py:attr:`~progress_current`
+            - 
+          * - :py:attr:`~progress_total`
+            - 
+          * - :py:attr:`~queued_at`
+            - 
+          * - :py:attr:`~rate`
+            - 
+          * - :py:attr:`~result`
+            - 
+          * - :py:attr:`~started_at`
+            - 
+          * - :py:attr:`~state`
+            - 
+          * - :py:attr:`~succeeded_on`
+            - 
+          * - :py:attr:`~user_id`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.ops import Operation
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: children
+   :type:  list[str] | None
+   :value: None
+
+
+.. py:attribute:: description
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: ended_at
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: error
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: id
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: messages
+   :type:  list[str] | None
+   :value: None
+
+
+.. py:attribute:: progress
+   :type:  float | None
+   :value: None
+
+
+.. py:attribute:: progress_current
+   :type:  int | None
+   :value: None
+
+
+.. py:attribute:: progress_total
+   :type:  int | None
+   :value: None
+
+
+.. py:attribute:: queued_at
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: rate
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: result
+   :type:  Any | None
+   :value: None
+
+
+.. py:attribute:: started_at
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: state
+   :type:  OperationState | None
+   :value: None
+
+
+.. py:attribute:: succeeded_on
+   :type:  list[str] | None
+   :value: None
+
+
+.. py:attribute:: user_id
+   :type:  str | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: OperationState(*args, **kwds)
+
+
+
+   
+   Create a collection of name/value pairs.
+
+   Example enumeration:
+
+   >>> class Color(Enum):
+   ...     RED = 1
+   ...     BLUE = 2
+   ...     GREEN = 3
+
+   Access them by:
+
+   - attribute access:
+
+     >>> Color.RED
+     <Color.RED: 1>
+
+   - value lookup:
+
+     >>> Color(1)
+     <Color.RED: 1>
+
+   - name lookup:
+
+     >>> Color['RED']
+     <Color.RED: 1>
+
+   Enumerations can be iterated over, and know how many members they have:
+
+   >>> len(Color)
+   3
+
+   >>> list(Color)
+   [<Color.RED: 1>, <Color.BLUE: 2>, <Color.GREEN: 3>]
+
+   Methods can be added to enumerations, and members can have their own
+   attributes -- see the documentation for details.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: OperationState
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~Unknown`
+            - 
+          * - :py:attr:`~Queued`
+            - 
+          * - :py:attr:`~Running`
+            - 
+          * - :py:attr:`~Succeeded`
+            - 
+          * - :py:attr:`~Failed`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.ops import OperationState
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: Unknown
+   :value: 'unknown'
+
+
+.. py:attribute:: Queued
+   :value: 'queued'
+
+
+.. py:attribute:: Running
+   :value: 'running'
+
+
+.. py:attribute:: Succeeded
+   :value: 'succeeded'
+
+
+.. py:attribute:: Failed
+   :value: 'failed'
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,127 @@
+
+
+
+
+
+
+The ``retry.py`` module
+=======================
+
+.. py:module:: ansys.hps.data_transfer.client.api.retry
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: retry
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~retry`
+            - Provides a decorator for retrying a function call with exponential backoff.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~log`
+            - 
+
+
+          * - :py:obj:`~max_tries_env_name`
+            - 
+
+
+          * - :py:obj:`~max_time_env_name`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides utilities for implementing retry mechanisms in the Ansys HPS data transfer client.
+
+This module includes functionality for handling transient errors and ensuring
+robust and reliable operations during data transfer.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: retry(max_tries=_lookup_max_tries, max_time=_lookup_max_time, raise_on_giveup=True, jitter=backoff.full_jitter)
+
+   
+   Provides a decorator for retrying a function call with exponential backoff.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: log
+
+.. py:data:: max_tries_env_name
+   :value: 'ANSYS_DT_CLIENT_RETRY_MAX_TIME'
+
+
+.. py:data:: max_time_env_name
+   :value: 'ANSYS_DT_CLIENT_RETRY_MAX_TRIES'
+
+
+
+
