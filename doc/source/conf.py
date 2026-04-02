@@ -22,11 +22,21 @@ release = version = __version__
 html_theme = "ansys_sphinx_theme"
 html_short_title = html_title = "pyhps-data-transfer"
 
+html_context = {
+    "github_user": "ansys",
+    "github_repo": "pyhps-data-transfer",
+    "github_version": "main",
+    "doc_path": "doc/source",
+    "pyansys_tags": ["Platform"],
+}
+
 # specify the location of your github repo
 html_theme_options = {
     "github_url": "https://github.com/ansys/pyhps-data-transfer/",
     "show_prev_next": False,
     "show_breadcrumbs": True,
+    "use_edit_page_button": True,
+    "logo": "ansys",
     "additional_breadcrumbs": [
         ("PyAnsys", "https://docs.pyansys.com/"),
     ],
@@ -35,7 +45,6 @@ html_theme_options = {
         "version_match": switcher_version,
     },
     "check_switcher": False,
-    "logo": "pyansys",
     "ansys_sphinx_theme_autoapi": {
         "project": project,
         "output": "api",
