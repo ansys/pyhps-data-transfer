@@ -218,7 +218,7 @@ jobs:
         run: ls -ltR /tmp/artifacts
 
       - name: Release to latest-dev
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/heads/main')
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
