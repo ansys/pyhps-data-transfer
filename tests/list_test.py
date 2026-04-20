@@ -56,6 +56,9 @@ def test_list(storage_path, client):
     assert op[0].state == OperationState.Succeeded, op[0].messages
 
     result = next(iter(op[0].result.values()))
+    result = [
+        item["name"] if isinstance(item, dict) else item for item in result
+    ]  # Handle both basic and extended modes
     assert names[0] in result
     assert names[1] in result
 
@@ -83,5 +86,8 @@ async def test_async_list(storage_path, async_client):
     assert op[0].state == OperationState.Succeeded, op[0].messages
 
     result = next(iter(op[0].result.values()))
+    result = [
+        item["name"] if isinstance(item, dict) else item for item in result
+    ]  # Handle both basic and extended modes
     assert names[0] in result
     assert names[1] in result

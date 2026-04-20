@@ -140,7 +140,7 @@ class DataTransferApi:
         ----------
         operations: List[StoragePath]
         """
-        return self._exec_operation_req("list", operations)
+        return self._exec_operation_req("list", operations, params={"mode": "extended"})
 
     def mkdir(self, operations: builtins.list[StoragePath]):
         """Create a directory.
@@ -180,11 +180,14 @@ class DataTransferApi:
 
     @retry()
     def _exec_operation_req(
-        self, storage_operation: str, operations: builtins.list[StoragePath] | builtins.list[SrcDst]
+        self,
+        storage_operation: str,
+        operations: builtins.list[StoragePath] | builtins.list[SrcDst],
+        params: dict | None = None,
     ):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
-        resp = self.client.session.post(url, json=payload)
+        resp = self.client.session.post(url, json=payload, params=params)
         json = resp.json()
         r = OperationIdResponse(**json)
         return r
