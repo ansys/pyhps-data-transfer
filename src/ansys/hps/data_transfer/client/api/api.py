@@ -339,7 +339,7 @@ class DataTransferApi:
                     log.debug("All operations have completed.")
                     break
             except TimeoutException or TimeoutError:
-                log.debug("Operations call timed out, retrying...")
+                log.debug("Operations status call timed out, retrying...")
                 continue
             except Exception as e:
                 log.debug(f"Error getting operations: {e}")
