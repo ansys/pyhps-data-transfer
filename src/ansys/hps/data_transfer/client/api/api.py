@@ -28,6 +28,7 @@ data transfer operations, managing resources, and handling client interactions.
 
 import builtins
 from collections.abc import Callable
+from httpx import TimeoutException
 import logging
 import time
 import traceback
@@ -289,7 +290,7 @@ class DataTransferApi:
         operation_ids: builtins.list[str | Operation | OperationIdResponse],
         timeout: float | None = None,
         interval: float = 0.1,
-        cap: float = 2.0,
+        cap: float = 5.0,
         raise_on_error: bool = False,
         handler: Callable[[builtins.list[Operation]], None] = None,
     ):
@@ -333,6 +334,9 @@ class DataTransferApi:
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     log.debug("All operations have completed.")
                     break
+            except TimeoutException or TimeoutError:
+                log.debug("Operations call timed out, retrying...")
+                continue
             except Exception as e:
                 log.debug(f"Error getting operations: {e}")
                 if raise_on_error:
