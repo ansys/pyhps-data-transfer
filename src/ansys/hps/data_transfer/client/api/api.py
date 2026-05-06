@@ -28,12 +28,12 @@ data transfer operations, managing resources, and handling client interactions.
 
 import builtins
 from collections.abc import Callable
-from httpx import TimeoutException
 import logging
 import time
 import traceback
 
 import backoff
+from httpx import TimeoutException
 
 from ..client import Client
 from ..exceptions import TimeoutError
@@ -198,7 +198,7 @@ class DataTransferApi:
         params = {"ids": ids}
         if expand:
             params["expand"] = "true"
-        # We need to timeout fairly quickly here, since the call is expected to be made and return very quickly.  
+        # We need to timeout fairly quickly here, since the call is expected to be made and return very quickly.
         # If its not, we want to know when its not working properly with some timeout messages.
         resp = self.client.session.get(url, params=params, timeout=2)
         json = resp.json()
@@ -287,7 +287,7 @@ class DataTransferApi:
         json = resp.json()
         return OperationIdResponse(**json)
 
-    # Short operations need a short time, but some larger operations will be spammed 
+    # Short operations need a short time, but some larger operations will be spammed
     # by too many calls over their lifetime of minutes, so work up to at least 5 seconds by default.
     def wait_for(
         self,
@@ -338,7 +338,7 @@ class DataTransferApi:
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     log.debug("All operations have completed.")
                     break
-            except TimeoutException or TimeoutError:
+            except (TimeoutException, TimeoutError):
                 log.debug("Operations status call timed out, retrying...")
                 continue
             except Exception as e:
