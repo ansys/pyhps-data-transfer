@@ -35,6 +35,7 @@ import time
 import traceback
 
 import backoff
+from httpx import TimeoutException
 import humanize as hz
 
 from ..client import AsyncClient
@@ -150,7 +151,7 @@ class AsyncDataTransferApi:
         params = {"ids": ids}
         if expand:
             params["expand"] = "true"
-        resp = await self.client.session.get(url, params=params)
+        resp = await self.client.session.get(url, params=params, timeout=2)
         json = resp.json()
         return OperationsResponse(**json).operations
 
@@ -211,7 +212,7 @@ class AsyncDataTransferApi:
         operation_ids: builtins.list[str | Operation],
         timeout: float | None = None,
         interval: float = 0.1,
-        cap: float = 2.0,
+        cap: float = 5.0,
         raise_on_error: bool = False,
         handler: Callable[[builtins.list[Operation]], Awaitable[None]] = None,
     ):
@@ -256,6 +257,8 @@ class AsyncDataTransferApi:
 
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
+            except (TimeoutException, TimeoutError):
+                log.debug("Operations status call timed out, retrying...")
             except Exception as e:
                 log.debug(f"Error getting operations: {e}")
                 if raise_on_error:

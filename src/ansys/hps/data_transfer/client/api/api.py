@@ -33,6 +33,7 @@ import time
 import traceback
 
 import backoff
+from httpx import TimeoutException
 
 from ..client import Client
 from ..exceptions import TimeoutError
@@ -197,7 +198,9 @@ class DataTransferApi:
         params = {"ids": ids}
         if expand:
             params["expand"] = "true"
-        resp = self.client.session.get(url, params=params, timeout=1)
+        # We need to timeout fairly quickly here, since the call is expected to be made and return very quickly.
+        # If its not, we want to know when its not working properly with some timeout messages.
+        resp = self.client.session.get(url, params=params, timeout=2)
         json = resp.json()
         return OperationsResponse(**json).operations
 
@@ -284,12 +287,14 @@ class DataTransferApi:
         json = resp.json()
         return OperationIdResponse(**json)
 
+    # Short operations need a short time, but some larger operations will be spammed
+    # by too many calls over their lifetime of minutes, so work up to at least 5 seconds by default.
     def wait_for(
         self,
         operation_ids: builtins.list[str | Operation | OperationIdResponse],
         timeout: float | None = None,
         interval: float = 0.1,
-        cap: float = 2.0,
+        cap: float = 5.0,
         raise_on_error: bool = False,
         handler: Callable[[builtins.list[Operation]], None] = None,
     ):
@@ -333,6 +338,8 @@ class DataTransferApi:
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     log.debug("All operations have completed.")
                     break
+            except (TimeoutException, TimeoutError):
+                log.debug("Operations status call timed out, retrying...")
             except Exception as e:
                 log.debug(f"Error getting operations: {e}")
                 if raise_on_error:
