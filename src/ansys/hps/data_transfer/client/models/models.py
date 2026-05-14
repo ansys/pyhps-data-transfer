@@ -366,6 +366,11 @@ class SubjectType(Enum):
     Any = "any"
 
 
+class ListMode(Enum):
+    Basic = "basic"
+    Extended = "extended"
+
+
 class OperationState(Enum):
     Unknown = "unknown"
     Queued = "queued"
@@ -412,7 +417,6 @@ class Operation(BaseModel):
     error_detail: DetailedError | None = None
     id: str | None = None
     info: dict[str, Any] | None = None
-    labels: list[str] | None = None
     max_retries: int | None = None
     messages: list[str] | None = None
     progress: float | None = None
@@ -423,6 +427,7 @@ class Operation(BaseModel):
     retries: int | None = None
     started_at: AwareDatetime | None = None
     state: OperationState | None = None
+    subject: str | None = None
     user_id: str | None = None
 
 
