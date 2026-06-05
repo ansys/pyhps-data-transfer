@@ -217,22 +217,13 @@ jobs:
       - name: List artifacts
         run: ls -ltR /tmp/artifacts
 
-      - name: Delete existing assets on pre-release
+      - name: Delete existing pre-release
         env:
           GH_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           TAG: "v${{ needs.library-version.outputs.library_version }}"
           REPO: ${{ github.repository }}
         run: |
-          if gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1; then
-            echo "Cleaning up assets on existing pre-release $TAG"
-            mapfile -t assets < <(gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[].name')
-            for asset in "${assets[@]}"; do
-              echo "Deleting asset: $asset"
-              gh release delete-asset "$TAG" "$asset" --repo "$REPO" --yes
-            done
-          else
-            echo "No existing release for $TAG; nothing to clean."
-          fi
+          gh release delete "$TAG" --repo "$REPO" --cleanup-tag --yes || true
 
       - name: Release to latest-dev
         uses: softprops/action-gh-release@v3
