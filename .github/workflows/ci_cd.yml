@@ -217,6 +217,14 @@ jobs:
       - name: List artifacts
         run: ls -ltR /tmp/artifacts
 
+      - name: Delete existing pre-release
+        env:
+          GH_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          TAG: "v${{ needs.library-version.outputs.library_version }}"
+          REPO: ${{ github.repository }}
+        run: |
+          gh release delete "$TAG" --repo "$REPO" --cleanup-tag --yes || true
+
       - name: Release to latest-dev
         uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/heads/main')
