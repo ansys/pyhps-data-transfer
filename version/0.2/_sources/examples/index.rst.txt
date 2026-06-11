@@ -1,0 +1,201 @@
+:orphan:
+
+Examples
+========
+
+The examples in this section show how to use PyHPS Data Transfer to
+interact in Python with a data transfer service.
+Each example consists of a Python script plus a data file.
+
+You can use these command-line arguments to execute Python scripts:
+
+* ``--local-path``: Path to the files or directory to transfer. This argument supports wildcards. The default is ``None``.
+* ``--remote-path``: Optional path to the remote directory to transfer files to. The default is ``None``.
+* ``--url``: HPS URL to connect to. The default is ``https://localhost:8443/hps``.
+* ``--username``: HPS username. The default is ``repadmin``.
+* ``--password``: HPS password. The default is ``repadmin``.
+* ``--debug``: Enable debug logging. The default is ``no-debug``.
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Basic usage examples
+====================
+
+These examples show how to use PyHPS Data Transfer to run file operations both synchronously and asynchronously.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This exammple script is intended to be run from the command line. It authenticates with the specified HPS service and sets up an asynchronous client for data transfer operations. It then transfers files to and from remote backends using the data transfer service.">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_01_async_data_transfer_client_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_01_async_data_transfer_client.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Run file operations asynchronously</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example script is intended to be run from the command line. It runs the specified file operations synchronously based on the provided arguments.">
+
+.. only:: html
+
+  .. image:: /examples/basic/images/thumb/sphx_glr_00_file_operations_client_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_basic_00_file_operations_client.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Run file operations synchronously</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Set and query permissions
+==========================
+
+This example shows how to set and query permissions on files stored in the remote backend.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example script sets and queries permissions on files and directories using the data transfer service.">
+
+.. only:: html
+
+  .. image:: /examples/permissions/images/thumb/sphx_glr_set_permissions_example_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_permissions_set_permissions_example.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Set and query permissions</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Start PyHPS Data Transfer
+=========================
+
+This example shows how to create a data transfer API object using a client and then check for available storages.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example script starts a data transfer service client and queries available storage.">
+
+.. only:: html
+
+  .. image:: /examples/startup/images/thumb/sphx_glr_data_transfer_runner_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_startup_data_transfer_runner.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Start PyHPS Data Transfer</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+Transfer files using PyHPS Data Transfer
+========================================
+
+This example shows some of the main data transfer client calls, like how to transfer files to remote backends,
+list files on a given path, and download a file from remote backends to local storage.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example script transfers files to remote backends and back using the data transfer service. The local-path argument is the path to the files or directory to transfer. Wildcards are supported.">
+
+.. only:: html
+
+  .. image:: /examples/transfer_files/images/thumb/sphx_glr_transfer_files_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_transfer_files_transfer_files.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Transfer files</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+   :includehidden:
+
+
+   /examples/basic/index.rst
+   /examples/permissions/index.rst
+   /examples/startup/index.rst
+   /examples/transfer_files/index.rst
+
