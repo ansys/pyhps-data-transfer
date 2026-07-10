@@ -87,7 +87,7 @@ class WaitHandler:
                 start = op.queued_at
             else:
                 start = op.started_at
-                
+
             if op_done:
                 end = op.ended_at
             else:
