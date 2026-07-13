@@ -83,7 +83,11 @@ class WaitHandler:
         msg = f"Data transfer {op_type} '{op.description}'({op.id}) {'finished. ' if op_done else 'is in progress. '}"
 
         try:
-            start = op.started_at
+            if op.state == OperationState.Queued:
+                start = op.queued_at
+            else:
+                start = op.started_at
+
             if op_done:
                 end = op.ended_at
             else:
