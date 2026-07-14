@@ -694,12 +694,13 @@ class AsyncClient(ClientBase):
 
     async def stop(self, wait=5.0):
         """Stop the async binary worker."""
+        if self._monitor_task is not None:
+            self._monitor_task.cancel()
+
         if self._session is not None:
             try:
                 await self._session.post(self.base_api_url + "/shutdown")
                 await asyncio.sleep(0.1)
-                if self._monitor_task is not None:
-                    self._monitor_task.cancel()
             except Exception as ex:
                 log.warning(f"Failed to send shutdown request: {ex}")
             finally:
@@ -726,16 +727,34 @@ class AsyncClient(ClientBase):
                 await asyncio.sleep(backoff.full_jitter(sleep))
 
     def _update_token(self):
-        loop = asyncio.get_running_loop()
         if self._session is None:
             return
         log.debug("Updating auth token, ends in %s", self._bin_config.token[-10:])
         try:
             self._session.headers["Authorization"] = prepare_token(self._bin_config.token)
-            # Make sure the token gets intercepted by the worker
-            loop.run_until_complete(self.session.get("/"))
         except Exception as e:
-            log.debug(f"Error updating token: {e}")
+            log.debug(f"Error updating token header: {e}")
+            return
+
+        async def _notify_worker_token_update():
+            try:
+                resp = await self.session.get("/")
+                if resp.status_code != 200:
+                    log.debug("Worker token update probe returned %s", resp.status_code)
+            except Exception as ex:
+                log.debug(f"Error notifying worker about token update: {ex}")
+
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            log.debug("No running event loop available for async token update")
+            return
+
+        try:
+            # Schedule probe on the active loop instead of trying to drive the loop directly.
+            loop.create_task(_notify_worker_token_update())
+        except Exception as e:
+            log.debug(f"Error scheduling token update task: {e}")
 
     async def _monitor(self):
         while True:
