@@ -1,7 +1,7 @@
 # Copyright (C) 2025 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
+#
 
-import asyncio
 import threading
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -49,8 +49,7 @@ def test_binary_monitor_handles_stuck_log_thread_and_stdout_close_error():
     stdout.close.assert_called_once()
     binary._log_thread = None
     assert any(
-        call.args and "Log thread did not stop in time" in call.args[0]
-        for call in log_mock.warning.call_args_list
+        call.args and "Log thread did not stop in time" in call.args[0] for call in log_mock.warning.call_args_list
     )
 
 
@@ -65,10 +64,7 @@ def test_binary_stop_suppresses_worker_stopped_log_when_stopping():
     with patch("ansys.hps.data_transfer.client.binary.log") as log_mock:
         binary.stop(wait=0.01)
 
-    assert not any(
-        call.args and call.args[0] == "Worker stopped."
-        for call in log_mock.debug.call_args_list
-    )
+    assert not any(call.args and call.args[0] == "Worker stopped." for call in log_mock.debug.call_args_list)
 
 
 def test_binary_log_output_suppresses_eof_log_during_stop():
@@ -89,8 +85,7 @@ def test_binary_log_output_suppresses_eof_log_during_stop():
         binary._log_output()
 
     assert not any(
-        call.args and "Log thread stdout ended normally" in call.args[0]
-        for call in log_mock.debug.call_args_list
+        call.args and "Log thread stdout ended normally" in call.args[0] for call in log_mock.debug.call_args_list
     )
 
 
@@ -178,9 +173,7 @@ def test_wait_for_raises_on_prolonged_status_unavailability_with_timeout():
         patch("ansys.hps.data_transfer.client.api.api.time.sleep", return_value=None),
     ):
         with pytest.raises(TimeoutError, match="Operation status unavailable"):
-            api.wait_for(
-                ["op-1"], timeout=60.0, interval=0.0, cap=0.0, handler=lambda _ops: None
-            )
+            api.wait_for(["op-1"], timeout=60.0, interval=0.0, cap=0.0, handler=lambda _ops: None)
 
 
 def test_wait_for_returns_last_known_ops_on_prolonged_unavailability_without_timeout():
@@ -197,9 +190,7 @@ def test_wait_for_returns_last_known_ops_on_prolonged_unavailability_without_tim
         patch("ansys.hps.data_transfer.client.api.api.time.sleep", return_value=None),
         patch("ansys.hps.data_transfer.client.api.api.log") as log_mock,
     ):
-        ops = api.wait_for(
-            ["op-1"], timeout=None, interval=0.0, cap=0.0, handler=lambda _ops: None
-        )
+        ops = api.wait_for(["op-1"], timeout=None, interval=0.0, cap=0.0, handler=lambda _ops: None)
 
     assert ops == running
     assert any(
