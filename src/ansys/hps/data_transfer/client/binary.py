@@ -368,7 +368,8 @@ class Binary:
         start = time.time()
         while True:
             if self._process.poll() is not None:
-                log.debug("Worker stopped.")
+                if not self._stop.is_set():
+                    log.debug("Worker stopped.")
                 break
             if time.time() - start > wait:
                 log.warning("Worker did not stop in time, killing ...")
@@ -384,7 +385,8 @@ class Binary:
         while not self._stop.is_set():
             if self._process is None or self._process.stdout is None:
                 if started:
-                    log.debug("Log thread found the process stdout missing, reading stopped.")
+                    if not self._stop.is_set():
+                        log.debug("Log thread found the process stdout missing, reading stopped.")
                     break
                 time.sleep(1)
                 continue
@@ -392,7 +394,8 @@ class Binary:
                 started = True
                 line = self._process.stdout.readline()
                 if not line:
-                    log.debug("Log thread stdout ended normally, reading stopped.")
+                    if not self._stop.is_set():
+                        log.debug("Log thread stdout ended normally, reading stopped.")
                     break
                 # If we dont need to log it, it still needs to be read to prevent hangs from full buffers
                 if not self.config.log:
@@ -413,51 +416,71 @@ class Binary:
         restart_count = 0  # Initialize a counter for restarts
         while not self._stop.is_set():
             if self._process is None:
-                log.info(f"Data Transfer is starting on restart counter {restart_count}")
-                self._prepare()
-                args = " ".join(self._args)
+                try:
+                    log.info(f"Data Transfer is starting on restart counter {restart_count}")
+                    self._prepare()
+                    args = list(self._args)
 
-                redacted = f"{args}"
-                if self._config.token is not None:
-                    redacted = args.replace(self._config.token, "***")
+                    redacted = " ".join(args)
+                    if self._config.token is not None:
+                        redacted = redacted.replace(self._config.token, "***")
 
-                env = os.environ.copy()
-                env_str = ""
-                if self._config.env:
-                    env.update(self._config.env)
-                    env_str = ",".join([k for k in self._config.env.keys() if k != "PATH"])
+                    env = os.environ.copy()
+                    env_str = ""
+                    if self._config.env:
+                        env.update(self._config.env)
+                        env_str = ",".join([k for k in self._config.env.keys() if k != "PATH"])
 
-                log.debug(f"Command: {redacted}")
-                if self._config.debug:
-                    log.debug(f"Environment: {env_str}")
+                    log.debug(f"Command: {redacted}")
+                    if self._config.debug:
+                        log.debug(f"Environment: {env_str}")
 
-                with PrepareSubprocess():
-                    log.info("Launching data transfer worker")
-                    self._process = subprocess.Popen(
-                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
-                    )
-                    log.info(f"Data transfer worker is running with PID: {self._process.pid}")
+                    with PrepareSubprocess():
+                        log.info("Launching data transfer worker")
+                        self._process = subprocess.Popen(
+                            args,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT,
+                            env=env,
+                        )
+                        log.info(f"Data transfer worker is running with PID: {self._process.pid}")
 
-                    self._log_thread = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
-                    self._log_thread.daemon = True
-                    self._log_thread.start()
+                        self._log_thread = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
+                        self._log_thread.daemon = True
+                        self._log_thread.start()
+                except Exception:
+                    log.exception("Failed to prepare or launch data transfer worker")
+                    self._process = None
+                    self._prepared.clear()
+                    time.sleep(1.0)
+                    continue
             else:
                 ret_code = self._process.poll()
-                if ret_code is not None and ret_code != 0:
+                if ret_code is not None:
                     restart_count += 1  # Increment the restart counter
                     if restart_count > self.config.max_restarts:
                         log.error(f"Worker exceeded maximum restart attempts ({self.config.max_restarts}). Stopping...")
                         break  # Exit the loop after exceeding the restart limit
 
                     log.warning(f"Worker exited with code {ret_code}, restarting ...")
+                    old_process = self._process
                     self._process = None
                     self._prepared.clear()
                     if self.config._on_process_died is not None:
                         self.config._on_process_died(ret_code)
 
+                    if old_process is not None and old_process.stdout is not None:
+                        # Ensure any blocking readline in the log thread is interrupted.
+                        try:
+                            old_process.stdout.close()
+                        except Exception:
+                            pass
+
                     if self._log_thread is not None:
                         log.info("Waiting for log thread to finish ...")
-                        self._log_thread.join()
+                        self._log_thread.join(timeout=max(1.0, self._config.monitor_interval * 10))
+                        if self._log_thread.is_alive():
+                            log.warning("Log thread did not stop in time; continuing restart.")
                         self._log_thread = None
                     time.sleep(1.0)
                     continue
@@ -465,7 +488,8 @@ class Binary:
             restart_count = 0
 
             time.sleep(self._config.monitor_interval)
-        log.debug("Worker monitor stopped")
+        if not self._stop.is_set():
+            log.debug("Worker monitor stopped")
 
     def _prepare(self):
         if self._config._selected_port is None:
@@ -531,6 +555,6 @@ class Binary:
             self._args.extend(
                 [
                     "-t",
-                    f'"{prepare_token(self._config.token)}"',
+                    prepare_token(self._config.token),
                 ]
             )

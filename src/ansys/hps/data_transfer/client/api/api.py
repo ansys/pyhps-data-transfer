@@ -323,11 +323,19 @@ class DataTransferApi:
         operation_ids = [op.id if isinstance(op, Operation | OperationIdResponse) else op for op in operation_ids]
         start = time.time()
         attempt = 0
+        ops = None
+        status_error_count = 0
+        last_status_success = start
+        # Guard against indefinite loops when operation status is consistently unavailable
+        # (for example, operation endpoint errors after a worker restart).
+        status_unavailable_timeout = max(30.0, cap * 6)
         while True:
             attempt += 1
             try:
                 expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
                 ops = self._operations(operation_ids, expand=expand)
+                status_error_count = 0
+                last_status_success = time.time()
                 if handler is not None:
                     try:
                         handler(ops)
@@ -340,11 +348,32 @@ class DataTransferApi:
                     break
             except (TimeoutException, TimeoutError):
                 log.debug("Operations status call timed out, retrying...")
+                status_error_count += 1
             except Exception as e:
                 log.debug(f"Error getting operations: {e}")
+                status_error_count += 1
                 if raise_on_error:
                     raise
+                # Transient worker restarts can briefly fail status calls.
+                # Keep waiting if we have an in-progress snapshot from a previous poll.
+                elif ops is not None and any(
+                    op.state not in [OperationState.Succeeded, OperationState.Failed] for op in ops
+                ):
+                    pass
                 else:
+                    break
+
+            if status_error_count > 0:
+                status_unavailable_for = time.time() - last_status_success
+                if status_unavailable_for > status_unavailable_timeout:
+                    message = (
+                        f"Operation status unavailable for {status_unavailable_for:.1f}s while waiting for completion"
+                    )
+                    if timeout is not None or raise_on_error:
+                        raise TimeoutError(message)
+                    # Preserve legacy non-raising behavior for callers that do not
+                    # request strict timeout/error handling, while avoiding hangs.
+                    log.warning(f"{message}. Returning last known operation status.")
                     break
 
             if timeout is not None and (time.time() - start) > timeout:
