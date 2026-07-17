@@ -323,6 +323,7 @@ class DataTransferApi:
         operation_ids = [op.id if isinstance(op, Operation | OperationIdResponse) else op for op in operation_ids]
         start = time.time()
         attempt = 0
+        ops = None
         while True:
             attempt += 1
             try:
@@ -344,6 +345,12 @@ class DataTransferApi:
                 log.debug(f"Error getting operations: {e}")
                 if raise_on_error:
                     raise
+                # Transient worker restarts can briefly fail status calls.
+                # Keep waiting if we have an in-progress snapshot from a previous poll.
+                elif ops is not None and any(
+                    op.state not in [OperationState.Succeeded, OperationState.Failed] for op in ops
+                ):
+                    pass
                 else:
                     break
 

@@ -44,7 +44,11 @@ import psutil
 import urllib3
 
 from ansys.hps.data_transfer.client.binary import Binary, BinaryConfig
-from ansys.hps.data_transfer.client.exceptions import BinaryError, async_raise_for_status, raise_for_status
+from ansys.hps.data_transfer.client.exceptions import (
+    BinaryError,
+    async_raise_for_status,
+    raise_for_status,
+)
 from ansys.hps.data_transfer.client.token import prepare_token
 
 urllib3.disable_warnings()
@@ -451,7 +455,8 @@ class ClientBase:
                 reason, bin_path = self._check_binary(d["build_info"], bin_path)
                 bin_path = os.path.abspath(bin_path)
 
-                if self._check_in_use and bin_in_use(bin_path):
+                if self._check_in_use and os.path.exists(bin_path) and bin_in_use(bin_path):
+                    self._bin_config.path = bin_path
                     log.info(f"Skipping download, binary in use: {bin_path}")
                     return
 
@@ -549,7 +554,21 @@ class ClientBase:
     def _on_port_changed(self, port):
         log.debug(f"Port changed to {port}")
         if self._session is not None:
-            self._session.close()
+            close = getattr(self._session, "close", None)
+            aclose = getattr(self._session, "aclose", None)
+            try:
+                if callable(close):
+                    close()
+                elif callable(aclose):
+                    # This callback can run from the worker monitor thread where no event loop exists.
+                    try:
+                        loop = asyncio.get_running_loop()
+                    except RuntimeError:
+                        asyncio.run(aclose())
+                    else:
+                        loop.create_task(aclose())
+            except Exception as ex:
+                log.warning(f"Failed to close session on port change: {ex}")
         self._session = None
 
     def _on_process_died(self, ret_code):
@@ -561,6 +580,8 @@ class ClientBase:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
+        if self._monitor_stop is not None and self._monitor_stop.is_set():
+            return
         log.debug(f"response status: {response.status_code} for {response.request.method} {response.url}")
         if response.status_code == 401 and self._unauthorized_num_retry < self._unauthorized_max_retry:
             log.info("401 authorization error: Trying to get a new access token.")
@@ -589,6 +610,8 @@ class ClientBase:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
+        if self._monitor_stop is not None and self._monitor_stop.is_set():
+            return
         log.debug(f"response status: {response.status_code} for {response.request.method} {response.url}")
         if response.status_code == 401 and self._unauthorized_num_retry < self._unauthorized_max_retry:
             log.info("401 authorization error: Trying to get a new access token.")
@@ -694,6 +717,8 @@ class AsyncClient(ClientBase):
 
     async def stop(self, wait=5.0):
         """Stop the async binary worker."""
+        if self.binary is not None and self.binary._stop is not None:
+            self.binary._stop.set()
         if self._session is not None:
             try:
                 await self._session.post(self.base_api_url + "/shutdown")
@@ -809,6 +834,14 @@ class Client(ClientBase):
 
     def stop(self, wait=5.0):
         """Stop the client session."""
+        if self._monitor_stop is not None:
+            self._monitor_stop.set()
+        if self.binary is not None and self.binary._stop is not None:
+            self.binary._stop.set()
+        try:
+            atexit.unregister(self.stop)
+        except Exception:
+            pass
         if self._session is not None:
             try:
                 self._session.post(self.base_api_url + "/shutdown")

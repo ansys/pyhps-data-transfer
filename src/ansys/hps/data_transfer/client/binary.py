@@ -368,7 +368,8 @@ class Binary:
         start = time.time()
         while True:
             if self._process.poll() is not None:
-                log.debug("Worker stopped.")
+                if not self._stop.is_set():
+                    log.debug("Worker stopped.")
                 break
             if time.time() - start > wait:
                 log.warning("Worker did not stop in time, killing ...")
@@ -384,7 +385,8 @@ class Binary:
         while not self._stop.is_set():
             if self._process is None or self._process.stdout is None:
                 if started:
-                    log.debug("Log thread found the process stdout missing, reading stopped.")
+                    if not self._stop.is_set():
+                        log.debug("Log thread found the process stdout missing, reading stopped.")
                     break
                 time.sleep(1)
                 continue
@@ -392,7 +394,8 @@ class Binary:
                 started = True
                 line = self._process.stdout.readline()
                 if not line:
-                    log.debug("Log thread stdout ended normally, reading stopped.")
+                    if not self._stop.is_set():
+                        log.debug("Log thread stdout ended normally, reading stopped.")
                     break
                 # If we dont need to log it, it still needs to be read to prevent hangs from full buffers
                 if not self.config.log:
@@ -475,7 +478,8 @@ class Binary:
             restart_count = 0
 
             time.sleep(self._config.monitor_interval)
-        log.debug("Worker monitor stopped")
+        if not self._stop.is_set():
+            log.debug("Worker monitor stopped")
 
     def _prepare(self):
         if self._config._selected_port is None:
