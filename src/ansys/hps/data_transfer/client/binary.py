@@ -384,9 +384,7 @@ class Binary:
         while not self._stop.is_set():
             if self._process is None or self._process.stdout is None:
                 if started:
-                    log.debug(
-                        "Log thread found the process stdout missing, reading stopped."
-                    )
+                    log.debug("Log thread found the process stdout missing, reading stopped.")
                     break
                 time.sleep(1)
                 continue
@@ -416,9 +414,7 @@ class Binary:
         while not self._stop.is_set():
             if self._process is None:
                 try:
-                    log.info(
-                        f"Data Transfer is starting on restart counter {restart_count}"
-                    )
+                    log.info(f"Data Transfer is starting on restart counter {restart_count}")
                     self._prepare()
                     args = list(self._args)
 
@@ -430,9 +426,7 @@ class Binary:
                     env_str = ""
                     if self._config.env:
                         env.update(self._config.env)
-                        env_str = ",".join(
-                            [k for k in self._config.env.keys() if k != "PATH"]
-                        )
+                        env_str = ",".join([k for k in self._config.env.keys() if k != "PATH"])
 
                     log.debug(f"Command: {redacted}")
                     if self._config.debug:
@@ -446,13 +440,9 @@ class Binary:
                             stderr=subprocess.STDOUT,
                             env=env,
                         )
-                        log.info(
-                            f"Data transfer worker is running with PID: {self._process.pid}"
-                        )
+                        log.info(f"Data transfer worker is running with PID: {self._process.pid}")
 
-                        self._log_thread = threading.Thread(
-                            target=self._log_output, args=(), name="worker_log_output"
-                        )
+                        self._log_thread = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
                         self._log_thread.daemon = True
                         self._log_thread.start()
                 except Exception:
@@ -466,9 +456,7 @@ class Binary:
                 if ret_code is not None:
                     restart_count += 1  # Increment the restart counter
                     if restart_count > self.config.max_restarts:
-                        log.error(
-                            f"Worker exceeded maximum restart attempts ({self.config.max_restarts}). Stopping..."
-                        )
+                        log.error(f"Worker exceeded maximum restart attempts ({self.config.max_restarts}). Stopping...")
                         break  # Exit the loop after exceeding the restart limit
 
                     log.warning(f"Worker exited with code {ret_code}, restarting ...")
