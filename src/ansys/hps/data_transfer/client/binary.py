@@ -463,14 +463,24 @@ class Binary:
                         break  # Exit the loop after exceeding the restart limit
 
                     log.warning(f"Worker exited with code {ret_code}, restarting ...")
+                    old_process = self._process
                     self._process = None
                     self._prepared.clear()
                     if self.config._on_process_died is not None:
                         self.config._on_process_died(ret_code)
 
+                    if old_process is not None and old_process.stdout is not None:
+                        # Ensure any blocking readline in the log thread is interrupted.
+                        try:
+                            old_process.stdout.close()
+                        except Exception:
+                            pass
+
                     if self._log_thread is not None:
                         log.info("Waiting for log thread to finish ...")
-                        self._log_thread.join()
+                        self._log_thread.join(timeout=max(1.0, self._config.monitor_interval * 10))
+                        if self._log_thread.is_alive():
+                            log.warning("Log thread did not stop in time; continuing restart.")
                         self._log_thread = None
                     time.sleep(1.0)
                     continue
