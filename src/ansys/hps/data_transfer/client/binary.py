@@ -124,7 +124,6 @@ def default_log_message(debug: bool, data: dict[str, any]):
     if msg is None:
         return
 
-    # msg = msg.capitalize()
     level_no = level_map.get(level, logging.INFO)
     other = ""
     for k, v in data.items():
