@@ -116,7 +116,10 @@ def default_log_message(debug: bool, data: dict[str, any]):
     if not debug:
         data.pop("caller", None)
         data.pop("mode", None)
-    msg = data.pop("message", None)
+    msg = data.pop("msg", None)
+    if msg is None:
+        # lagacy support for old message types
+        msg = data.pop("message", None)    
 
     if msg is None:
         return
