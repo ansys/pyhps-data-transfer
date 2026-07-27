@@ -128,6 +128,40 @@ class CompatUploadResponseBody(BaseModel):
     checksum: str | None = None
 
 
+class Format(Enum):
+    Tar_gz = "tar.gz"
+    Zip = "zip"
+
+
+class CreateArchiveBody(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    dst: str | None = Field(
+        default=None,
+        description="Destination path for the archive file in storage",
+        examples=["archives/myproject.zip"],
+    )
+    format: Format | None = Field(
+        default=None,
+        description="Archive format; auto-detected from the dst file extension if omitted",
+    )
+    include_custom_metadata: bool | None = Field(
+        default=False,
+        description="Include custom metadata in the archive; if true, metadata is stored in a separate file inside the archive",
+    )
+    paths: list[str] | None = Field(
+        default=None,
+        description="Paths of files to include in the archive relative to src folder",
+    )
+    remote: str | None = Field(default="any", description="Remote storage name")
+    src: str | None = Field(
+        default=None,
+        description="Source folder path to archive",
+        examples=["projects/myproject"],
+    )
+
+
 class DataAssignment(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -192,6 +226,27 @@ class ErrorModel(BaseModel):
         description="A URI reference to human-readable documentation for the error.",
         examples=["https://example.com/errors/example"],
     )
+
+
+class ExtractBody(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    archive_path: str | None = Field(
+        default=None,
+        description="Path of the archive file in storage",
+        examples=["archives/project.zip"],
+    )
+    destination: str | None = Field(
+        default=None,
+        description="Destination folder path for extracted files",
+        examples=["extracted/project"],
+    )
+    format: Format | None = Field(
+        default=None,
+        description="Archive format; auto-detected from the file extension if omitted",
+    )
+    remote: str | None = Field(default="any", description="Remote storage name")
 
 
 class Features(BaseModel):
