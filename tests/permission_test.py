@@ -26,8 +26,6 @@ using the Data Transfer API from the Ansys HPS Data Transfer Client.
 
 import tempfile
 
-import pytest
-
 from ansys.hps.data_transfer.client import DataTransferApi
 from ansys.hps.data_transfer.client.models import OperationState, Resource, RoleAssignment, SrcDst, StoragePath, Subject
 
