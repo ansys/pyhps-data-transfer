@@ -65,6 +65,7 @@ def get_log_level(verbosity: int, debug: bool = False) -> int:
         return logging.DEBUG
     return verbosity_map.get(verbosity, logging.INFO)
 
+
 dt_api_key_header_env = "ANSYS_DT_SERVICES__DATA_TRANSFER_API_KEY__HEADER_NAME"
 dt_api_key_value_env = "ANSYS_DT_SERVICES__DATA_TRANSFER_API_KEY__VALUE"
 
@@ -170,8 +171,8 @@ class BinaryConfig:
         self,
         # Required
         data_transfer_url: str = "https://localhost:8443/hps/dt/api/v1",
-        data_transfer_api_key_header = "X-API-Key",
-        data_transfer_api_key = None,
+        data_transfer_api_key_header="X-API-Key",
+        data_transfer_api_key=None,
         # Process related settings
         # log: bool = True,
         log_to_file: bool = False,
