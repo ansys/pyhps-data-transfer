@@ -67,7 +67,7 @@ example = [
 
 build = [
     "build==1.5.1",
-    "twine==6.2.0",
+    "twine==7.0.0",
     "wheel",
     "datamodel-code-generator==0.68.1",
     "pre-commit==4.6.1",
