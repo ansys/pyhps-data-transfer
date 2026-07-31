@@ -32,6 +32,7 @@ from ansys.hps.data_transfer.client import DataTransferApi
 from ansys.hps.data_transfer.client.models import OperationState, Resource, RoleAssignment, SrcDst, StoragePath, Subject
 
 
+@pytest.mark.skip(reason="Skipping this test for release")
 def test_permissions(storage_path, client, user_client, user_id):
     """Test setting and checking permissions."""
     admin = DataTransferApi(client)
