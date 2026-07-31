@@ -174,15 +174,20 @@ def user_id(keycloak_client):
 def event_loop():
     """Create an instance of the event loop."""
     # https://stackoverflow.com/a/71668965
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
     yield loop
 
-    pending = asyncio.tasks.all_tasks(loop)
-    loop.run_until_complete(asyncio.gather(*pending))
+    # pytest-asyncio may clear the policy loop during teardown; restore ours explicitly.
+    asyncio.set_event_loop(loop)
+    pending = [task for task in asyncio.all_tasks(loop) if not task.done()]
+    if pending:
+        loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
     loop.run_until_complete(asyncio.sleep(1))
 
     loop.close()
+    asyncio.set_event_loop(None)
 
 
 @pytest.fixture(scope="session")
