@@ -627,7 +627,7 @@ class ClientBase:
                 log.debug("Using API key embedded in auth token")
                 self._api_key = self._bin_config.token[len("ApiKey ") :]
             else:
-                log.debug("Generating random API key" )
+                log.debug("Generating random API key")
                 self._api_key = "".join(
                     random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)
                 )
