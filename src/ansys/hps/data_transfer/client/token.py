@@ -22,12 +22,20 @@
 
 """Provides a utility function for handling authentication tokens."""
 
+API_KEY_PREFIX="ApiKey "
+BEARER_PREFIX="Bearer "
 
 def prepare_token(token):
     """Prepare an authentication token by ensuring it is prefixed with ``Bearer``."""
     if token is None:
         return None
-    tkn = token
-    if not tkn.startswith("Bearer"):
-        tkn = f"Bearer {tkn}"
-    return tkn
+    if not token_is_bearer(token) and not token_is_api_key(token):
+        token = f"Bearer {token}"
+    return token
+
+def token_is_bearer(token):
+    return token.lower().startswith(BEARER_PREFIX.lower())
+
+def token_is_api_key(token):
+    return token.lower().startswith(API_KEY_PREFIX.lower())
+    
