@@ -249,9 +249,9 @@ class BinaryConfig:
     def token(self, value):
         """Set token."""
         if self.debug:
-            log.debug(
-                f"Setting token to ...{value[-10:]}, old token: {f'...{self._token[-10:]}' if self._token else 'none'}"
-            )
+            new = f"***{value[-10:]}" if value else "none"
+            old = f"***{self._token[-10:]}" if self._token else "none"
+            log.debug(f"Setting token to {new}, old token: {old}")
         self._token = value
         if self._on_token_update is not None:
             self._on_token_update()
