@@ -66,6 +66,10 @@ def get_log_level(verbosity: int, debug: bool = False) -> int:
     return verbosity_map.get(verbosity, logging.INFO)
 
 
+dt_api_key_header_env = "ANSYS_DT_SERVICES__DATA_TRANSFER_API_KEY__HEADER_NAME"
+dt_api_key_value_env = "ANSYS_DT_SERVICES__DATA_TRANSFER_API_KEY__VALUE"
+
+
 class PrepareSubprocess:
     """Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
 
@@ -167,6 +171,8 @@ class BinaryConfig:
         self,
         # Required
         data_transfer_url: str = "https://localhost:8443/hps/dt/api/v1",
+        data_transfer_api_key_header="X-API-Key",
+        data_transfer_api_key=None,
         # Process related settings
         # log: bool = True,
         log_to_file: bool = False,
@@ -212,6 +218,10 @@ class BinaryConfig:
         self._on_process_died = None
         self._on_port_changed = None
 
+        if data_transfer_api_key:
+            self._env[dt_api_key_header_env] = data_transfer_api_key_header
+            self._env[dt_api_key_value_env] = data_transfer_api_key
+
     def update(self, **kwargs):
         """Update worker configuration settings."""
         for key, value in kwargs.items():
@@ -241,8 +251,9 @@ class BinaryConfig:
     def token(self, value):
         """Set token."""
         if self.debug:
+            value_str = value[-10:] if value is not None else "none"
             log.debug(
-                f"Setting token to ...{value[-10:]}, old token: {f'...{self._token[-10:]}' if self._token else 'none'}"
+                f"Setting token to ...{value_str}, old token: {f'...{self._token[-10:]}' if self._token else 'none'}"
             )
         self._token = value
         if self._on_token_update is not None:
