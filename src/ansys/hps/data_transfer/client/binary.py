@@ -117,7 +117,7 @@ def default_log_message(debug: bool, data: dict[str, any]):
         data.pop("caller", None)
         data.pop("mode", None)
     source = data.pop("source", None)
-    sourceStr = f"{source.get('file', '')}:{source.get('line', '')}" if source else ""
+    source_str = f"{source.get('file', '')}:{source.get('line', '')}" if source else ""
     msg = data.pop("msg", None)
 
     if msg is None:
@@ -132,8 +132,8 @@ def default_log_message(debug: bool, data: dict[str, any]):
     other = other.strip()
 
     full_msg = "File Transfer"
-    if sourceStr and debug:
-        full_msg += f" ({sourceStr})"
+    if source_str and debug:
+        full_msg += f" ({source_str})"
     full_msg = f"{full_msg}: {msg}"
     if other:
         full_msg += f" {other}"

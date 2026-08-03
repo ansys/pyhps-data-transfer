@@ -36,8 +36,10 @@ def prepare_token(token):
 
 
 def token_is_bearer(token):
+    """Check whether the token is prefixed with ``Bearer``."""
     return token.lower().startswith(BEARER_PREFIX.lower())
 
 
 def token_is_api_key(token):
+    """Check whether the token is prefixed with ``ApiKey``."""
     return token.lower().startswith(API_KEY_PREFIX.lower())
