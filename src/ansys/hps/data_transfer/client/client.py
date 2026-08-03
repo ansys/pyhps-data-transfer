@@ -45,7 +45,7 @@ import urllib3
 
 from ansys.hps.data_transfer.client.binary import Binary, BinaryConfig
 from ansys.hps.data_transfer.client.exceptions import BinaryError, async_raise_for_status, raise_for_status
-from ansys.hps.data_transfer.client.token import prepare_token
+from ansys.hps.data_transfer.client.token import prepare_token, token_is_api_key
 
 urllib3.disable_warnings()
 
@@ -561,6 +561,9 @@ class ClientBase:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
+        if self._bin_config.auth_type in ["api-key"]:
+            return
+
         log.debug(f"response status: {response.status_code} for {response.request.method} {response.url}")
         if response.status_code == 401 and self._unauthorized_num_retry < self._unauthorized_max_retry:
             log.info("401 authorization error: Trying to get a new access token.")
@@ -589,6 +592,9 @@ class ClientBase:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
+        if self._bin_config.auth_type in ["api-key"]:
+            return
+
         log.debug(f"response status: {response.status_code} for {response.request.method} {response.url}")
         if response.status_code == 401 and self._unauthorized_num_retry < self._unauthorized_max_retry:
             log.info("401 authorization error: Trying to get a new access token.")
@@ -617,9 +623,14 @@ class ClientBase:
 
         if self.has("auth_types.api_key"):
             self._bin_config.auth_type = "api-key"
-            self._api_key = "".join(
-                random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)
-            )
+            if self._bin_config.token is not None and token_is_api_key(self._bin_config.token):
+                log.debug("Using API key embedded in auth token")
+                self._api_key = self._bin_config.token[len("ApiKey ") :]
+            else:
+                log.debug("Generating random API key")
+                self._api_key = "".join(
+                    random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(128)
+                )
             env = {
                 api_key_header_env: self._api_key_header,
                 api_key_value_env: self._api_key,
