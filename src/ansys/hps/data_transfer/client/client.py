@@ -561,7 +561,7 @@ class ClientBase:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
-        if self._bin_config.auth_type not in ["oidc", "token-service"]:
+        if self._bin_config.auth_type not in ["api-key"]:
             return
 
         log.debug(f"response status: {response.status_code} for {response.request.method} {response.url}")
@@ -592,7 +592,7 @@ class ClientBase:
         Automatically refreshes the access token and
         re-sends the request in case of an unauthorized error.
         """
-        if self._bin_config.auth_type not in ["oidc", "token-service"]:
+        if self._bin_config.auth_type not in ["api-key"]:
             return
 
         log.debug(f"response status: {response.status_code} for {response.request.method} {response.url}")
