@@ -124,7 +124,7 @@ def default_log_message(debug: bool, data: dict[str, any]):
         return
 
     # msg = msg.capitalize()
-    level_no = level_map.get(level, logging.INFO)
+    level_no = level_map.get(level.lower() if isinstance(level, str) else level, logging.INFO)
     other = ""
     for k, v in data.items():
         formatted_value = f'"{v}"' if isinstance(v, str) and " " in v else v
