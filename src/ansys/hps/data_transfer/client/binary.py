@@ -124,7 +124,7 @@ def default_log_message(debug: bool, data: dict[str, any]):
         return
 
     # msg = msg.capitalize()
-    level_no = level_map.get(level, logging.INFO)
+    level_no = level_map.get(level.lower() if isinstance(level, str) else level, logging.INFO)
     other = ""
     for k, v in data.items():
         formatted_value = f'"{v}"' if isinstance(v, str) and " " in v else v
@@ -249,9 +249,9 @@ class BinaryConfig:
     def token(self, value):
         """Set token."""
         if self.debug:
-            log.debug(
-                f"Setting token to ...{value[-10:]}, old token: {f'...{self._token[-10:]}' if self._token else 'none'}"
-            )
+            new = f"***{value[-10:]}" if value else "none"
+            old = f"***{self._token[-10:]}" if self._token else "none"
+            log.debug(f"Setting token to {new}, old token: {old}")
         self._token = value
         if self._on_token_update is not None:
             self._on_token_update()
