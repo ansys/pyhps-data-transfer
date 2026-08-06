@@ -401,8 +401,9 @@ class WorkerTokenResponseBody(BaseModel):
     model_config = ConfigDict(
         extra="allow",
     )
+    access_token: str | None = None
     expires_at: AwareDatetime | None = None
-    token: str | None = None
+    token_type: str | None = None
 
 
 class ResourceType(Enum):
