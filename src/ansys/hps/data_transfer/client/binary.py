@@ -119,6 +119,8 @@ def default_log_message(debug: bool, data: dict[str, any]):
     source = data.pop("source", None)
     source_str = f"{source.get('file', '')}:{source.get('line', '')}" if source else ""
     msg = data.pop("msg", None)
+    if msg is None:
+        msg = data.pop("message", None)
 
     if msg is None:
         return
