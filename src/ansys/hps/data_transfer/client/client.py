@@ -619,7 +619,7 @@ class ClientBase:
 
     def _adjust_config(self):
         if self._bin_config.no_auth:
-            log.debug("no_auth is set, skipping auth auto-configuration")
+            log.info("No credentials provided - skipping authentication")
             self._bin_config.auth_type = "none"
             return
 
