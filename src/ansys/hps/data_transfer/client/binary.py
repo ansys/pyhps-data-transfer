@@ -167,6 +167,11 @@ class BinaryConfig:
         Whether to ignore SSL certificate verification.
     debug: bool, default: False
         Whether to enable debug logging.
+    auth_type: str, default: None
+        Authentication type to pass to the worker, for example ``api-key`` or ``none``.
+    no_auth: bool, default: False
+        Whether the data transfer service requires no authentication. If set, this takes
+        precedence over ``auth_type`` and skips automatic API key negotiation.
     max_restarts: int, default: 5
         Maximum number of times to restart the worker if it crashes.
     """
@@ -190,6 +195,7 @@ class BinaryConfig:
         insecure: bool = False,
         debug: bool = False,
         auth_type: str = None,
+        no_auth: bool = False,
         env: dict | None = None,
         max_restarts: int = 5,
     ):
@@ -214,6 +220,7 @@ class BinaryConfig:
         self._env = env or {}
         self.insecure = insecure
         self.auth_type = auth_type
+        self.no_auth = no_auth
         self.max_restarts = max_restarts
 
         self._on_token_update = None
@@ -527,7 +534,9 @@ class Binary:
         if self._config.debug:
             self._args.append("--debug")
 
-        if self._config.auth_type:
+        if self._config.no_auth:
+            self._args.extend(["--auth-type", "none"])
+        elif self._config.auth_type:
             self._args.extend(
                 [
                     "--auth-type",

@@ -26,6 +26,7 @@ from unittest.mock import AsyncMock, MagicMock, mock_open, patch
 import httpx
 import pytest
 
+from ansys.hps.data_transfer.client.binary import BinaryConfig
 from ansys.hps.data_transfer.client.client import AsyncClient, Client, ClientBase
 
 
@@ -280,6 +281,17 @@ class TestClientBase(unittest.TestCase):
         mock_getsize.assert_called_once_with("/path/to/panic_file.log")
         mock_log.error.assert_any_call("Worker panic file content:\nError: Something went wrong\n")
         mock_log.error.assert_any_call("Worker panic file content:\nDetails: Invalid configuration\n")
+
+    def test_adjust_config_no_auth_skips_api_key_negotiation(self):
+        """Test that _adjust_config respects no_auth and skips API key auto-negotiation."""
+        self.client._bin_config = BinaryConfig(no_auth=True)
+        self.client._features = ["auth_types.api_key", "auth_types.none"]
+
+        self.client._adjust_config()
+
+        assert self.client._bin_config.auth_type == "none"
+        assert self.client._api_key is None
+        assert self.client._bin_config.env == {}
 
 
 if __name__ == "__main__":

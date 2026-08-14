@@ -618,6 +618,11 @@ class ClientBase:
         return
 
     def _adjust_config(self):
+        if self._bin_config.no_auth:
+            log.debug("no_auth is set, skipping auth auto-configuration")
+            self._bin_config.auth_type = "none"
+            return
+
         if not self._features:
             return
 
