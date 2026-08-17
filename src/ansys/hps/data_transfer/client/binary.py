@@ -167,6 +167,8 @@ class BinaryConfig:
         Whether to ignore SSL certificate verification.
     debug: bool, default: False
         Whether to enable debug logging.
+    auth_type: str, default: None
+        Authentication type to pass to the worker, for example ``api-key`` or ``none``.
     max_restarts: int, default: 5
         Maximum number of times to restart the worker if it crashes.
     """
