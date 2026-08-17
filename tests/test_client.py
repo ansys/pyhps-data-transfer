@@ -282,9 +282,9 @@ class TestClientBase(unittest.TestCase):
         mock_log.error.assert_any_call("Worker panic file content:\nError: Something went wrong\n")
         mock_log.error.assert_any_call("Worker panic file content:\nDetails: Invalid configuration\n")
 
-    def test_adjust_config_no_auth_skips_api_key_negotiation(self):
-        """Test that _adjust_config respects no_auth and skips API key auto-negotiation."""
-        self.client._bin_config = BinaryConfig(no_auth=True)
+    def test_adjust_config_auth_type_none_skips_api_key_negotiation(self):
+        """Test that auth_type='none' skips API key auto-negotiation."""
+        self.client._bin_config = BinaryConfig(auth_type="none")
         self.client._features = ["auth_types.api_key", "auth_types.none"]
 
         self.client._adjust_config()
