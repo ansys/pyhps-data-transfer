@@ -209,6 +209,8 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/main')
     needs: [package, library-version]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v8
         with:
@@ -220,7 +222,7 @@ jobs:
 
       - name: Delete existing pre-release
         env:
-          GH_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
           TAG: "v${{ needs.library-version.outputs.library_version }}"
           REPO: ${{ github.repository }}
         run: |
@@ -230,7 +232,6 @@ jobs:
         uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/heads/main')
         with:
-          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           tag_name: "v${{ needs.library-version.outputs.library_version }}"
           name: "v${{ needs.library-version.outputs.library_version }}"
           prerelease: true
