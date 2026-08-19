@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``utils`` package
+=========================
+
+.. py:module:: ansys.hps.data_transfer.client.utils
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: utils
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.utils.jitter`
+            - Provides utilities for implementing exponential backoff with optional jitter.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.utils.otel_config`
+            - Provides utilities for configuring OpenTelemetry (Otel) settings for the Ansys HPS data transfer client.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> jitter</api/ansys/hps/data_transfer/client/utils/jitter/index>
+    <span class="nf nf-fa-file"></span> otel_config</api/ansys/hps/data_transfer/client/utils/otel_config/index>
+
+
+
+
+
+
+
+
+Description
+-----------
+
+
+PyHPS data transfer utilities subpackage.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+

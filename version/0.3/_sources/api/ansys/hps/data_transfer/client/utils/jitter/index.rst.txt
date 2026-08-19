@@ -1,0 +1,113 @@
+
+
+
+
+
+
+The ``jitter.py`` module
+========================
+
+.. py:module:: ansys.hps.data_transfer.client.utils.jitter
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: jitter
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~get_expo_backoff`
+            - Get the backoff value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides utilities for implementing exponential backoff with optional jitter.
+
+This module is commonly used in retry mechanisms to handle transient errors in distributed systems.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: get_expo_backoff(base: float, attempts: int = 1, cap: float = 100000000, attempts_cap: int = 100000000, jitter: bool = True)
+
+   
+   Get the backoff value.
+
+   For more information, see `Exponential Backoff And Jitter
+   <https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/>`_
+   in the AWS documentation.
+
+   :Parameters:
+
+       **base** : :class:`python:float`
+           Time to sleep in the first attempt.
+
+       **attempts** : :class:`python:int`, default: 1
+           Number of attempts that have already been made.
+
+       **cap** : :class:`python:float`, default: 100000000
+           Maximum value that can be returned.
+
+       **jitter** : :ref:`bool <python:bltin-boolean-values>`, default: :data:`python:True`
+           Whether to apply jitter to the returned value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

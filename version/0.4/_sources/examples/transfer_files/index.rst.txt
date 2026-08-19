@@ -1,0 +1,46 @@
+
+
+.. _sphx_glr_examples_transfer_files:
+
+Transfer files using PyHPS Data Transfer
+========================================
+
+This example shows some of the main data transfer client calls, like how to transfer files to remote backends,
+list files on a given path, and download a file from remote backends to local storage.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example script transfers files to remote backends and back using the data transfer service. The local-path argument is the path to the files or directory to transfer. Wildcards are supported.">
+
+.. only:: html
+
+  .. image:: /examples/transfer_files/images/thumb/sphx_glr_transfer_files_thumb.png
+    :alt:
+
+  :doc:`/examples/transfer_files/transfer_files`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Transfer files</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/transfer_files/transfer_files
+
