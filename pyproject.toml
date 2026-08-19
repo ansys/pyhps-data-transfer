@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core >=3.2, <3.11"] # THIS SHOULD BE REVERTED TO '["flit_core >=3.2,<4"]'
+requires = ["flit_core >=3.2, <4.1"] # THIS SHOULD BE REVERTED TO '["flit_core >=3.2,<4"]'
 build-backend = "flit_core.buildapi"
 
 [project]
@@ -43,11 +43,11 @@ tests = [
     "pytest-cov==7.1.0",
     "pytest-timeout==2.4.0",
     "pytest-mock-resources[redis]==2.12.4",
-    "pytest-rerunfailures==16.4",
+    "pytest-rerunfailures==16.5",
     "pytest-asyncio==1.4.0",
     "python-keycloak==7.1.1",
     "python-slugify>=8.0.4",
-    "tox==4.58.0",
+    "tox==4.60.0",
 ]
 doc = [
     "ansys-sphinx-theme==1.9.0",
@@ -69,8 +69,8 @@ build = [
     "build==1.5.1",
     "twine==7.0.0",
     "wheel",
-    "datamodel-code-generator==0.71.0",
-    "pre-commit==4.6.1",
+    "datamodel-code-generator==0.73.0",
+    "pre-commit==4.6.2",
     "importlib_metadata>=7.0",
 ]
 

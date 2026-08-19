@@ -618,6 +618,10 @@ class ClientBase:
         return
 
     def _adjust_config(self):
+        if self._bin_config.auth_type == "none":
+            log.info("No credentials provided - skipping authentication")
+            return
+
         if not self._features:
             return
 
