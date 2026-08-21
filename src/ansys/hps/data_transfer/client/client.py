@@ -574,7 +574,7 @@ class ClientBase:
             token = self.refresh_token_callback()
             self._bin_config.token = token
             # Update the Authorization header
-            response.request.headers.update({"Authorization": f"Bearer {token}"})
+            response.request.headers.update({"Authorization": f"{prepare_token(token)}"})
             log.debug("Retrying request with updated access token.")
             retried_response = self._session.send(response.request)
             log.debug(f"Retried response status: {retried_response.status_code}")
@@ -605,7 +605,7 @@ class ClientBase:
             token = await self.refresh_token_callback()
             self._bin_config.token = token
             # Update the Authorization header
-            response.request.headers.update({"Authorization": f"Bearer {token}"})
+            response.request.headers.update({"Authorization": f"{prepare_token(token)}"})
             log.debug("Retrying request with updated access token.")
             retried_response = await self._session.send(response.request)
             log.debug(f"Retried response status: {retried_response.status_code}")
