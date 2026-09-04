@@ -30,9 +30,7 @@ import asyncio
 import builtins
 from collections.abc import Awaitable, Callable
 import logging
-import textwrap
 import time
-import traceback
 
 import backoff
 from httpx import TimeoutException
@@ -59,6 +57,7 @@ from ..models import (
 from ..utils.jitter import get_expo_backoff
 from .handler import AsyncWaitHandler
 from .retry import retry
+from .waiter import SILENCE_TIMEOUT, AsyncSseWaiter, generate_subject
 
 log = logging.getLogger(__name__)
 
@@ -108,41 +107,47 @@ class AsyncDataTransferApi:
         json = resp.json()
         return StorageConfigResponse(**json).storage
 
-    async def copy(self, operations: list[SrcDst]):
+    async def copy(self, operations: list[SrcDst], subject: str | None = None):
         """Provides an async interface to copy a list of ``SrcDst`` objects."""
-        return await self._exec_async_operation_req("copy", operations)
+        return await self._exec_async_operation_req("copy", operations, subject=subject)
 
-    async def exists(self, operations: list[StoragePath]):
+    async def exists(self, operations: list[StoragePath], subject: str | None = None):
         """Provides an async interface to check if a list of ``StoragePath`` objects exist."""
-        return await self._exec_async_operation_req("exists", operations)
+        return await self._exec_async_operation_req("exists", operations, subject=subject)
 
-    async def list(self, operations: list[StoragePath]):
+    async def list(self, operations: list[StoragePath], subject: str | None = None):
         """Provides an async interface to get a list of ``StoragePath`` objects."""
-        return await self._exec_async_operation_req("list", operations)
+        return await self._exec_async_operation_req("list", operations, subject=subject)
 
-    async def mkdir(self, operations: builtins.list[StoragePath]):
+    async def mkdir(self, operations: builtins.list[StoragePath], subject: str | None = None):
         """Provides an async interface to create a list of directories in the remote backend."""
-        return await self._exec_async_operation_req("mkdir", operations)
+        return await self._exec_async_operation_req("mkdir", operations, subject=subject)
 
-    async def move(self, operations: builtins.list[SrcDst]):
+    async def move(self, operations: builtins.list[SrcDst], subject: str | None = None):
         """Provides an async interface to move a list of ``SrcDst`` objects in the remote backend."""
-        return await self._exec_async_operation_req("move", operations)
+        return await self._exec_async_operation_req("move", operations, subject=subject)
 
-    async def remove(self, operations: builtins.list[StoragePath]):
+    async def remove(self, operations: builtins.list[StoragePath], subject: str | None = None):
         """Provides an async interface to remove files in the remote backend."""
-        return await self._exec_async_operation_req("remove", operations)
+        return await self._exec_async_operation_req("remove", operations, subject=subject)
 
-    async def rmdir(self, operations: builtins.list[StoragePath]):
+    async def rmdir(self, operations: builtins.list[StoragePath], subject: str | None = None):
         """Provides an async interface to remove directories in the remote backend."""
-        return await self._exec_async_operation_req("rmdir", operations)
+        return await self._exec_async_operation_req("rmdir", operations, subject=subject)
 
     @retry()
     async def _exec_async_operation_req(
-        self, storage_operation: str, operations: builtins.list[StoragePath] | builtins.list[SrcDst]
+        self,
+        storage_operation: str,
+        operations: builtins.list[StoragePath] | builtins.list[SrcDst],
+        subject: str | None = None,
     ):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
-        resp = await self.client.session.post(url, json=payload)
+        params = {}
+        if subject:
+            params["subject"] = subject
+        resp = await self.client.session.post(url, json=payload, params=params)
         json = resp.json()
         return OperationIdResponse(**json)
 
@@ -215,6 +220,8 @@ class AsyncDataTransferApi:
         cap: float = 5.0,
         raise_on_error: bool = False,
         handler: Callable[[builtins.list[Operation]], Awaitable[None]] = None,
+        use_sse: bool = True,
+        subject: str | None = None,
     ):
         """Provides an async interface to wait for a list of operations to complete.
 
@@ -232,6 +239,10 @@ class AsyncDataTransferApi:
             Raise an exception if an error occurs. Default is False.
         operation_handler: Callable[[builtins.list[Operation]], None]
             A callable that will be called with the list of operations when they are fetched.
+        use_sse: bool
+            Use Server-Sent Events for real-time updates instead of polling. Default True.
+        subject: str | None
+            Subject ID for SSE filtering. Auto-generated if None.
         """
         if handler is None:
             handler = self.wait_handler_factory()
@@ -239,22 +250,50 @@ class AsyncDataTransferApi:
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
         operation_ids = [op.id if isinstance(op, Operation | OperationIdResponse) else op for op in operation_ids]
+
+        # Generate subject if not provided and using SSE
+        subj = subject if subject else generate_subject() if use_sse else None
+
         start = time.time()
         attempt = 0
-        op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")
-        # log.debug(f"Waiting for operations to complete: {op_str}")
+        final_ops = None
+
+        if use_sse and subj:
+            # SSE path
+            try:
+                async with AsyncSseWaiter(self.client.session, subj, handler) as waiter:
+                    async for op in waiter:
+                        final_ops = [op]
+                        if waiter.is_terminal:
+                            break
+
+                    # If we got here without terminal, check if stream died
+                    if not waiter.is_terminal and waiter.time_since_last_event > SILENCE_TIMEOUT:
+                        log.debug("SSE stream silent, falling back to polling")
+                        # Fall through to polling
+                    else:
+                        # SSE completed - fetch full operation in case SSE data was truncated
+                        try:
+                            full_ops = await self._operations(operation_ids)
+                            if full_ops:
+                                final_ops = full_ops
+                                if handler is not None:
+                                    try:
+                                        await handler(full_ops)
+                                    except Exception as e:
+                                        log.warning(f"Handler error: {e}")
+                        except Exception as e:
+                            log.debug(f"Failed to fetch full operation after SSE completion: {e}")
+                        return final_ops
+            except Exception as e:
+                log.debug(f"SSE connection failed, falling back to polling: {e}")
+
+        # Polling path (existing logic)
         while True:
             attempt += 1
             try:
                 expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
                 ops = await self._operations(operation_ids, expand=expand)
-                if handler is not None:
-                    try:
-                        await handler(ops)
-                    except Exception as e:
-                        log.warning(f"Handler error: {e}")
-                        log.debug(traceback.format_exc())
-
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     break
             except (TimeoutException, TimeoutError):
@@ -274,5 +313,5 @@ class AsyncDataTransferApi:
             await asyncio.sleep(duration)
 
         duration = hz.naturalsize(time.time() - start)
-        log.debug(f"Operations completed after {duration}: {op_str}")
-        return ops
+        log.debug(f"Operations completed after {duration}")
+        return final_ops

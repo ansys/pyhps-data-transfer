@@ -258,6 +258,8 @@ class Features(BaseModel):
     metadata_plugins: list[str] | None = None
     operation_plugins: list[str] | None = None
     permissions_plugins: list[str] | None = None
+    sse: list[str] | None = Field(default=None, description="Available SSE event types")
+    sse_keep_alive: str | None = Field(default=None, description="SSE keep-alive interval (e.g. '15s') or 'disabled'")
     storage_plugins: list[str] | None = None
 
 
