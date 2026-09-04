@@ -58,7 +58,7 @@ from ..models import (
 from ..utils.jitter import get_expo_backoff
 from .handler import AsyncWaitHandler
 from .retry import retry
-from .waiter import AsyncSseWaiter, generate_subject
+from .waiter import AsyncSseWaiter
 
 log = logging.getLogger(__name__)
 
@@ -71,6 +71,7 @@ class AsyncDataTransferApi:
         self.dump_mode = "json"
         self.client = client
         self.wait_handler_factory = AsyncWaitHandler
+        self._sse_supported: bool | None = None
 
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
@@ -100,6 +101,17 @@ class AsyncDataTransferApi:
     async def operations(self, ids: list[str], expand: bool = False):
         """Provides an async interface to get a list of operations by their IDs."""
         return await self._operations(ids, expand=expand)
+
+    async def _detect_sse_support(self) -> bool:
+        """Detect and cache whether the connected worker advertises SSE support."""
+        if self._sse_supported is None:
+            try:
+                s = await self.status()
+                self._sse_supported = bool(s.features and s.features.sse)
+            except Exception as e:
+                log.debug(f"Failed to detect SSE support, disabling SSE: {e}")
+                self._sse_supported = False
+        return self._sse_supported
 
     async def storages(self):
         """Provides an async interface to get the list of storage configurations."""
@@ -221,7 +233,7 @@ class AsyncDataTransferApi:
         cap: float = 5.0,
         raise_on_error: bool = False,
         handler: Callable[[builtins.list[Operation]], Awaitable[None]] = None,
-        use_sse: bool = False,
+        use_sse: bool = True,
         subject: str | None = None,
     ):
         """Provides an async interface to wait for a list of operations to complete.
@@ -241,12 +253,15 @@ class AsyncDataTransferApi:
         operation_handler: Callable[[builtins.list[Operation]], None]
             A callable that will be called with the list of operations when they are fetched.
         use_sse: bool
-            Use Server-Sent Events for real-time updates instead of polling. Default False.
-            Requires the same ``subject`` to be passed to the operation call(s) (for example
-            ``copy``) that produced ``operation_ids``, otherwise no matching events will be
-            received and this call will fall back to polling.
+            Use Server-Sent Events for real-time updates instead of polling, if the worker
+            advertises support for it. Default True. Falls back to polling automatically
+            if the worker does not support SSE, or if the SSE stream fails or ends without
+            a terminal event. If ``subject`` was passed to the operation call(s) (for
+            example ``copy``) that produced ``operation_ids``, the same value must be
+            passed here; otherwise the operation ids themselves are used as the subject,
+            which matches the server's default behavior when no subject is supplied.
         subject: str | None
-            Subject ID for SSE filtering. Auto-generated if None.
+            Subject ID for SSE filtering. Defaults to the operation ids when None.
         """
         if handler is None:
             handler = self.wait_handler_factory()
@@ -255,14 +270,16 @@ class AsyncDataTransferApi:
             operation_ids = [operation_ids]
         operation_ids = [op.id if isinstance(op, Operation | OperationIdResponse) else op for op in operation_ids]
 
-        # Generate subject if not provided and using SSE
-        subj = subject if subject else generate_subject() if use_sse else None
+        # Default the subject to the operation ids themselves, matching the server's own
+        # fallback behavior when no explicit subject was supplied to the operation call.
+        subj = subject if subject else operation_ids if use_sse else None
+        use_sse = bool(use_sse and subj and await self._detect_sse_support())
 
         start = time.time()
         attempt = 0
         final_ops = None
 
-        if use_sse and subj:
+        if use_sse:
             # SSE path
             try:
                 async with AsyncSseWaiter(self.client.session, subj, handler) as waiter:

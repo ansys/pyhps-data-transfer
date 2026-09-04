@@ -153,6 +153,39 @@ def test_wait_for_without_sse(client, storage_path):
         os.unlink(test_file)
 
 
+def test_wait_for_default_sse_no_subject(client, storage_path):
+    """Test wait_for with default use_sse=True and no explicit subject.
+
+    The operation id itself should be used as the SSE subject by default, matching the
+    server's fallback behavior when no subject is supplied at operation submission time.
+    """
+    api = DataTransferApi(client)
+    _skip_if_sse_unsupported(api)
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".txt") as f:
+        f.write(b"test data for default SSE subject")
+        test_file = f.name
+    test_file_name = os.path.basename(test_file)
+
+    try:
+        ops = [
+            SrcDst(
+                src=StoragePath(path=test_file, remote="local"),
+                dst=StoragePath(path=f"{storage_path}/{test_file_name}"),
+            )
+        ]
+        result = api.copy(ops)
+
+        # No subject passed to copy() or wait_for(): the operation id should be used
+        # automatically as the SSE subject.
+        final_ops = api.wait_for(result.id)
+        assert final_ops is not None
+        assert len(final_ops) > 0
+        assert final_ops[0].state in (OperationState.Succeeded, OperationState.Failed)
+    finally:
+        os.unlink(test_file)
+
+
 def test_user_provided_subject(client, storage_path):
     """Test that user-provided subject is used."""
     api = DataTransferApi(client)
@@ -239,6 +272,34 @@ async def test_async_wait_for_with_sse(async_client, storage_path):
         result = await api.copy(ops, subject=subject)
 
         final_ops = await api.wait_for(result.id, use_sse=True, subject=subject)
+        assert final_ops is not None
+        assert len(final_ops) > 0
+        assert final_ops[0].state in (OperationState.Succeeded, OperationState.Failed)
+    finally:
+        os.unlink(test_file)
+
+
+@pytest.mark.asyncio
+async def test_async_wait_for_default_sse_no_subject(async_client, storage_path):
+    """Test async wait_for with default use_sse=True and no explicit subject."""
+    api = AsyncDataTransferApi(async_client)
+    await _skip_if_sse_unsupported_async(api)
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".txt") as f:
+        f.write(b"test data for async default SSE subject")
+        test_file = f.name
+    test_file_name = os.path.basename(test_file)
+
+    try:
+        ops = [
+            SrcDst(
+                src=StoragePath(path=test_file, remote="local"),
+                dst=StoragePath(path=f"{storage_path}/{test_file_name}"),
+            )
+        ]
+        result = await api.copy(ops)
+
+        final_ops = await api.wait_for(result.id)
         assert final_ops is not None
         assert len(final_ops) > 0
         assert final_ops[0].state in (OperationState.Succeeded, OperationState.Failed)
