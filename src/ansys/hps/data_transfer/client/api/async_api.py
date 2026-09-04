@@ -31,6 +31,7 @@ import builtins
 from collections.abc import Awaitable, Callable
 import logging
 import time
+import traceback
 
 import backoff
 from httpx import TimeoutException
@@ -296,7 +297,15 @@ class AsyncDataTransferApi:
             try:
                 expand = getattr(handler.Meta, "expand_group", False) if hasattr(handler, "Meta") else False
                 ops = await self._operations(operation_ids, expand=expand)
+                if handler is not None:
+                    try:
+                        await handler(ops)
+                    except Exception as e:
+                        log.warning(f"Handler error: {e}")
+                        log.debug(traceback.format_exc())
+
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
+                    final_ops = ops
                     break
             except (TimeoutException, TimeoutError):
                 log.debug("Operations status call timed out, retrying...")
