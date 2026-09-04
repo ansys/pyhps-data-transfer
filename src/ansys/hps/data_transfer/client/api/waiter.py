@@ -160,7 +160,7 @@ class AsyncSseWaiter:
         elif len(self.subjects) == 1:
             params["subject"] = self.subjects[0]
 
-        self._stream_ctx = await self.session.stream("GET", "/events", params=params, timeout=35.0)
+        self._stream_ctx = self.session.stream("GET", "/events", params=params, timeout=35.0)
         self._response = await self._stream_ctx.__aenter__()
         self._last_event_time = time.time()
         return self

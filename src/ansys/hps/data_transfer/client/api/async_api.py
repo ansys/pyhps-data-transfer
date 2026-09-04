@@ -57,7 +57,7 @@ from ..models import (
 from ..utils.jitter import get_expo_backoff
 from .handler import AsyncWaitHandler
 from .retry import retry
-from .waiter import SILENCE_TIMEOUT, AsyncSseWaiter, generate_subject
+from .waiter import AsyncSseWaiter, generate_subject
 
 log = logging.getLogger(__name__)
 
@@ -220,7 +220,7 @@ class AsyncDataTransferApi:
         cap: float = 5.0,
         raise_on_error: bool = False,
         handler: Callable[[builtins.list[Operation]], Awaitable[None]] = None,
-        use_sse: bool = True,
+        use_sse: bool = False,
         subject: str | None = None,
     ):
         """Provides an async interface to wait for a list of operations to complete.
@@ -240,7 +240,10 @@ class AsyncDataTransferApi:
         operation_handler: Callable[[builtins.list[Operation]], None]
             A callable that will be called with the list of operations when they are fetched.
         use_sse: bool
-            Use Server-Sent Events for real-time updates instead of polling. Default True.
+            Use Server-Sent Events for real-time updates instead of polling. Default False.
+            Requires the same ``subject`` to be passed to the operation call(s) (for example
+            ``copy``) that produced ``operation_ids``, otherwise no matching events will be
+            received and this call will fall back to polling.
         subject: str | None
             Subject ID for SSE filtering. Auto-generated if None.
         """
@@ -267,24 +270,23 @@ class AsyncDataTransferApi:
                         if waiter.is_terminal:
                             break
 
-                    # If we got here without terminal, check if stream died
-                    if not waiter.is_terminal and waiter.time_since_last_event > SILENCE_TIMEOUT:
-                        log.debug("SSE stream silent, falling back to polling")
-                        # Fall through to polling
-                    else:
-                        # SSE completed - fetch full operation in case SSE data was truncated
-                        try:
-                            full_ops = await self._operations(operation_ids)
-                            if full_ops:
-                                final_ops = full_ops
-                                if handler is not None:
-                                    try:
-                                        await handler(full_ops)
-                                    except Exception as e:
-                                        log.warning(f"Handler error: {e}")
-                        except Exception as e:
-                            log.debug(f"Failed to fetch full operation after SSE completion: {e}")
-                        return final_ops
+                if waiter.is_terminal:
+                    # SSE completed - fetch full operation in case SSE data was truncated
+                    try:
+                        full_ops = await self._operations(operation_ids)
+                        if full_ops:
+                            final_ops = full_ops
+                            if handler is not None:
+                                try:
+                                    await handler(full_ops)
+                                except Exception as e:
+                                    log.warning(f"Handler error: {e}")
+                    except Exception as e:
+                        log.debug(f"Failed to fetch full operation after SSE completion: {e}")
+                    return final_ops
+                # Stream ended without a terminal event (e.g. silent/closed early/unsupported).
+                # Fall through to polling to guarantee we wait until completion.
+                log.debug("SSE stream ended without a terminal event, falling back to polling")
             except Exception as e:
                 log.debug(f"SSE connection failed, falling back to polling: {e}")
 

@@ -41,9 +41,26 @@ def test_generate_subject():
     assert subject1 != subject2
 
 
+def _skip_if_sse_unsupported(api):
+    """Skip the current test if the connected server does not advertise SSE support."""
+    status = api.status()
+    features = status.features
+    if not features or not features.sse:
+        pytest.skip("Server does not advertise SSE support")
+
+
+async def _skip_if_sse_unsupported_async(api):
+    """Skip the current test if the connected server does not advertise SSE support (async)."""
+    status = await api.status()
+    features = status.features
+    if not features or not features.sse:
+        pytest.skip("Server does not advertise SSE support")
+
+
 def test_sse_waiter_with_copy(client, storage_path):
     """Test SSE waiter with a copy operation."""
     api = DataTransferApi(client)
+    _skip_if_sse_unsupported(api)
 
     # Generate subject
     subject = generate_subject()
@@ -83,6 +100,8 @@ def test_sse_waiter_with_copy(client, storage_path):
 def test_wait_for_with_sse(client, storage_path):
     """Test wait_for with SSE enabled."""
     api = DataTransferApi(client)
+    _skip_if_sse_unsupported(api)
+    subject = generate_subject()
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".txt") as f:
         f.write(b"test data for wait_for SSE")
@@ -96,10 +115,10 @@ def test_wait_for_with_sse(client, storage_path):
                 dst=StoragePath(path=f"{storage_path}/{test_file_name}"),
             )
         ]
-        result = api.copy(ops)
+        result = api.copy(ops, subject=subject)
 
-        # Wait with SSE (default)
-        final_ops = api.wait_for(result.id, use_sse=True)
+        # Wait with SSE, using the same subject as the operation submission
+        final_ops = api.wait_for(result.id, use_sse=True, subject=subject)
         assert final_ops is not None
         assert len(final_ops) > 0
         assert final_ops[0].state in (OperationState.Succeeded, OperationState.Failed)
@@ -137,6 +156,7 @@ def test_wait_for_without_sse(client, storage_path):
 def test_user_provided_subject(client, storage_path):
     """Test that user-provided subject is used."""
     api = DataTransferApi(client)
+    _skip_if_sse_unsupported(api)
 
     custom_subject = "my-custom-subject-123"
 
@@ -166,6 +186,7 @@ def test_user_provided_subject(client, storage_path):
 async def test_async_sse_waiter(async_client, storage_path):
     """Test async SSE waiter with a copy operation."""
     api = AsyncDataTransferApi(async_client)
+    await _skip_if_sse_unsupported_async(api)
 
     subject = generate_subject()
 
@@ -200,6 +221,8 @@ async def test_async_sse_waiter(async_client, storage_path):
 async def test_async_wait_for_with_sse(async_client, storage_path):
     """Test async wait_for with SSE enabled."""
     api = AsyncDataTransferApi(async_client)
+    await _skip_if_sse_unsupported_async(api)
+    subject = generate_subject()
 
     with tempfile.NamedTemporaryFile(delete=False, suffix=".txt") as f:
         f.write(b"test data for async wait_for SSE")
@@ -213,9 +236,9 @@ async def test_async_wait_for_with_sse(async_client, storage_path):
                 dst=StoragePath(path=f"{storage_path}/{test_file_name}"),
             )
         ]
-        result = await api.copy(ops)
+        result = await api.copy(ops, subject=subject)
 
-        final_ops = await api.wait_for(result.id, use_sse=True)
+        final_ops = await api.wait_for(result.id, use_sse=True, subject=subject)
         assert final_ops is not None
         assert len(final_ops) > 0
         assert final_ops[0].state in (OperationState.Succeeded, OperationState.Failed)
