@@ -28,7 +28,6 @@ This module also handles processes related to the Ansys HPS data transfer client
 import json
 import logging
 import os
-import platform
 import stat
 import subprocess
 import threading
@@ -64,41 +63,6 @@ def get_log_level(verbosity: int, debug: bool = False) -> int:
     if debug:
         return logging.DEBUG
     return verbosity_map.get(verbosity, logging.INFO)
-
-
-class PrepareSubprocess:
-    """Provides for letting the context manager disable ``vfork`` and ``posix_spawn`` in the subprocess."""
-
-    def __init__(self):
-        """Initialize the PrepareSubprocess class object."""
-        # Check if not Windows
-        self.disable_vfork = os.name != "nt" and platform.system() != "Windows"
-        self._orig_use_vfork = None
-        self._orig_use_pspawn = None
-
-    def __enter__(self):
-        """Disable vfork and posix_spawn in subprocess."""
-        if not self.disable_vfork:
-            return
-
-        if hasattr(subprocess, "_USE_VFORK"):
-            self._orig_use_vfork = subprocess._USE_VFORK
-            subprocess._USE_VFORK = False
-
-        if hasattr(subprocess, "_USE_POSIX_SPAWN"):
-            self._orig_use_pspawn = getattr(subprocess, "_USE_POSIX_SPAWN", False)
-            subprocess._USE_POSIX_SPAWN = False
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        """Restore original values of _USE_VFORK and _USE_POSIX_SPAWN."""
-        if not self.disable_vfork:
-            return
-
-        if self._orig_use_vfork is not None:
-            subprocess._USE_VFORK = self._orig_use_vfork
-
-        if self._orig_use_pspawn is not None:
-            subprocess._USE_POSIX_SPAWN = self._orig_use_pspawn
 
 
 def default_log_message(debug: bool, data: dict[str, any]):
@@ -427,11 +391,10 @@ class Binary:
             if self._process is None:
                 log.info(f"Data Transfer is starting on restart counter {restart_count}")
                 self._prepare()
-                args = " ".join(self._args)
 
-                redacted = f"{args}"
+                redacted = list(self._args)
                 if self._config.token is not None:
-                    redacted = args.replace(self._config.token, "***")
+                    redacted = [arg.replace(self._config.token, "***") for arg in redacted]
 
                 env = os.environ.copy()
                 env_str = ""
@@ -439,20 +402,17 @@ class Binary:
                     env.update(self._config.env)
                     env_str = ",".join([k for k in self._config.env.keys() if k != "PATH"])
 
-                log.debug(f"Command: {redacted}")
+                log.debug("Command: %s", subprocess.list2cmdline(redacted))
                 if self._config.debug:
                     log.debug(f"Environment: {env_str}")
 
-                with PrepareSubprocess():
-                    log.info("Launching data transfer worker")
-                    self._process = subprocess.Popen(
-                        args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env
-                    )
-                    log.info(f"Data transfer worker is running with PID: {self._process.pid}")
+                log.info("Launching data transfer worker")
+                self._process = subprocess.Popen(self._args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
+                log.info(f"Data transfer worker is running with PID: {self._process.pid}")
 
-                    self._log_thread = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
-                    self._log_thread.daemon = True
-                    self._log_thread.start()
+                self._log_thread = threading.Thread(target=self._log_output, args=(), name="worker_log_output")
+                self._log_thread.daemon = True
+                self._log_thread.start()
             else:
                 ret_code = self._process.poll()
                 if ret_code is not None and ret_code != 0:
@@ -543,6 +503,6 @@ class Binary:
             self._args.extend(
                 [
                     "-t",
-                    f'"{prepare_token(self._config.token)}"',
+                    prepare_token(self._config.token),
                 ]
             )
