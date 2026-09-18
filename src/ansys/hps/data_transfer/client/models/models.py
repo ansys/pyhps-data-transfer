@@ -30,12 +30,6 @@ from typing import Any
 from pydantic import AnyUrl, AwareDatetime, BaseModel, ConfigDict, Field, conint
 
 
-class AuthRedirectRequestBody(BaseModel):
-    model_config = ConfigDict(
-        extra="allow",
-    )
-
-
 class BinaryInfo(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -304,6 +298,12 @@ class PlainSrcDst(BaseModel):
     )
     dst: str | None = None
     src: str | None = None
+
+
+class ProxyRequestBody(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
 
 
 class RemoveMetadataRequest(BaseModel):
