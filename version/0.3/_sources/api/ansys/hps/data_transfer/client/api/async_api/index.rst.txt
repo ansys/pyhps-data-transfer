@@ -1,0 +1,659 @@
+
+
+
+
+
+
+The ``async_api.py`` module
+===========================
+
+.. py:module:: ansys.hps.data_transfer.client.api.async_api
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: async_api
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~AsyncDataTransferApi`
+            - Provides a wrapper for the Data Transfer Worker REST API, offering an async interface.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~log`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides asynchronous API functionality for interacting with the Ansys HPS data transfer client.
+
+This module includes methods and utilities for performing
+data transfer operations asynchronously, managing resources, and handling client interactions.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: AsyncDataTransferApi(client: ansys.hps.data_transfer.client.client.AsyncClient)
+
+   
+   Provides a wrapper for the Data Transfer Worker REST API, offering an async interface.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AsyncDataTransferApi
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~status`
+            - Provides an async interface to get the status of the worker.
+          * - :py:attr:`~operations`
+            - Provides an async interface to get a list of operations by their IDs.
+          * - :py:attr:`~storages`
+            - Provides an async interface to get the list of storage configurations.
+          * - :py:attr:`~copy`
+            - Provides an async interface to copy a list of ``SrcDst`` objects.
+          * - :py:attr:`~exists`
+            - Provides an async interface to check if a list of ``StoragePath`` objects exist.
+          * - :py:attr:`~list`
+            - Provides an async interface to get a list of ``StoragePath`` objects.
+          * - :py:attr:`~mkdir`
+            - Provides an async interface to create a list of directories in the remote backend.
+          * - :py:attr:`~move`
+            - Provides an async interface to move a list of ``SrcDst`` objects in the remote backend.
+          * - :py:attr:`~remove`
+            - Provides an async interface to remove files in the remote backend.
+          * - :py:attr:`~rmdir`
+            - Provides an async interface to remove directories in the remote backend.
+          * - :py:attr:`~check_permissions`
+            - Provides an async interface to check permissions of a list of ``RoleAssignment`` objects.
+          * - :py:attr:`~get_permissions`
+            - Provides an async interface to get permissions of a list of ``RoleQuery`` objects.
+          * - :py:attr:`~remove_permissions`
+            - Provides an async interface to remove permissions of a list of ``RoleAssignment`` objects.
+          * - :py:attr:`~set_permissions`
+            - Provides an async interface to set permissions of a list of ``RoleAssignment`` objects.
+          * - :py:attr:`~get_metadata`
+            - Provides an async interface to get metadata of a list of ``StoragePath`` objects.
+          * - :py:attr:`~set_metadata`
+            - Provides an async interface to set metadata of a list of ``DataAssignment`` objects.
+          * - :py:attr:`~wait_for`
+            - Provides an async interface to wait for a list of operations to complete.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dump_mode`
+            - 
+          * - :py:attr:`~client`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.api.async_api import AsyncDataTransferApi
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: dump_mode
+   :value: 'json'
+
+
+.. py:attribute:: client
+
+
+
+Method detail
+-------------
+
+.. py:method:: status(wait=False, sleep=5, jitter=True, timeout: float | None = 20.0)
+   :async:
+
+
+   
+   Provides an async interface to get the status of the worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: operations(ids: list[str])
+   :async:
+
+
+   
+   Provides an async interface to get a list of operations by their IDs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: storages()
+   :async:
+
+
+   
+   Provides an async interface to get the list of storage configurations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: copy(operations: list[ansys.hps.data_transfer.client.models.msg.SrcDst])
+   :async:
+
+
+   
+   Provides an async interface to copy a list of ``SrcDst`` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: exists(operations: list[ansys.hps.data_transfer.client.models.msg.StoragePath])
+   :async:
+
+
+   
+   Provides an async interface to check if a list of ``StoragePath`` objects exist.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: list(operations: list[ansys.hps.data_transfer.client.models.msg.StoragePath])
+   :async:
+
+
+   
+   Provides an async interface to get a list of ``StoragePath`` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: mkdir(operations: list[ansys.hps.data_transfer.client.models.msg.StoragePath])
+   :async:
+
+
+   
+   Provides an async interface to create a list of directories in the remote backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: move(operations: list[ansys.hps.data_transfer.client.models.msg.SrcDst])
+   :async:
+
+
+   
+   Provides an async interface to move a list of ``SrcDst`` objects in the remote backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove(operations: list[ansys.hps.data_transfer.client.models.msg.StoragePath])
+   :async:
+
+
+   
+   Provides an async interface to remove files in the remote backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: rmdir(operations: list[ansys.hps.data_transfer.client.models.msg.StoragePath])
+   :async:
+
+
+   
+   Provides an async interface to remove directories in the remote backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: check_permissions(permissions: list[ansys.hps.data_transfer.client.models.permissions.RoleAssignment])
+   :async:
+
+
+   
+   Provides an async interface to check permissions of a list of ``RoleAssignment`` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_permissions(permissions: list[ansys.hps.data_transfer.client.models.permissions.RoleQuery])
+   :async:
+
+
+   
+   Provides an async interface to get permissions of a list of ``RoleQuery`` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_permissions(permissions: list[ansys.hps.data_transfer.client.models.permissions.RoleAssignment])
+   :async:
+
+
+   
+   Provides an async interface to remove permissions of a list of ``RoleAssignment`` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_permissions(permissions: list[ansys.hps.data_transfer.client.models.permissions.RoleAssignment])
+   :async:
+
+
+   
+   Provides an async interface to set permissions of a list of ``RoleAssignment`` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_metadata(paths: list[str | ansys.hps.data_transfer.client.models.msg.StoragePath])
+   :async:
+
+
+   
+   Provides an async interface to get metadata of a list of ``StoragePath`` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_metadata(asgs: dict[str | ansys.hps.data_transfer.client.models.msg.StoragePath, ansys.hps.data_transfer.client.models.metadata.DataAssignment])
+   :async:
+
+
+   
+   Provides an async interface to set metadata of a list of ``DataAssignment`` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: wait_for(operation_ids: list[str | ansys.hps.data_transfer.client.models.ops.Operation], timeout: float | None = None, interval: float = 0.1, cap: float = 2.0, raise_on_error: bool = False, progress_handler: collections.abc.Callable[[str, float], collections.abc.Awaitable[None]] = None)
+   :async:
+
+
+   
+   Provides an async interface to wait for a list of operations to complete.
+
+
+   :Parameters:
+
+       **operation_ids: list[str | Operation]**
+           The list of operation ids to wait for.
+
+       **timeout: float | None**
+           The maximum time to wait for the operations to complete.
+
+       **interval: float**
+           The interval between checks for the operations to complete.
+
+       **cap: float**
+           The maximum backoff value used to calculate the next wait time. Default is 2.0.
+
+       **raise_on_error: bool**
+           Raise an exception if an error occurs. Default is False.
+
+       **progress_handler: Callable[[str, float], None]**
+           A async function to handle progress updates. Default is None.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+.. py:data:: log
+
+
+

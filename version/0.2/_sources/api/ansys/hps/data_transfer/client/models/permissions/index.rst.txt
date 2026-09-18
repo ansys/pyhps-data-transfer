@@ -1,0 +1,735 @@
+
+
+
+
+
+
+The ``permissions.py`` module
+=============================
+
+.. py:module:: ansys.hps.data_transfer.client.models.permissions
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: permissions
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~Resource`
+            - Provides the schema for the resource type.
+
+
+          * - :py:obj:`~Subject`
+            - Provides the schema for the subject type.
+
+
+          * - :py:obj:`~RoleAssignment`
+            - Provides the schema for the role assigned to the user.
+
+
+          * - :py:obj:`~RoleQuery`
+            - Provides the schema for querying the role of the user.
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ResourceType`
+            - Resource type schema.
+
+
+          * - :py:obj:`~RoleType`
+            - Provides the role type schema for the role of the user.
+
+
+          * - :py:obj:`~SubjectType`
+            - Provides the subject type schema for the user or group.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the schemas for resource type, role type, and subject type.
+
+Permission functionality related RoleAssignment and  RoleQuery schema.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: Resource(/, **data: Any)
+
+
+
+   
+   Provides the schema for the resource type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Resource
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.permissions import Resource
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: path
+   :type:  str | None
+   :value: 'my/path/to/data/file.txt'
+
+
+.. py:attribute:: type
+   :type:  ResourceType | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: Subject(/, **data: Any)
+
+
+
+   
+   Provides the schema for the subject type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Subject
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - 
+          * - :py:attr:`~type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.permissions import Subject
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: id
+   :type:  str | None
+   :value: '946991ec-828c-4de4-acbe-962ada8bc441'
+
+
+.. py:attribute:: type
+   :type:  SubjectType | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: RoleAssignment(/, **data: Any)
+
+
+
+   
+   Provides the schema for the role assigned to the user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RoleAssignment
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~resource`
+            - 
+          * - :py:attr:`~role`
+            - 
+          * - :py:attr:`~subject`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.permissions import RoleAssignment
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: resource
+   :type:  Resource | None
+   :value: None
+
+
+.. py:attribute:: role
+   :type:  RoleType | None
+   :value: None
+
+
+.. py:attribute:: subject
+   :type:  Subject | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: RoleQuery(/, **data: Any)
+
+
+
+   
+   Provides the schema for querying the role of the user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RoleQuery
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~resource`
+            - 
+          * - :py:attr:`~role`
+            - 
+          * - :py:attr:`~subject`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.permissions import RoleQuery
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: resource
+   :type:  Resource | None
+   :value: None
+
+
+.. py:attribute:: role
+   :type:  RoleType | None
+   :value: None
+
+
+.. py:attribute:: subject
+   :type:  Subject | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: ResourceType(*args, **kwds)
+
+
+
+   
+   Resource type schema.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ResourceType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~Doc`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.permissions import ResourceType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: Doc
+   :value: 'document'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: RoleType(*args, **kwds)
+
+
+
+   
+   Provides the role type schema for the role of the user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RoleType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~Reader`
+            - 
+          * - :py:attr:`~Writer`
+            - 
+          * - :py:attr:`~Admin`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.permissions import RoleType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: Reader
+   :value: 'reader'
+
+
+.. py:attribute:: Writer
+   :value: 'writer'
+
+
+.. py:attribute:: Admin
+   :value: 'admin'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: SubjectType(*args, **kwds)
+
+
+
+   
+   Provides the subject type schema for the user or group.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SubjectType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~User`
+            - 
+          * - :py:attr:`~Group`
+            - 
+          * - :py:attr:`~Any`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.permissions import SubjectType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: User
+   :value: 'user'
+
+
+.. py:attribute:: Group
+   :value: 'group'
+
+
+.. py:attribute:: Any
+   :value: 'any'
+
+
+
+
+
+
+
+
+

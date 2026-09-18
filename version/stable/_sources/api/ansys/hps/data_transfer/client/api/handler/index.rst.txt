@@ -1,0 +1,239 @@
+
+
+
+
+
+
+The ``handler.py`` module
+=========================
+
+.. py:module:: ansys.hps.data_transfer.client.api.handler
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: handler
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~WaitHandler`
+            - Allows additional handling of operation status on wait.
+
+
+          * - :py:obj:`~AsyncWaitHandler`
+            - Allows additional, asynchronous handling of operation status on wait.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~log`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides functionality for monitoring of operations.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: WaitHandler
+
+   
+   Allows additional handling of operation status on wait.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: WaitHandler
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~final`
+            - 
+          * - :py:attr:`~start`
+            - 
+          * - :py:attr:`~report_threshold`
+            - 
+          * - :py:attr:`~min_progress_interval`
+            - 
+          * - :py:attr:`~last_progress`
+            - 
+          * - :py:attr:`~completed_ids`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.api.handler import WaitHandler
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: final
+
+.. py:attribute:: start
+
+.. py:attribute:: report_threshold
+   :value: 2.0
+
+
+.. py:attribute:: min_progress_interval
+   :value: 15.0
+
+
+.. py:attribute:: last_progress
+
+.. py:attribute:: completed_ids
+   :value: []
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: AsyncWaitHandler
+
+
+
+   
+   Allows additional, asynchronous handling of operation status on wait.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.api.handler import AsyncWaitHandler
+
+
+
+
+
+
+.. py:data:: log
+
+
+

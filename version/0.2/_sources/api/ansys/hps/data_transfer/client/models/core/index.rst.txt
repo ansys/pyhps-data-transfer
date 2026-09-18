@@ -1,0 +1,153 @@
+
+
+
+
+
+
+The ``core.py`` module
+======================
+
+.. py:module:: ansys.hps.data_transfer.client.models.core
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: core
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ErrorResponse`
+            - Provides the error response schema.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the error response schema.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: ErrorResponse(/, **data: Any)
+
+
+
+   
+   Provides the error response schema.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ErrorResponse
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~error`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.core import ErrorResponse
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: error
+   :type:  str | None
+   :value: 'something bad happened'
+
+
+
+
+
+
+
+
+

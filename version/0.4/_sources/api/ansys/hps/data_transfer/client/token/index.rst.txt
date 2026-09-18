@@ -1,0 +1,95 @@
+
+
+
+
+
+
+The ``token.py`` module
+=======================
+
+.. py:module:: ansys.hps.data_transfer.client.token
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: token
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~prepare_token`
+            - Prepare an authentication token by ensuring it is prefixed with ``Bearer``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides a utility function for handling authentication tokens.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: prepare_token(token)
+
+   
+   Prepare an authentication token by ensuring it is prefixed with ``Bearer``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

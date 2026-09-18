@@ -1,0 +1,689 @@
+
+
+
+
+
+
+The ``api.py`` module
+=====================
+
+.. py:module:: ansys.hps.data_transfer.client.api.api
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: api
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~DataTransferApi`
+            - Provides the data transfer API.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~log`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the core API functionality for interacting with the Ansys HPS data transfer client.
+
+This module includes methods and utilities for performing
+data transfer operations, managing resources, and handling client interactions.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: DataTransferApi(client: ansys.hps.data_transfer.client.client.Client)
+
+   
+   Provides the data transfer API.
+
+
+   :Parameters:
+
+       **client: Client**
+           Client object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DataTransferApi
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~status`
+            - Get the status of the worker binary.
+          * - :py:attr:`~operations`
+            - Get a list of operations.
+          * - :py:attr:`~storages`
+            - Get types of storages available on the storage backend.
+          * - :py:attr:`~copy`
+            - Get the API response for copying a list of files.
+          * - :py:attr:`~exists`
+            - Check if a path exists.
+          * - :py:attr:`~list`
+            - List files in a path.
+          * - :py:attr:`~mkdir`
+            - Create a directory.
+          * - :py:attr:`~move`
+            - Move a file on the backend storage.
+          * - :py:attr:`~remove`
+            - Delete a file.
+          * - :py:attr:`~rmdir`
+            - Delete a directory.
+          * - :py:attr:`~check_permissions`
+            - Check permissions of a path (including parent directory) using a list of ``RoleAssignment`` objects.
+          * - :py:attr:`~get_permissions`
+            - Get permissions of a file from a list of ``RoleQuery`` objects.
+          * - :py:attr:`~remove_permissions`
+            - Remove permissions using a list of ``RoleAssignment`` objects.
+          * - :py:attr:`~set_permissions`
+            - Set permissions using a list of ``RoleAssignment`` objects.
+          * - :py:attr:`~get_metadata`
+            - Get metadata of a path on the backend storage.
+          * - :py:attr:`~set_metadata`
+            - Set metadata for a path on the backend storage.
+          * - :py:attr:`~wait_for`
+            - Wait for operations to complete.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dump_mode`
+            - 
+          * - :py:attr:`~client`
+            - 
+          * - :py:attr:`~wait_handler_factory`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.api.api import DataTransferApi
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: dump_mode
+   :value: 'json'
+
+
+.. py:attribute:: client
+
+.. py:attribute:: wait_handler_factory
+
+
+
+Method detail
+-------------
+
+.. py:method:: status(wait=False, sleep=5, jitter=True, timeout: float | None = 20.0)
+
+   
+   Get the status of the worker binary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: operations(ids: list[str], expand: bool = False)
+
+   
+   Get a list of operations.
+
+
+   :Parameters:
+
+       **ids: List[str]**
+           List of IDs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: storages()
+
+   
+   Get types of storages available on the storage backend.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: copy(operations: list[ansys.hps.data_transfer.client.models.SrcDst])
+
+   
+   Get the API response for copying a list of files.
+
+
+   :Parameters:
+
+       **operations: List[SrcDst]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: exists(operations: list[ansys.hps.data_transfer.client.models.StoragePath])
+
+   
+   Check if a path exists.
+
+
+   :Parameters:
+
+       **operations: List[StoragePath]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: list(operations: list[ansys.hps.data_transfer.client.models.StoragePath])
+
+   
+   List files in a path.
+
+
+   :Parameters:
+
+       **operations: List[StoragePath]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: mkdir(operations: list[ansys.hps.data_transfer.client.models.StoragePath])
+
+   
+   Create a directory.
+
+
+   :Parameters:
+
+       **operations: List[StoragePath]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: move(operations: list[ansys.hps.data_transfer.client.models.SrcDst])
+
+   
+   Move a file on the backend storage.
+
+
+   :Parameters:
+
+       **operations: List[SrcDst]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove(operations: list[ansys.hps.data_transfer.client.models.StoragePath])
+
+   
+   Delete a file.
+
+
+   :Parameters:
+
+       **operations: List[StoragePath]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: rmdir(operations: list[ansys.hps.data_transfer.client.models.StoragePath])
+
+   
+   Delete a directory.
+
+
+   :Parameters:
+
+       **operations: List[StoragePath]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: check_permissions(permissions: list[ansys.hps.data_transfer.client.models.RoleAssignment])
+
+   
+   Check permissions of a path (including parent directory) using a list of ``RoleAssignment`` objects.
+
+
+   :Parameters:
+
+       **permissions: List[RoleAssignment]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_permissions(permissions: list[ansys.hps.data_transfer.client.models.RoleQuery])
+
+   
+   Get permissions of a file from a list of ``RoleQuery`` objects.
+
+
+   :Parameters:
+
+       **permissions: List[RoleQuery]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_permissions(permissions: list[ansys.hps.data_transfer.client.models.RoleAssignment])
+
+   
+   Remove permissions using a list of ``RoleAssignment`` objects.
+
+
+   :Parameters:
+
+       **permissions: List[RoleAssignment]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_permissions(permissions: list[ansys.hps.data_transfer.client.models.RoleAssignment])
+
+   
+   Set permissions using a list of ``RoleAssignment`` objects.
+
+
+   :Parameters:
+
+       **permissions: List[RoleAssignment]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_metadata(paths: list[str | ansys.hps.data_transfer.client.models.StoragePath])
+
+   
+   Get metadata of a path on the backend storage.
+
+
+   :Parameters:
+
+       **paths: List[str | StoragePath]**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_metadata(asgs: dict[str | ansys.hps.data_transfer.client.models.StoragePath, ansys.hps.data_transfer.client.models.DataAssignment])
+
+   
+   Set metadata for a path on the backend storage.
+
+
+   :Parameters:
+
+       **asgs: Dict[str | StoragePath, DataAssignment]**
+           List of paths with key of type string or ``StoragePath`` and value of ``DataAssignment``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: wait_for(operation_ids: list[str | ansys.hps.data_transfer.client.models.Operation | ansys.hps.data_transfer.client.models.OperationIdResponse], timeout: float | None = None, interval: float = 0.1, cap: float = 2.0, raise_on_error: bool = False, handler: collections.abc.Callable[[list[ansys.hps.data_transfer.client.models.Operation]], None] = None)
+
+   
+   Wait for operations to complete.
+
+
+   :Parameters:
+
+       **operation_ids: List[str | Operation | OperationIdResponse]**
+           List of operation ids.
+
+       **timeout: float | None**
+           Timeout in seconds. Default is None.
+
+       **interval: float**
+           Interval in seconds. Default is 0.1.
+
+       **cap: float**
+           The maximum backoff value used to calculate the next wait time. Default is 2.0.
+
+       **raise_on_error: bool**
+           Raise an exception if an error occurs. Default is False.
+
+       **operation_handler: Callable[[builtins.list[Operation]], None]**
+           A callable that will be called with the list of operations when they are fetched.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+.. py:data:: log
+
+
+
