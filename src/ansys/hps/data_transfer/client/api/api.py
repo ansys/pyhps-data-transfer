@@ -56,6 +56,7 @@ from ..models import (
 from ..utils.jitter import get_expo_backoff
 from .handler import WaitHandler
 from .retry import retry
+from .waiter import SseWaiter
 
 log = logging.getLogger(__name__)
 
@@ -74,6 +75,7 @@ class DataTransferApi:
         self.dump_mode = "json"
         self.client = client
         self.wait_handler_factory = WaitHandler
+        self._sse_supported: bool | None = None
 
     @retry()
     def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
@@ -109,6 +111,17 @@ class DataTransferApi:
         """
         return self._operations(ids, expand=expand)
 
+    def _detect_sse_support(self) -> bool:
+        """Detect and cache whether the connected worker advertises SSE support."""
+        if self._sse_supported is None:
+            try:
+                s = self.status()
+                self._sse_supported = bool(s.features and s.features.sse)
+            except Exception as e:
+                log.debug(f"Failed to detect SSE support, disabling SSE: {e}")
+                self._sse_supported = False
+        return self._sse_supported
+
     def storages(self):
         """Get types of storages available on the storage backend."""
         url = "/storage"
@@ -116,68 +129,82 @@ class DataTransferApi:
         json = resp.json()
         return StorageConfigResponse(**json).storage
 
-    def copy(self, operations: list[SrcDst]):
+    def copy(self, operations: list[SrcDst], subject: str | None = None):
         """Get the API response for copying a list of files.
 
         Parameters
         ----------
         operations: List[SrcDst]
+        subject: str | None
+            Subject ID for SSE event filtering. Auto-generated if None and use_sse=True in wait_for.
         """
-        return self._exec_operation_req("copy", operations)
+        return self._exec_operation_req("copy", operations, subject=subject)
 
-    def exists(self, operations: list[StoragePath]):
+    def exists(self, operations: list[StoragePath], subject: str | None = None):
         """Check if a path exists.
 
         Parameters
         ----------
         operations: List[StoragePath]
+        subject: str | None
+            Subject ID for SSE event filtering.
         """
-        return self._exec_operation_req("exists", operations)
+        return self._exec_operation_req("exists", operations, subject=subject)
 
-    def list(self, operations: list[StoragePath]):
+    def list(self, operations: list[StoragePath], subject: str | None = None):
         """List files in a path.
 
         Parameters
         ----------
         operations: List[StoragePath]
+        subject: str | None
+            Subject ID for SSE event filtering.
         """
-        return self._exec_operation_req("list", operations, params={"mode": "extended"})
+        return self._exec_operation_req("list", operations, params={"mode": "extended"}, subject=subject)
 
-    def mkdir(self, operations: builtins.list[StoragePath]):
+    def mkdir(self, operations: builtins.list[StoragePath], subject: str | None = None):
         """Create a directory.
 
         Parameters
         ----------
         operations: List[StoragePath]
+        subject: str | None
+            Subject ID for SSE event filtering.
         """
-        return self._exec_operation_req("mkdir", operations)
+        return self._exec_operation_req("mkdir", operations, subject=subject)
 
-    def move(self, operations: builtins.list[SrcDst]):
+    def move(self, operations: builtins.list[SrcDst], subject: str | None = None):
         """Move a file on the backend storage.
 
         Parameters
         ----------
         operations: List[SrcDst]
+        subject: str | None
+            Subject ID for SSE event filtering.
         """
-        return self._exec_operation_req("move", operations)
+        return self._exec_operation_req("move", operations, subject=subject)
 
-    def remove(self, operations: builtins.list[StoragePath]):
+    def remove(self, operations: builtins.list[StoragePath], subject: str | None = None):
         """Delete a file.
 
         Parameters
         ----------
         operations: List[StoragePath]
+        subject: str | None
+            Subject ID for SSE event filtering.
         """
-        return self._exec_operation_req("remove", operations)
+        return self._exec_operation_req("remove", operations, subject=subject)
 
-    def rmdir(self, operations: builtins.list[StoragePath]):
+    def rmdir(self, operations: builtins.list[StoragePath], subject: str | None = None):
         """Delete a directory.
 
         Parameters
         ----------
         operations: List[StoragePath]
+        subject: str | None
+            Subject ID for SSE event filtering.
         """
-        return self._exec_operation_req("rmdir", operations)
+        return self._exec_operation_req("rmdir", operations, subject=subject)
 
     @retry()
     def _exec_operation_req(
@@ -185,9 +212,14 @@ class DataTransferApi:
         storage_operation: str,
         operations: builtins.list[StoragePath] | builtins.list[SrcDst],
         params: dict | None = None,
+        subject: str | None = None,
     ):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
+        if params is None:
+            params = {}
+        if subject:
+            params["subject"] = subject
         resp = self.client.session.post(url, json=payload, params=params)
         json = resp.json()
         r = OperationIdResponse(**json)
@@ -297,6 +329,8 @@ class DataTransferApi:
         cap: float = 5.0,
         raise_on_error: bool = False,
         handler: Callable[[builtins.list[Operation]], None] = None,
+        use_sse: bool = True,
+        subject: str | None = None,
     ):
         """Wait for operations to complete.
 
@@ -314,6 +348,16 @@ class DataTransferApi:
             Raise an exception if an error occurs. Default is False.
         operation_handler: Callable[[builtins.list[Operation]], None]
             A callable that will be called with the list of operations when they are fetched.
+        use_sse: bool
+            Use Server-Sent Events for real-time updates instead of polling, if the worker
+            advertises support for it. Default True. Falls back to polling automatically
+            if the worker does not support SSE, or if the SSE stream fails or ends without
+            a terminal event. If ``subject`` was passed to the operation call(s) (for
+            example ``copy``) that produced ``operation_ids``, the same value must be
+            passed here; otherwise the operation ids themselves are used as the subject,
+            which matches the server's default behavior when no subject is supplied.
+        subject: str | None
+            Subject ID for SSE filtering. Defaults to the operation ids when None.
         """
         if handler is None:
             handler = self.wait_handler_factory()
@@ -321,8 +365,46 @@ class DataTransferApi:
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
         operation_ids = [op.id if isinstance(op, Operation | OperationIdResponse) else op for op in operation_ids]
+
+        # Default the subject to the operation ids themselves, matching the server's own
+        # fallback behavior when no explicit subject was supplied to the operation call.
+        subj = subject if subject else operation_ids if use_sse else None
+        use_sse = bool(use_sse and subj and self._detect_sse_support())
+
         start = time.time()
         attempt = 0
+        final_ops = None
+
+        if use_sse:
+            # SSE path
+            try:
+                with SseWaiter(self.client.session, subj, handler) as waiter:
+                    for op in waiter:
+                        final_ops = [op]
+                        if waiter.is_terminal:
+                            break
+
+                if waiter.is_terminal:
+                    # SSE completed - fetch full operation in case SSE data was truncated
+                    try:
+                        full_ops = self._operations(operation_ids)
+                        if full_ops:
+                            final_ops = full_ops
+                            if handler is not None:
+                                try:
+                                    handler(final_ops)
+                                except Exception as e:
+                                    log.warning(f"Handler error: {e}")
+                    except Exception as e:
+                        log.debug(f"Failed to fetch full operation after SSE completion: {e}")
+                    return final_ops
+                # Stream ended without a terminal event (e.g. silent/closed early/unsupported).
+                # Fall through to polling to guarantee we wait until completion.
+                log.debug("SSE stream ended without a terminal event, falling back to polling")
+            except Exception as e:
+                log.debug(f"SSE connection failed, falling back to polling: {e}")
+
+        # Polling path (existing logic)
         while True:
             attempt += 1
             try:
@@ -337,6 +419,7 @@ class DataTransferApi:
 
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
                     log.debug("All operations have completed.")
+                    final_ops = ops
                     break
             except (TimeoutException, TimeoutError):
                 log.debug("Operations status call timed out, retrying...")
@@ -354,4 +437,4 @@ class DataTransferApi:
             duration = get_expo_backoff(interval, attempts=attempt, cap=cap, jitter=True)
             time.sleep(duration)
 
-        return ops
+        return final_ops
