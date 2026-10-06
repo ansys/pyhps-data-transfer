@@ -41,7 +41,7 @@ tests = [
     "pytest==9.1.1",
     "pytest-cov==7.1.0",
     "pytest-timeout==2.4.0",
-    "pytest-mock-resources[redis]==2.13.0",
+    "pytest-mock-resources[redis]==2.15.0",
     "pytest-rerunfailures==16.7",
     "pytest-asyncio==1.4.0",
     "python-keycloak==7.1.1",
