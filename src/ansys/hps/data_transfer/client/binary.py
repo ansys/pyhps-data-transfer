@@ -29,12 +29,11 @@ import json
 import logging
 import os
 import platform
+import socket
 import stat
 import subprocess
 import threading
 import time
-
-import portend
 
 from .exceptions import BinaryError
 from .token import prepare_token
@@ -491,8 +490,9 @@ class Binary:
         self._prepared.set()
 
     def _get_open_port(self):
-        port = portend.find_available_local_port()
-        return port
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            return sock.getsockname()[1]
 
     def _build_base_args(self):
         log_types = ["diode"]
