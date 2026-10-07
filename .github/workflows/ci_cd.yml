@@ -64,7 +64,7 @@ jobs:
       runner: "public-ubuntu-latest-8-cores"
       docker-compose-profiles: "backend"
       hps-version: ${{ inputs.hps-version || 'latest-dev' }}
-      include-mini-tests: false
+      include-hps-lite-tests: false
     secrets: inherit # pass all secrets
 
   backward-compatibility-tests:
@@ -78,7 +78,7 @@ jobs:
       docker-compose-profiles: "backend"
       hps-version: ${{ matrix.hps-version }}
       upload-coverage: false
-      include-mini-tests: false
+      include-hps-lite-tests: false
     secrets: inherit # pass all secrets
 
   docs:
