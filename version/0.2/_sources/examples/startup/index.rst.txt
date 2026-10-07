@@ -1,0 +1,45 @@
+
+
+.. _sphx_glr_examples_startup:
+
+Start PyHPS Data Transfer
+=========================
+
+This example shows how to create a data transfer API object using a client and then check for available storages.
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbnails">
+
+.. thumbnail-parent-div-open
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example script starts a data transfer service client and queries available storage.">
+
+.. only:: html
+
+  .. image:: /examples/startup/images/thumb/sphx_glr_data_transfer_runner_thumb.png
+    :alt:
+
+  :ref:`sphx_glr_examples_startup_data_transfer_runner.py`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Start PyHPS Data Transfer</div>
+    </div>
+
+
+.. thumbnail-parent-div-close
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /examples/startup/data_transfer_runner
+

@@ -1,0 +1,147 @@
+
+
+
+
+
+
+The ``authenticate.py`` module
+==============================
+
+.. py:module:: ansys.hps.data_transfer.client.authenticate
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: authenticate
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~authenticate`
+            - Authenticate the user with a password or refresh token against the HPS authentication service.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~log`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides authentication for the user with a password or refresh token.
+
+This module interacts with the HPS authentication service.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: authenticate(url: str = 'https://localhost:8443/hps', realm: str = 'rep', grant_type: str = 'password', scope='openid', client_id: str = 'rep-cli', client_secret: str = None, username: str = None, password: str = None, refresh_token: str = None, timeout: float = 10.0, verify: bool | str = True, **kwargs)
+
+   
+   Authenticate the user with a password or refresh token against the HPS authentication service.
+
+   If this method is successful, the response includes access and refresh tokens.
+
+   :Parameters:
+
+       **url** : :class:`python:str`, default: 'https://localhost:8443/hps'
+           Base path for the server to call.
+
+       **realm** : :class:`python:str`, default: 'rep'
+           Name of the Keycloak realm.
+
+       **grant_type: str, default: 'password'**
+           Authentication method.
+
+       **scope** : :class:`python:str`, default: 'openid'
+           String containing one or more requested scopes.
+
+       **client_id** : :class:`python:str`, default: 'rep-cli'
+           Client type.
+
+       **client_secret** : :class:`python:str`, default: :data:`python:None`
+           Client secret.
+
+       **username** : :class:`python:str`
+           Username.
+
+       **password** : :class:`python:str`
+           Password.
+
+       **refresh_token** : :class:`python:str`
+           Refresh token.
+
+       **timeout** : :class:`python:float`, default: 10.0
+           Timeout in seconds.
+
+       **verify: Union[bool, str]**
+           If a Boolean, whether to verify the server's TLS certificate. If a string, the
+           path to the CA bundle to use. For more information, see the :class:`requests.Session`
+           documentation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: log
+
+
+

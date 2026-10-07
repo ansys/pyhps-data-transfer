@@ -1,0 +1,2186 @@
+
+
+
+
+
+
+The ``msg.py`` module
+=====================
+
+.. py:module:: ansys.hps.data_transfer.client.models.msg
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: msg
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~BuildInfo`
+            - Provides the build information schema for the current build.
+
+
+          * - :py:obj:`~CheckPermissionsResponse`
+            - Check the permissions response schema for the current user.
+
+
+          * - :py:obj:`~CopyMetadataRequest`
+            - Provides the request schema for copying metadata.
+
+
+          * - :py:obj:`~FileDownloadTokenResponse`
+            - Provides the token response schema for for downloading a file.
+
+
+          * - :py:obj:`~GetMetadataRequest`
+            - Provides the request schema for getting metadata.
+
+
+          * - :py:obj:`~MetadataConfigResponse`
+            - Provides the response schema for metadata configuration for the current user.
+
+
+          * - :py:obj:`~MoveMetadataRequest`
+            - Provides the request schema for moving metadata.
+
+
+          * - :py:obj:`~OpIdResponse`
+            - Provides the response schema for an operation ID.
+
+
+          * - :py:obj:`~OpsRequest`
+            - Provides the request schema for operations.
+
+
+          * - :py:obj:`~PermissionsConfigResponse`
+            - Provides the response schema for permissions configuration for the current user.
+
+
+          * - :py:obj:`~RemoveMetadataRequest`
+            - Provides the request schema for removing metadata.
+
+
+          * - :py:obj:`~SetMetadataRequest`
+            - Provides the request schema for setting metadata.
+
+
+          * - :py:obj:`~Status`
+            - Provides the request schema for getting the build status.
+
+
+          * - :py:obj:`~StorageConfigResponse`
+            - Provides the response schema for storage configuration for the current user.
+
+
+          * - :py:obj:`~StoragePath`
+            - Provides the schema for a storage path with a remote.
+
+
+          * - :py:obj:`~PathOperations`
+            - Provides the schema for path operations for a list of storage paths.
+
+
+          * - :py:obj:`~SrcDst`
+            - Provides the schema for a source destination and destination storage path pair.
+
+
+          * - :py:obj:`~SrcDstOperations`
+            - Provides the schema for source destination operations for a list of source and destination storage path pairs.
+
+
+          * - :py:obj:`~OpsResponse`
+            - Provides the response schema for a list of operations.
+
+
+          * - :py:obj:`~CheckPermissionsRequest`
+            - Provides the request schema for checking permissions for the current user.
+
+
+          * - :py:obj:`~GetPermissionsRequest`
+            - Provides the request schema for getting permissions for the current user.
+
+
+          * - :py:obj:`~GetPermissionsResponse`
+            - Provides the response schema for getting permissions for the current user.
+
+
+          * - :py:obj:`~RemovePermissionsRequest`
+            - Provides the request schema for removing permissions for the current user.
+
+
+          * - :py:obj:`~SetPermissionsRequest`
+            - Provides the request schema for setting permissions for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the build information schema and response schemas for other data transfer operations.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: BuildInfo(/, **data: Any)
+
+
+
+   
+   Provides the build information schema for the current build.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BuildInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~branch`
+            - 
+          * - :py:attr:`~mode`
+            - 
+          * - :py:attr:`~revision`
+            - 
+          * - :py:attr:`~short_revision`
+            - 
+          * - :py:attr:`~timestamp`
+            - 
+          * - :py:attr:`~version`
+            - 
+          * - :py:attr:`~version_hash`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import BuildInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: branch
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: mode
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: revision
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: short_revision
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: timestamp
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: version
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: version_hash
+   :type:  str | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: CheckPermissionsResponse(/, **data: Any)
+
+
+
+   
+   Check the permissions response schema for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CheckPermissionsResponse
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~allowed`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import CheckPermissionsResponse
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: allowed
+   :type:  bool | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: CopyMetadataRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for copying metadata.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CopyMetadataRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~recursive`
+            - 
+          * - :py:attr:`~src_dst`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import CopyMetadataRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: recursive
+   :type:  bool | None
+   :value: None
+
+
+.. py:attribute:: src_dst
+   :type:  list[ansys.hps.data_transfer.client.models.metadata.SrcDst]
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: FileDownloadTokenResponse(/, **data: Any)
+
+
+
+   
+   Provides the token response schema for for downloading a file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: FileDownloadTokenResponse
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~token`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import FileDownloadTokenResponse
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: token
+   :type:  str | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: GetMetadataRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for getting metadata.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: GetMetadataRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~paths`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import GetMetadataRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: paths
+   :type:  list[str] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: MetadataConfigResponse(/, **data: Any)
+
+
+
+   
+   Provides the response schema for metadata configuration for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MetadataConfigResponse
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~config`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import MetadataConfigResponse
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: config
+   :type:  dict[str, Any] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: MoveMetadataRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for moving metadata.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MoveMetadataRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~recursive`
+            - 
+          * - :py:attr:`~src_dst`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import MoveMetadataRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: recursive
+   :type:  bool | None
+   :value: None
+
+
+.. py:attribute:: src_dst
+   :type:  list[ansys.hps.data_transfer.client.models.metadata.SrcDst]
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: OpIdResponse(/, **data: Any)
+
+
+
+   
+   Provides the response schema for an operation ID.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: OpIdResponse
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - 
+          * - :py:attr:`~location`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import OpIdResponse
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: id
+   :type:  str | None
+   :value: '2diK2kCkpgeHAQSNthIZ1JYyPte'
+
+
+.. py:attribute:: location
+   :type:  str | None
+   :value: '/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: OpsRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for operations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: OpsRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~ids`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import OpsRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: ids
+   :type:  list[str]
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: PermissionsConfigResponse(/, **data: Any)
+
+
+
+   
+   Provides the response schema for permissions configuration for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PermissionsConfigResponse
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~config`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import PermissionsConfigResponse
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: config
+   :type:  dict[str, Any] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: RemoveMetadataRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for removing metadata.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RemoveMetadataRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~paths`
+            - 
+          * - :py:attr:`~recursive`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import RemoveMetadataRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: paths
+   :type:  list[str]
+
+.. py:attribute:: recursive
+   :type:  bool | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: SetMetadataRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for setting metadata.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SetMetadataRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~metadata`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import SetMetadataRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: metadata
+   :type:  SetMetadataRequest.metadata
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: Status(/, **data: Any)
+
+
+
+   
+   Provides the request schema for getting the build status.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Status
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~build_info`
+            - 
+          * - :py:attr:`~ready`
+            - 
+          * - :py:attr:`~time`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import Status
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: build_info
+   :type:  BuildInfo | None
+   :value: None
+
+
+.. py:attribute:: ready
+   :type:  bool | None
+   :value: None
+
+
+.. py:attribute:: time
+   :type:  str | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: StorageConfigResponse(/, **data: Any)
+
+
+
+   
+   Provides the response schema for storage configuration for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: StorageConfigResponse
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~storage`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import StorageConfigResponse
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: storage
+   :type:  list[dict[str, Any]] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: StoragePath(/, **data: Any)
+
+
+
+   
+   Provides the schema for a storage path with a remote.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: StoragePath
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~remote`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import StoragePath
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: path
+   :type:  str
+
+.. py:attribute:: remote
+   :type:  str | None
+   :value: 'any'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: PathOperations(/, **data: Any)
+
+
+
+   
+   Provides the schema for path operations for a list of storage paths.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PathOperations
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~operations`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import PathOperations
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: operations
+   :type:  list[StoragePath]
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: SrcDst(/, **data: Any)
+
+
+
+   
+   Provides the schema for a source destination and destination storage path pair.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SrcDst
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dst`
+            - 
+          * - :py:attr:`~src`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import SrcDst
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: dst
+   :type:  StoragePath
+
+.. py:attribute:: src
+   :type:  StoragePath
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: SrcDstOperations(/, **data: Any)
+
+
+
+   
+   Provides the schema for source destination operations for a list of source and destination storage path pairs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SrcDstOperations
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~operations`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import SrcDstOperations
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: operations
+   :type:  list[SrcDst]
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: OpsResponse(/, **data: Any)
+
+
+
+   
+   Provides the response schema for a list of operations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: OpsResponse
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~operations`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import OpsResponse
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: operations
+   :type:  list[ansys.hps.data_transfer.client.models.ops.Operation] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: CheckPermissionsRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for checking permissions for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CheckPermissionsRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~permissions`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import CheckPermissionsRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: permissions
+   :type:  list[perms.RoleAssignment] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: GetPermissionsRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for getting permissions for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: GetPermissionsRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~permissions`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import GetPermissionsRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: permissions
+   :type:  list[perms.RoleQuery] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: GetPermissionsResponse(/, **data: Any)
+
+
+
+   
+   Provides the response schema for getting permissions for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: GetPermissionsResponse
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~permissions`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import GetPermissionsResponse
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: permissions
+   :type:  list[perms.RoleAssignment] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: RemovePermissionsRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for removing permissions for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RemovePermissionsRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~permissions`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import RemovePermissionsRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: permissions
+   :type:  list[perms.RoleAssignment] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: SetPermissionsRequest(/, **data: Any)
+
+
+
+   
+   Provides the request schema for setting permissions for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SetPermissionsRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~permissions`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.msg import SetPermissionsRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: permissions
+   :type:  list[perms.RoleAssignment] | None
+   :value: None
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,1149 @@
+
+
+
+
+
+
+The ``client.py`` module
+========================
+
+.. py:module:: ansys.hps.data_transfer.client.client
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: client
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~MonitorState`
+            - Provides for monitoring and tracking the state of the worker binary.
+
+
+          * - :py:obj:`~ClientBase`
+            - Provides the Python client to the HPS data transfer APIs.
+
+
+          * - :py:obj:`~AsyncClient`
+            - Provides an async interface to the Python client to the HPS data transfer APIs.
+
+
+          * - :py:obj:`~Client`
+            - Provides the Python client to the HPS data transfer APIs.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~bin_in_use`
+            - Check if a binary is in use.
+
+
+          * - :py:obj:`~flatten_features`
+            - Flatten a nested dictionary into a list of strings.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~logger`
+            - 
+
+
+          * - :py:obj:`~api_key_header_env`
+            - 
+
+
+          * - :py:obj:`~api_key_value_env`
+            - 
+
+
+          * - :py:obj:`~log`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the Python client to the HPS data transfer APIs.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: MonitorState
+
+   
+   Provides for monitoring and tracking the state of the worker binary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MonitorState
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~reset`
+            - Reset the monitor state to the initial values.
+          * - :py:attr:`~mark_ready`
+            - Mark the worker as ready or not ready.
+          * - :py:attr:`~mark_failed`
+            - Mark the worker as failed.
+          * - :py:attr:`~report`
+            - Report the worker status.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~sleep_for`
+            - Sleep time based on the worker state.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.client import MonitorState
+
+Property detail
+---------------
+
+.. py:property:: sleep_for
+
+   
+   Sleep time based on the worker state.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: reset()
+
+   
+   Reset the monitor state to the initial values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: mark_ready(ready)
+
+   
+   Mark the worker as ready or not ready.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: mark_failed(exc=None, binary=None)
+
+   
+   Mark the worker as failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: report(binary)
+
+   
+   Report the worker status.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: ClientBase(bin_config: ansys.hps.data_transfer.client.binary.BinaryConfig = None, download_dir: str = 'dt_download', clean=False, clean_dev=True, check_in_use=True, refresh_token_callback: collections.abc.Callable[[], str | collections.abc.Awaitable[str]] = None, timeout=5.0, retries=4)
+
+   
+   Provides the Python client to the HPS data transfer APIs.
+
+   This class uses the provided credentials to create and store
+   an authorized :class:`requests.Session` object.
+
+   :Parameters:
+
+       **bin_config: BinaryConfig, default: None**
+           Binary configuration. If no configuration is provided, a default ``BinaryConfig`` object is created.
+
+       **download_dir: str, default: "dt_download"**
+           Path to the download directory.
+
+       **clean: bool, default: False**
+           Whether to clean the path to the download directory.
+
+       **clean_dev: bool, default: True**
+           Whether to clean the path to the download directory if the binary is from the development branch.
+
+       **check_in_use: bool, default: True**
+           Whether to check if the binary is in use and skip downloading a new binary.
+
+       **refresh_token_callback: Callable[[], str], default: None**
+           Callback function to refresh the access token. This function should return a new access token.
+
+       **timeout: float, default: 60.0**
+           Timeout for the session. This is the maximum time to wait for a response from the server.
+
+       **retries: int, default: 1**
+           Number of times to retry the operation.
+
+       **Examples:**
+           ..
+
+       **--------**
+           ..
+
+       **Create a client object and connect to HPS data transfer with an access token.**
+           ..
+
+       **>>> from ansys.hps.data_transfer.client import Client**
+           ..
+
+       **>>> def refresh_token_cb():**
+           # Function to refresh the token
+           token = authenticate(username=username, password, verify=False, url=auth_url)
+           token = token.get("access_token", None)
+           return token
+
+       **>>> client = Client(clean=True)**
+           ..
+
+       **>>> client.refresh_token_callback = refresh_token_cb**
+           ..
+
+       **>>> client.binary_config.update(**
+               verbosity=3,
+               debug=False,
+               insecure=True,
+               token=token,
+               data_transfer_url=dt_url,
+           )
+
+       **>>> client.start()**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ClientBase
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~start`
+            - Start the client session using the binary configuration credentials.
+          * - :py:attr:`~stop`
+            - Stop the client session.
+          * - :py:attr:`~has`
+            - Check if the feature is available using a dot notation.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~retries`
+            - Number of retries.
+          * - :py:attr:`~unauthorized_max_retry`
+            - Getter for unauthorized_max_retry.
+          * - :py:attr:`~binary_config`
+            - Binary configuration.
+          * - :py:attr:`~pid`
+            - Process ID of the worker binary.
+          * - :py:attr:`~base_api_url`
+            - API URL from the configuration.
+          * - :py:attr:`~session`
+            - Session object. If one does not exist, a new one is created.
+          * - :py:attr:`~is_started`
+            - Flag indicating if the binary is up and running.
+          * - :py:attr:`~timeout`
+            - Timeout for the session.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~refresh_token_callback`
+            - 
+          * - :py:attr:`~binary`
+            - 
+          * - :py:attr:`~panic_file`
+            - 
+          * - :py:attr:`~progress_interval`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.client import ClientBase
+
+Property detail
+---------------
+
+.. py:property:: retries
+
+   
+   Number of retries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: unauthorized_max_retry
+
+   
+   Getter for unauthorized_max_retry.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: binary_config
+
+   
+   Binary configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pid
+
+   
+   Process ID of the worker binary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: base_api_url
+
+   
+   API URL from the configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: session
+
+   
+   Session object. If one does not exist, a new one is created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_started
+
+   
+   Flag indicating if the binary is up and running.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: timeout
+
+   
+   Timeout for the session.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: refresh_token_callback
+   :value: None
+
+
+.. py:attribute:: binary
+   :value: None
+
+
+.. py:attribute:: panic_file
+   :value: None
+
+
+.. py:attribute:: progress_interval
+   :value: 5.0
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: start()
+
+   
+   Start the client session using the binary configuration credentials.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: stop(wait=5.0)
+
+   
+   Stop the client session.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: has(feature)
+
+   
+   Check if the feature is available using a dot notation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: AsyncClient(*args, **kwargs)
+
+
+
+   
+   Provides an async interface to the Python client to the HPS data transfer APIs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AsyncClient
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~start`
+            - Start the async binary worker.
+          * - :py:attr:`~stop`
+            - Stop the async binary worker.
+          * - :py:attr:`~wait`
+            - Wait on the async binary worker.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.client import AsyncClient
+
+
+
+Method detail
+-------------
+
+.. py:method:: start()
+   :async:
+
+
+   
+   Start the async binary worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: stop(wait=5.0)
+   :async:
+
+
+   
+   Stop the async binary worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: wait(timeout: float = 60.0, sleep=0.5)
+   :async:
+
+
+   
+   Wait on the async binary worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: Client(*args, **kwargs)
+
+
+
+   
+   Provides the Python client to the HPS data transfer APIs.
+
+   This class uses the provided credentials to create and store
+   an authorized :class:`requests.Session` object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Client
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~start`
+            - Start the client session using the binary configuration credentials.
+          * - :py:attr:`~stop`
+            - Stop the client session.
+          * - :py:attr:`~wait`
+            - Wait on the worker binary to start.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.client import Client
+
+
+
+Method detail
+-------------
+
+.. py:method:: start()
+
+   
+   Start the client session using the binary configuration credentials.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: stop(wait=5.0)
+
+   
+   Stop the client session.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: wait(timeout: float = 60.0, sleep=0.5)
+
+   
+   Wait on the worker binary to start.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+.. py:function:: bin_in_use(bin_path)
+
+   
+   Check if a binary is in use.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: flatten_features(y, separator='.')
+
+   
+   Flatten a nested dictionary into a list of strings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: logger
+
+.. py:data:: api_key_header_env
+   :value: 'ANSYS_DT_AUTH__API_KEY__HEADER_NAME'
+
+
+.. py:data:: api_key_value_env
+   :value: 'ANSYS_DT_AUTH__API_KEY__VALUE'
+
+
+.. py:data:: log
+
+
+
