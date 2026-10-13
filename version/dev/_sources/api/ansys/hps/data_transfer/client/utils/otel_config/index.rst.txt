@@ -1,0 +1,103 @@
+
+
+
+
+
+
+The ``otel_config.py`` module
+=============================
+
+.. py:module:: ansys.hps.data_transfer.client.utils.otel_config
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: otel_config
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~set_otel_config`
+            - Set data transfer worker Otel configuration using environment variables before starting the data transfer worker.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides utilities for configuring OpenTelemetry (Otel) settings for the Ansys HPS data transfer client.
+
+This module allows setting up environment variables required
+for telemetry data export and resource attributes.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: set_otel_config(exporter_url, resource_attributes=None, headers=None, exporter_type=None)
+
+   
+   Set data transfer worker Otel configuration using environment variables before starting the data transfer worker.
+
+   ANSYS_DT_OTEL__EXPORTER_URL - Otel exporter url.
+   ANSYS_DT_OTEL__RESOURCE_ATTRIBUTES - key-value pairs of resource attributes to be passed to the Otel SDK.
+   ANSYS_DT_OTEL__HEADERS - key-value pairs of headers to be associated with gRPC requests.
+   ANSYS_DT_OTEL__EXPORTER_TYPE - Otel exporter type.
+   ANSYS_DT_OTEL__ENABLED - enables Otel.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
