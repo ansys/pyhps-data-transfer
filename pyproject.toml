@@ -68,7 +68,7 @@ build = [
     "build==1.6.1",
     "twine==7.0.0",
     "wheel",
-    "datamodel-code-generator==0.84.0",
+    "datamodel-code-generator==0.86.0",
     "pre-commit==4.6.2",
     "importlib_metadata>=7.0",
 ]
