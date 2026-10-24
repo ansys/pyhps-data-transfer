@@ -30,7 +30,6 @@ import asyncio
 import builtins
 from collections.abc import Awaitable, Callable
 import logging
-import textwrap
 import time
 import traceback
 
@@ -59,6 +58,7 @@ from ..models import (
 from ..utils.jitter import get_expo_backoff
 from .handler import AsyncWaitHandler
 from .retry import retry
+from .waiter import AsyncSseWaiter
 
 log = logging.getLogger(__name__)
 
@@ -71,6 +71,7 @@ class AsyncDataTransferApi:
         self.dump_mode = "json"
         self.client = client
         self.wait_handler_factory = AsyncWaitHandler
+        self._sse_supported: bool | None = None
 
     @retry()
     async def status(self, wait=False, sleep=5, jitter=True, timeout: float | None = 20.0):
@@ -101,6 +102,17 @@ class AsyncDataTransferApi:
         """Provides an async interface to get a list of operations by their IDs."""
         return await self._operations(ids, expand=expand)
 
+    async def _detect_sse_support(self) -> bool:
+        """Detect and cache whether the connected worker advertises SSE support."""
+        if self._sse_supported is None:
+            try:
+                s = await self.status()
+                self._sse_supported = bool(s.features and s.features.sse)
+            except Exception as e:
+                log.debug(f"Failed to detect SSE support, disabling SSE: {e}")
+                self._sse_supported = False
+        return self._sse_supported
+
     async def storages(self):
         """Provides an async interface to get the list of storage configurations."""
         url = "/storage"
@@ -108,41 +120,47 @@ class AsyncDataTransferApi:
         json = resp.json()
         return StorageConfigResponse(**json).storage
 
-    async def copy(self, operations: list[SrcDst]):
+    async def copy(self, operations: list[SrcDst], subject: str | None = None):
         """Provides an async interface to copy a list of ``SrcDst`` objects."""
-        return await self._exec_async_operation_req("copy", operations)
+        return await self._exec_async_operation_req("copy", operations, subject=subject)
 
-    async def exists(self, operations: list[StoragePath]):
+    async def exists(self, operations: list[StoragePath], subject: str | None = None):
         """Provides an async interface to check if a list of ``StoragePath`` objects exist."""
-        return await self._exec_async_operation_req("exists", operations)
+        return await self._exec_async_operation_req("exists", operations, subject=subject)
 
-    async def list(self, operations: list[StoragePath]):
+    async def list(self, operations: list[StoragePath], subject: str | None = None):
         """Provides an async interface to get a list of ``StoragePath`` objects."""
-        return await self._exec_async_operation_req("list", operations)
+        return await self._exec_async_operation_req("list", operations, subject=subject)
 
-    async def mkdir(self, operations: builtins.list[StoragePath]):
+    async def mkdir(self, operations: builtins.list[StoragePath], subject: str | None = None):
         """Provides an async interface to create a list of directories in the remote backend."""
-        return await self._exec_async_operation_req("mkdir", operations)
+        return await self._exec_async_operation_req("mkdir", operations, subject=subject)
 
-    async def move(self, operations: builtins.list[SrcDst]):
+    async def move(self, operations: builtins.list[SrcDst], subject: str | None = None):
         """Provides an async interface to move a list of ``SrcDst`` objects in the remote backend."""
-        return await self._exec_async_operation_req("move", operations)
+        return await self._exec_async_operation_req("move", operations, subject=subject)
 
-    async def remove(self, operations: builtins.list[StoragePath]):
+    async def remove(self, operations: builtins.list[StoragePath], subject: str | None = None):
         """Provides an async interface to remove files in the remote backend."""
-        return await self._exec_async_operation_req("remove", operations)
+        return await self._exec_async_operation_req("remove", operations, subject=subject)
 
-    async def rmdir(self, operations: builtins.list[StoragePath]):
+    async def rmdir(self, operations: builtins.list[StoragePath], subject: str | None = None):
         """Provides an async interface to remove directories in the remote backend."""
-        return await self._exec_async_operation_req("rmdir", operations)
+        return await self._exec_async_operation_req("rmdir", operations, subject=subject)
 
     @retry()
     async def _exec_async_operation_req(
-        self, storage_operation: str, operations: builtins.list[StoragePath] | builtins.list[SrcDst]
+        self,
+        storage_operation: str,
+        operations: builtins.list[StoragePath] | builtins.list[SrcDst],
+        subject: str | None = None,
     ):
         url = f"/storage:{storage_operation}"
         payload = {"operations": [operation.model_dump(mode=self.dump_mode) for operation in operations]}
-        resp = await self.client.session.post(url, json=payload)
+        params = {}
+        if subject:
+            params["subject"] = subject
+        resp = await self.client.session.post(url, json=payload, params=params)
         json = resp.json()
         return OperationIdResponse(**json)
 
@@ -215,6 +233,8 @@ class AsyncDataTransferApi:
         cap: float = 5.0,
         raise_on_error: bool = False,
         handler: Callable[[builtins.list[Operation]], Awaitable[None]] = None,
+        use_sse: bool = True,
+        subject: str | None = None,
     ):
         """Provides an async interface to wait for a list of operations to complete.
 
@@ -232,6 +252,16 @@ class AsyncDataTransferApi:
             Raise an exception if an error occurs. Default is False.
         operation_handler: Callable[[builtins.list[Operation]], None]
             A callable that will be called with the list of operations when they are fetched.
+        use_sse: bool
+            Use Server-Sent Events for real-time updates instead of polling, if the worker
+            advertises support for it. Default True. Falls back to polling automatically
+            if the worker does not support SSE, or if the SSE stream fails or ends without
+            a terminal event. If ``subject`` was passed to the operation call(s) (for
+            example ``copy``) that produced ``operation_ids``, the same value must be
+            passed here; otherwise the operation ids themselves are used as the subject,
+            which matches the server's default behavior when no subject is supplied.
+        subject: str | None
+            Subject ID for SSE filtering. Defaults to the operation ids when None.
         """
         if handler is None:
             handler = self.wait_handler_factory()
@@ -239,10 +269,46 @@ class AsyncDataTransferApi:
         if not isinstance(operation_ids, list):
             operation_ids = [operation_ids]
         operation_ids = [op.id if isinstance(op, Operation | OperationIdResponse) else op for op in operation_ids]
+
+        # Default the subject to the operation ids themselves, matching the server's own
+        # fallback behavior when no explicit subject was supplied to the operation call.
+        subj = subject if subject else operation_ids if use_sse else None
+        use_sse = bool(use_sse and subj and await self._detect_sse_support())
+
         start = time.time()
         attempt = 0
-        op_str = textwrap.wrap(", ".join(operation_ids), width=60, placeholder="...")
-        # log.debug(f"Waiting for operations to complete: {op_str}")
+        final_ops = None
+
+        if use_sse:
+            # SSE path
+            try:
+                async with AsyncSseWaiter(self.client.session, subj, handler) as waiter:
+                    async for op in waiter:
+                        final_ops = [op]
+                        if waiter.is_terminal:
+                            break
+
+                if waiter.is_terminal:
+                    # SSE completed - fetch full operation in case SSE data was truncated
+                    try:
+                        full_ops = await self._operations(operation_ids)
+                        if full_ops:
+                            final_ops = full_ops
+                            if handler is not None:
+                                try:
+                                    await handler(full_ops)
+                                except Exception as e:
+                                    log.warning(f"Handler error: {e}")
+                    except Exception as e:
+                        log.debug(f"Failed to fetch full operation after SSE completion: {e}")
+                    return final_ops
+                # Stream ended without a terminal event (e.g. silent/closed early/unsupported).
+                # Fall through to polling to guarantee we wait until completion.
+                log.debug("SSE stream ended without a terminal event, falling back to polling")
+            except Exception as e:
+                log.debug(f"SSE connection failed, falling back to polling: {e}")
+
+        # Polling path (existing logic)
         while True:
             attempt += 1
             try:
@@ -256,6 +322,7 @@ class AsyncDataTransferApi:
                         log.debug(traceback.format_exc())
 
                 if all(op.state in [OperationState.Succeeded, OperationState.Failed] for op in ops):
+                    final_ops = ops
                     break
             except (TimeoutException, TimeoutError):
                 log.debug("Operations status call timed out, retrying...")
@@ -274,5 +341,5 @@ class AsyncDataTransferApi:
             await asyncio.sleep(duration)
 
         duration = hz.naturalsize(time.time() - start)
-        log.debug(f"Operations completed after {duration}: {op_str}")
-        return ops
+        log.debug(f"Operations completed after {duration}")
+        return final_ops
