@@ -28,6 +28,7 @@ import pytest
 
 from ansys.hps.data_transfer.client.binary import BinaryConfig
 from ansys.hps.data_transfer.client.client import AsyncClient, Client, ClientBase
+from ansys.hps.data_transfer.client.exceptions import BinaryError
 
 
 @pytest.fixture
@@ -296,3 +297,48 @@ class TestClientBase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "os.fork is unsafe while filelock is changing descriptor ownership",
+        "SoftFileLock on x.lock was inherited across fork; construct a new instance",
+    ],
+)
+def test_prepare_platform_binary_filelock_fork_error(tmp_path, message):
+    """A filelock fork-safety RuntimeError is reported as an actionable BinaryError."""
+    client = Client()
+    session = MagicMock()
+    session.get.return_value = MagicMock(status_code=200, json=lambda: {"build_info": {}})
+    lock = MagicMock()
+    lock.__enter__.side_effect = RuntimeError(message)
+
+    with (
+        patch.object(client, "_create_session", return_value=session),
+        patch.object(client, "_get_features"),
+        patch.object(client, "_prepare_bin_path", return_value=str(tmp_path / "bin" / "hpsdata")),
+        patch("ansys.hps.data_transfer.client.client.filelock.SoftFileLock", return_value=lock),
+    ):
+        with pytest.raises(BinaryError, match="fork conflict") as exc_info:
+            client._prepare_platform_binary()
+
+    assert message in str(exc_info.value)
+    assert isinstance(exc_info.value.__cause__, RuntimeError)
+
+
+def test_prepare_platform_binary_other_runtime_error_unchanged(tmp_path):
+    client = Client()
+    session = MagicMock()
+    session.get.return_value = MagicMock(status_code=200, json=lambda: {"build_info": {}})
+    lock = MagicMock()
+    lock.__enter__.side_effect = RuntimeError("something else")
+
+    with (
+        patch.object(client, "_create_session", return_value=session),
+        patch.object(client, "_get_features"),
+        patch.object(client, "_prepare_bin_path", return_value=str(tmp_path / "bin" / "hpsdata")),
+        patch("ansys.hps.data_transfer.client.client.filelock.SoftFileLock", return_value=lock),
+    ):
+        with pytest.raises(RuntimeError, match="something else"):
+            client._prepare_platform_binary()
