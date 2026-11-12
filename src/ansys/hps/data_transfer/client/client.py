@@ -153,6 +153,17 @@ class MonitorState:
             log.warning(f"Worker failure detected, binary is {descr}")
 
 
+_FILELOCK_FORK_ERRORS = (
+    "unsafe while filelock is changing descriptor ownership",
+    "inherited across fork",
+    "cannot continue after fork",
+)
+
+
+def _is_filelock_fork_error(message: str) -> bool:
+    return any(m in message for m in _FILELOCK_FORK_ERRORS)
+
+
 class ClientBase:
     """Provides the Python client to the HPS data transfer APIs.
 
@@ -513,6 +524,15 @@ class ClientBase:
                 # log.debug(f"Binary mode: {stat.filemode(os.stat(bin_path).st_mode)}")
         except filelock.Timeout as ex:
             raise BinaryError(f"Failed to acquire lock for binary download: {lock_path}") from ex
+        except RuntimeError as ex:
+            if _is_filelock_fork_error(str(ex)):
+                raise BinaryError(
+                    "Binary download lock failed because of a fork conflict. filelock refuses to acquire or "
+                    "release a lock while another thread forks a process (or a lock was inherited across fork). "
+                    "Do not start processes/worker pools from other threads while Client.start() runs, "
+                    f"and do not share lock objects with forked children. Lock: {lock_path}. Original error: {ex}"
+                ) from ex
+            raise
 
     def _create_session(self, url: str, *, sync: bool = True):
         verify = not self._bin_config.insecure
