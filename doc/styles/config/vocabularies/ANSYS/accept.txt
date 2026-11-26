@@ -20,3 +20,6 @@ subpackage
 storages
 UUIDs
 THIRDPARTY
+build_api
+build_examples
+endif
