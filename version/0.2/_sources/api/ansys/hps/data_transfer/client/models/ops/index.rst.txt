@@ -1,0 +1,366 @@
+
+
+
+
+
+
+The ``ops.py`` module
+=====================
+
+.. py:module:: ansys.hps.data_transfer.client.models.ops
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ops
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~Operation`
+            - Provides the schema for a single operation in the system.
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~OperationState`
+            - State of an operation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the schemas for the operation state and operation.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: Operation(/, **data: Any)
+
+
+
+   
+   Provides the schema for a single operation in the system.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Operation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~children`
+            - 
+          * - :py:attr:`~description`
+            - 
+          * - :py:attr:`~ended_at`
+            - 
+          * - :py:attr:`~error`
+            - 
+          * - :py:attr:`~id`
+            - 
+          * - :py:attr:`~messages`
+            - 
+          * - :py:attr:`~progress`
+            - 
+          * - :py:attr:`~progress_current`
+            - 
+          * - :py:attr:`~progress_total`
+            - 
+          * - :py:attr:`~queued_at`
+            - 
+          * - :py:attr:`~result`
+            - 
+          * - :py:attr:`~started_at`
+            - 
+          * - :py:attr:`~state`
+            - 
+          * - :py:attr:`~succeeded_on`
+            - 
+          * - :py:attr:`~user_id`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.ops import Operation
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: children
+   :type:  list[str] | None
+   :value: None
+
+
+.. py:attribute:: description
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: ended_at
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: error
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: id
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: messages
+   :type:  list[str] | None
+   :value: None
+
+
+.. py:attribute:: progress
+   :type:  float | None
+   :value: None
+
+
+.. py:attribute:: progress_current
+   :type:  int | None
+   :value: None
+
+
+.. py:attribute:: progress_total
+   :type:  int | None
+   :value: None
+
+
+.. py:attribute:: queued_at
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: result
+   :type:  Any | None
+   :value: None
+
+
+.. py:attribute:: started_at
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: state
+   :type:  OperationState | None
+   :value: None
+
+
+.. py:attribute:: succeeded_on
+   :type:  list[str] | None
+   :value: None
+
+
+.. py:attribute:: user_id
+   :type:  str | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: OperationState(*args, **kwds)
+
+
+
+   
+   State of an operation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: OperationState
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~Unknown`
+            - 
+          * - :py:attr:`~Queued`
+            - 
+          * - :py:attr:`~Running`
+            - 
+          * - :py:attr:`~Succeeded`
+            - 
+          * - :py:attr:`~Failed`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.ops import OperationState
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: Unknown
+   :value: 'unknown'
+
+
+.. py:attribute:: Queued
+   :value: 'queued'
+
+
+.. py:attribute:: Running
+   :value: 'running'
+
+
+.. py:attribute:: Succeeded
+   :value: 'succeeded'
+
+
+.. py:attribute:: Failed
+   :value: 'failed'
+
+
+
+
+
+
+
+
+

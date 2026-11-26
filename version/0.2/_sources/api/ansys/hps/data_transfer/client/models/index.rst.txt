@@ -1,0 +1,222 @@
+
+
+
+
+
+
+The ``models`` package
+==========================
+
+.. py:module:: ansys.hps.data_transfer.client.models
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: models
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models.common`
+            - Provides the user information schema for the current user.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models.core`
+            - Provides the error response schema.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models.metadata`
+            - Provides schemas for one or more data assignments and for a data transfer source and destination.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models.msg`
+            - Provides the build information schema and response schemas for other data transfer operations.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models.ops`
+            - Provides the schemas for the operation state and operation.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models.permissions`
+            - Provides the schemas for resource type, role type, and subject type.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models.rest`
+            - Provides the Pydantic model for a schema related to a copy operation.
+
+
+          * - :py:obj:`~ansys.hps.data_transfer.client.models.storage`
+            - Provides the schema for the path type.
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~FieldCompatBucketNameFileNamePostRequest`
+            - Provides the post operation request schema for field compatibility of the bucket name and file name.
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> common</api/ansys/hps/data_transfer/client/models/common/index>
+    <span class="nf nf-fa-file"></span> core</api/ansys/hps/data_transfer/client/models/core/index>
+    <span class="nf nf-fa-file"></span> metadata</api/ansys/hps/data_transfer/client/models/metadata/index>
+    <span class="nf nf-fa-file"></span> msg</api/ansys/hps/data_transfer/client/models/msg/index>
+    <span class="nf nf-fa-file"></span> ops</api/ansys/hps/data_transfer/client/models/ops/index>
+    <span class="nf nf-fa-file"></span> permissions</api/ansys/hps/data_transfer/client/models/permissions/index>
+    <span class="nf nf-fa-file"></span> rest</api/ansys/hps/data_transfer/client/models/rest/index>
+    <span class="nf nf-fa-file"></span> storage</api/ansys/hps/data_transfer/client/models/storage/index>
+
+
+
+
+
+
+
+
+Description
+-----------
+
+
+PyHPS data transfer models subpackage.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: FieldCompatBucketNameFileNamePostRequest(/, **data: Any)
+
+
+
+   
+   Provides the post operation request schema for field compatibility of the bucket name and file name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: FieldCompatBucketNameFileNamePostRequest
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~file`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models import FieldCompatBucketNameFileNamePostRequest
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: file
+   :type:  bytes
+   :value: None
+
+
+
+
+
+
+
+
+

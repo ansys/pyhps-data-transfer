@@ -1,0 +1,172 @@
+
+
+
+
+
+
+The ``token.py`` module
+=======================
+
+.. py:module:: ansys.hps.data_transfer.client.token
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: token
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~prepare_token`
+            - Prepare an authentication token by ensuring it is prefixed with ``Bearer``.
+
+
+          * - :py:obj:`~token_is_bearer`
+            - Check whether the token is prefixed with ``Bearer``.
+
+
+          * - :py:obj:`~token_is_api_key`
+            - Check whether the token is prefixed with ``ApiKey``.
+
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~API_KEY_PREFIX`
+            - 
+
+
+          * - :py:obj:`~BEARER_PREFIX`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides a utility function for handling authentication tokens.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: prepare_token(token)
+
+   
+   Prepare an authentication token by ensuring it is prefixed with ``Bearer``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: token_is_bearer(token)
+
+   
+   Check whether the token is prefixed with ``Bearer``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: token_is_api_key(token)
+
+   
+   Check whether the token is prefixed with ``ApiKey``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: API_KEY_PREFIX
+   :value: 'ApiKey '
+
+
+.. py:data:: BEARER_PREFIX
+   :value: 'Bearer '
+
+
+
+

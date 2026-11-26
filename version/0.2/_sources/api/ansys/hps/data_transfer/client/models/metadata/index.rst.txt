@@ -1,0 +1,326 @@
+
+
+
+
+
+
+The ``metadata.py`` module
+==========================
+
+.. py:module:: ansys.hps.data_transfer.client.models.metadata
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: metadata
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~DataAssignment`
+            - Provides the data assignment schema for a single data assignment.
+
+
+          * - :py:obj:`~DataAssignments`
+            - Provides the data assignments schema for a collection of data assignments.
+
+
+          * - :py:obj:`~SrcDst`
+            - Provides the source and destination schema for a data transfer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides schemas for one or more data assignments and for a data transfer source and destination.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: DataAssignment(/, **data: Any)
+
+
+
+   
+   Provides the data assignment schema for a single data assignment.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DataAssignment
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~custom`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.metadata import DataAssignment
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: custom
+   :type:  dict[str, Any] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: DataAssignments
+
+
+
+   
+   Provides the data assignments schema for a collection of data assignments.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DataAssignments
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~root`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.metadata import DataAssignments
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: root
+   :type:  dict[str, DataAssignment] | None
+   :value: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:class:: SrcDst(/, **data: Any)
+
+
+
+   
+   Provides the source and destination schema for a data transfer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SrcDst
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dst`
+            - 
+          * - :py:attr:`~src`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.metadata import SrcDst
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: dst
+   :type:  str
+
+.. py:attribute:: src
+   :type:  str
+
+
+
+
+
+
+
+

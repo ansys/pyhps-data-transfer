@@ -1,0 +1,181 @@
+
+
+
+
+
+
+The ``common.py`` module
+========================
+
+.. py:module:: ansys.hps.data_transfer.client.models.common
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: common
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~UserInfo`
+            - Provides the user information schema for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Provides the user information schema for the current user.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+
+
+
+
+
+.. py:class:: UserInfo(/, **data: Any)
+
+
+
+   
+   Provides the user information schema for the current user.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: UserInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~groups`
+            - 
+          * - :py:attr:`~id`
+            - 
+          * - :py:attr:`~is_admin`
+            - 
+          * - :py:attr:`~roles`
+            - 
+          * - :py:attr:`~username`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from ansys.hps.data_transfer.client.models.common import UserInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: groups
+   :type:  list[str] | None
+   :value: None
+
+
+.. py:attribute:: id
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: is_admin
+   :type:  bool | None
+   :value: None
+
+
+.. py:attribute:: roles
+   :type:  list[str] | None
+   :value: None
+
+
+.. py:attribute:: username
+   :type:  str | None
+   :value: None
+
+
+
+
+
+
+
+
+
