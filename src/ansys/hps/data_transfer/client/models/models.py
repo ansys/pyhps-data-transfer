@@ -252,6 +252,11 @@ class Features(BaseModel):
     metadata_plugins: list[str] | None = None
     operation_plugins: list[str] | None = None
     permissions_plugins: list[str] | None = None
+    sse: list[str] | None = Field(
+        default=None,
+        description="Available SSE event types (e.g. operation:updated, operation:completed)",
+    )
+    sse_keep_alive: str | None = Field(default=None, description="SSE keep-alive interval (e.g. '15s') or 'disabled'")
     storage_plugins: list[str] | None = None
 
 
@@ -269,6 +274,16 @@ class ListBinariesResponseBody(BaseModel):
     available: list[BinaryInfo] | None = None
 
 
+class OperationCompletedEvent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    data: Any | None = None
+    source: str | None = None
+    subject: str | None = None
+    timestamp: AwareDatetime | None = None
+
+
 class OperationIdResponse(BaseModel):
     model_config = ConfigDict(
         extra="allow",
@@ -283,6 +298,16 @@ class OperationIdResponse(BaseModel):
         description="Location to poll for operation status, provided in the body for convenience",
         examples=["/api/v1/operations/2diK2kCkpgeHAQSNthIZ1JYyPte"],
     )
+
+
+class OperationUpdatedEvent(BaseModel):
+    model_config = ConfigDict(
+        extra="allow",
+    )
+    data: Any | None = None
+    source: str | None = None
+    subject: str | None = None
+    timestamp: AwareDatetime | None = None
 
 
 class OperationsRequest(BaseModel):
@@ -363,6 +388,7 @@ class UserInfo(BaseModel):
         extra="allow",
     )
     account_id: str | None = None
+    default_account: str | None = None
     groups: list[str] | None = None
     id: str | None = None
     is_admin: bool | None = None
